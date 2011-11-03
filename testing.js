@@ -5,7 +5,7 @@
 Ext.onReady(function() {
     TestUnit.init();
     
-    // ROUTING
+    // Routing:
     
     TestUnit.group('Routing');
     TestUnit.isType(Routing, 'object', 'Routing');
@@ -17,7 +17,11 @@ Ext.onReady(function() {
     Routing.connect("test2", "\/shop\/category/{category}\/product\/{product}", []);
     Routing.connect("test3", "/shop/producer/{producer}/show.html#section-top", []);
     
-    
+    TestUnit.isType(
+        Routing.generate('test1', {name: 'Stanislaw-Lem'}),
+        'string',
+        "Routing.generate('test1', {name: 'Stanislaw-Lem'})"
+    );
     TestUnit.test(
         Routing.generate('test1', {name: 'Stanislaw-Lem'}), 
         '/app_dev.php/author/show/Stanislaw-Lem',
@@ -34,21 +38,25 @@ Ext.onReady(function() {
         '/app_dev.php/shop/producer/Samsung/show.html#section-top'
     );
     
+    // Translations:
+    
     TestUnit.group('Translations');
     TestUnit.isType(ExposeTranslation, 'object', 'ExposeTranslation');
     
     ExposeTranslation.locale = 'pl';
-    ExposeTranslation.defaultDomains = ["HatimeriaExtJSBundle"];
-    ExposeTranslation.add("HatimeriaExtJSBundle:direct.title", "B\u0142\u0105d po stronie serwera");
-    ExposeTranslation.add("HatimeriaExtJSBundle:direct.forbidden", "Brak dost\u0119pu");
-    ExposeTranslation.add("HatimeriaExtJSBundle:direct.try_later", "Nast\u0105pi\u0142 b\u0142\u0105d po stronie serwera. Spr\u00f3buj ponownie p\u00f3\u017aniej.");
-    ExposeTranslation.add("HatimeriaExtJSBundle:form.alert_title", "Formularz zawiera b\u0142\u0119dy");
-    ExposeTranslation.add("HatimeriaExtJSBundle:form.image.browse", "Przegl\u0105daj");
-    ExposeTranslation.add("HatimeriaExtJSBundle:form.image.delete", "Usu\u0144");
+    ExposeTranslation.defaultDomains = ["Hatimeria"];
+    ExposeTranslation.add("Hatimeria:direct.title", "B\u0142\u0105d po stronie serwera");
+    ExposeTranslation.add("Validators:direct.forbidden", "Brak dost\u0119pu");
     
+    
+    TestUnit.isType(
+        ExposeTranslation.get('direct.title'), 'string', "ExposeTranslation.get('direct.title')"
+    );
     TestUnit.test(
         ExposeTranslation.get('direct.title'), 'Błąd po stronie serwera', 'direct.title'
     );
-    
+    TestUnit.test(
+        ExposeTranslation.get('Validators:direct.forbidden'), 'Brak dostępu', 'Validators:direct.forbidden'
+    );
     
 });

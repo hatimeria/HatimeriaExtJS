@@ -3,7 +3,7 @@
  * Copyright (c) 2011
  * Original author: Julien Muetton <julien_muetton@carpe-hora.com>
  * Modified by: William DURAND <william.durand1@gmail.com>
- * Rewrite to ExtJS by zbigniew.labacz@hatimeria.pl
+ * Adjusted to ExtJS by zbigniew.labacz@hatimeria.pl
  * MIT Licensed
  */
 

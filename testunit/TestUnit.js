@@ -11,8 +11,7 @@
             Ext.create('Ext.panel.Panel', {
                 id: 'test-panel',
                 title: 'Testy',
-                width: 600,
-                height: 600,
+                width: 800,
                 layout: 'auto',
                 scroll: true,
                 renderTo: 'ext-app'
@@ -81,7 +80,7 @@
                 cls = "failed";
             }
             
-            html = Ext.String.format('<span style="font-weight: bold;">Testig Type:</span> <span>{0}</span> should be <em style="font-weight: bold;">{1}</em>, is: <em style="font-weight: bold;">{2}</em> <span class="result_{3}">{4}</span>', description, type, typeof object, cls, result);
+            html = Ext.String.format('<span style="font-weight: bold;">Testig Type:</span> <span>{0}</span> should be <em style="font-weight: bold;">{1}</e>, is: <em style="font-weight: bold;">{2}</em> <span class="result_{3}">{4}</span>', description, type, typeof object, cls, result);
             
             Ext.getCmp('test-panel').add(Ext.create('Ext.panel.Panel', {
                 html: html,
