@@ -34,7 +34,7 @@
         {
             var data = {}, varname;
 
-            if (Ext.isUndefined(prefix))
+            if (!Ext.isDefined(prefix))
             {
                 prefix = '_';
             }
