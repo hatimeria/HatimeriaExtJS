@@ -3,9 +3,9 @@
  */
 (function() {
     
-    Ext.require('Hatimeria.core.response.DirectHandler');
+    Ext.require('HatimeriaCore.direct.ResponseHandler');
     
-    Ext.define('Hatimeria.core.form.AgreementForm', {
+    Ext.define('HatimeriaCore.form.AgreementForm', {
         extend: 'Ext.form.Panel',
         config: {
             /**
@@ -51,15 +51,22 @@
                 border: false,
                 items: [
                     {
+                        xtype: 'label',
+                        text: this.getLabel()
+                    },
+                    {
+                        xtype: 'panel',
                         id: 'agreement-field',
-                        fieldLabel: this.getLabel(),
-                        labelAlign: 'top',
-                        xtype: 'textarea',
-                        isFormField: false,
-                        readOnly: true,
-                        submitValue: false,
-                        width: this.initialConfig.width || 350 ,
-                        height: 100
+                        layout: 'auto',
+                        autoScroll: true,
+                        width: this.initialConfig.width || 350,
+                        bodyStyle: {
+                            background: '#FFF',
+                            overflow: 'auto'
+                        },
+                        margin: '5 0',
+                        height: 100,
+                        html: ''
                     },
                     {
                         xtype: 'checkbox',
@@ -83,7 +90,7 @@
          */
         loadTerms: function()
         {
-            Ext.create('Hatimeria.core.response.DirectHandler', {
+            Ext.create('HatimeriaCore.direct.ResponseHandler', {
                 fn: this.getDirectFn(),
                 params: this.getParams(),
                 scope: this,
@@ -100,7 +107,7 @@
          */
         updateTerms: function(value)
         {
-            this.getComponent('agreement-field').setValue(value);
+            this.getComponent('agreement-field').update(value);
         }
     });
     
