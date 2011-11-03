@@ -8,9 +8,9 @@
  */
 var ExposeTranslation = ExposeTranslation || {};
 
-(function(Translation, $, undefined) {
+(function(Translation, undefined) {
   // now register our routing methods
-  $.extend(Translation, (function() {
+  Ext.apply(Translation, (function() {
     var _messages = {},
         _sPluralRegex = /^\w+\: +(.+)$/,
         _cPluralRegex = /^(({\s*(\-?\d+[\s*,\s*\-?\d+]*)\s*})|([\[\]])\s*(-Inf|\-?\d+)\s*,\s*(\+?Inf|\-?\d+)\s*([\[\]]))\s+(.+?)$/,
@@ -56,7 +56,7 @@ var ExposeTranslation = ExposeTranslation || {};
           _key = key,
           _defaultDomains = Translation.defaultDomains;
 
-      if (!$.isArray(Translation.defaultDomains)) {
+      if (!Ext.isArray(Translation.defaultDomains)) {
         _defaultDomains = [Translation.defaultDomains];
       }
 
@@ -385,7 +385,7 @@ var ExposeTranslation = ExposeTranslation || {};
       get: function(key, placeholders, number) {
         var _message = _messages[key] || guess_domain(key),
             _number = parseInt(number),
-            _placeholders = $.extend({}, placeholders || {});
+            _placeholders = Ext.apply({}, placeholders || {});
 
         if (_message && !isNaN(_number)) {
           _message = pluralize(_message, _number);
@@ -411,4 +411,4 @@ var ExposeTranslation = ExposeTranslation || {};
       }
     };
   })());
-})(ExposeTranslation, jQuery);
+})(ExposeTranslation);
