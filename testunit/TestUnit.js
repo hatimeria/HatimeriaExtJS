@@ -5,6 +5,18 @@
     
     Ext.ns('TestUnit');
     
+    var createNew = function(text) {
+        Ext.getCmp('test-panel').add(Ext.create('Ext.panel.Panel', {
+            html: text,
+            border: 0,
+            padding: 5,
+            margin: 5,
+            style: {
+                'border-bottom': '1px solid #eee'
+            }
+        }));
+    };
+    
     TestUnit = {
         init: function()
         {
@@ -51,15 +63,7 @@
             
             html = Ext.String.format('<span style="font-weight: bold;">Testig:</span> <span>{0}:</span> <span class="result_{1}">{2}</span>', description, cls, result);
             
-            Ext.getCmp('test-panel').add(Ext.create('Ext.panel.Panel', {
-                html: html,
-                border: 0,
-                padding: 5,
-                margin: 5,
-                style: {
-                    'border-bottom': '1px solid #eee'
-                }
-            }));
+            createNew(html);
         },
         
         isType: function(object, type, description)
@@ -82,15 +86,7 @@
             
             html = Ext.String.format('<span style="font-weight: bold;">Testig Type:</span> <span>{0}</span> should be <em style="font-weight: bold;">{1}</e>, is: <em style="font-weight: bold;">{2}</em> <span class="result_{3}">{4}</span>', description, type, typeof object, cls, result);
             
-            Ext.getCmp('test-panel').add(Ext.create('Ext.panel.Panel', {
-                html: html,
-                border: 0,
-                padding: 5,
-                margin: 5,
-                style: {
-                    'border-bottom': '1px solid #eee'
-                }
-            }));
+            createNew(html);
         }
     }
    
