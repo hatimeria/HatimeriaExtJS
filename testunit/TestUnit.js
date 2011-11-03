@@ -1,0 +1,67 @@
+/* 
+ * Test unit
+ */
+(function() {
+    
+    Ext.ns('TestUnit');
+    
+    TestUnit = {
+        init: function()
+        {
+            Ext.create('Ext.panel.Panel', {
+                id: 'test-panel',
+                title: 'Testy',
+                width: 600,
+                height: 600,
+                layout: 'auto',
+                scroll: true,
+                renderTo: 'ext-app'
+            });
+        },
+        
+        group: function(name)
+        {
+            Ext.getCmp('test-panel').add(Ext.create('Ext.panel.Panel', {
+                html: '<span style="font-weight: bold;">'+name+':</span>',
+                border: 0,
+                padding: 5,
+                margin: 5,
+                style: {
+                    'border-bottom': '2px solid #eee'
+                }
+            }));
+        },
+        
+        test: function(expression, value, description)
+        {
+            var 
+                html = "",
+                cls,
+                result;
+            
+            if (expression === value)
+            {
+                result = '<span style="color: #00B235; font-weight: bold;">OK</span>';
+                cls = "ok";
+            }
+            else
+            {
+                result = '<span style="color: #F00; font-weight: bold;">Failed</span>';
+                cls = "failed";
+            }
+            
+            html = Ext.String.format('<span style="font-weight: bold;">Testig:</span> <span>{0}:</span> <span class="result_{1}">{2}</span>', description, cls, result);
+            
+            Ext.getCmp('test-panel').add(Ext.create('Ext.panel.Panel', {
+                html: html,
+                border: 0,
+                padding: 5,
+                margin: 5,
+                style: {
+                    'border-bottom': '1px solid #eee'
+                }
+            }));
+        }
+    }
+   
+})();
