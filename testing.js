@@ -8,6 +8,7 @@ Ext.onReady(function() {
     // ROUTING
     
     TestUnit.group('Routing');
+    TestUnit.isType(Routing, 'object', 'Routing');
     
     Routing.prefix = '/app_dev.php';
     Routing.variablePrefix = '{';
@@ -16,7 +17,6 @@ Ext.onReady(function() {
     Routing.connect("test2", "\/shop\/category/{category}\/product\/{product}", []);
     Routing.connect("test3", "/shop/producer/{producer}/show.html#section-top", []);
     
-    TestUnit.isType(Routing, 'object', 'Routing');
     
     TestUnit.test(
         Routing.generate('test1', {name: 'Stanislaw-Lem'}), 
@@ -35,9 +35,10 @@ Ext.onReady(function() {
     );
     
     TestUnit.group('Translations');
+    TestUnit.isType(ExposeTranslation, 'object', 'ExposeTranslation');
     
     ExposeTranslation.locale = 'pl';
-    ExposeTranslation.defaultDomains = ["messages"];
+    ExposeTranslation.defaultDomains = ["HatimeriaExtJSBundle"];
     ExposeTranslation.add("HatimeriaExtJSBundle:direct.title", "B\u0142\u0105d po stronie serwera");
     ExposeTranslation.add("HatimeriaExtJSBundle:direct.forbidden", "Brak dost\u0119pu");
     ExposeTranslation.add("HatimeriaExtJSBundle:direct.try_later", "Nast\u0105pi\u0142 b\u0142\u0105d po stronie serwera. Spr\u00f3buj ponownie p\u00f3\u017aniej.");
@@ -46,7 +47,8 @@ Ext.onReady(function() {
     ExposeTranslation.add("HatimeriaExtJSBundle:form.image.delete", "Usu\u0144");
     
     TestUnit.test(
-        
+        ExposeTranslation.get('direct.title'), 'Błąd po stronie serwera', 'direct.title'
     );
+    
     
 });
