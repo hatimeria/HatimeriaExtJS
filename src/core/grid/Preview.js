@@ -3,7 +3,7 @@
  *  
  */
 
-Ext.define("HatimeriaCore.grid.Preview", {
+Ext.define("Hatimeria.core.grid.Preview", {
     init: function() {
         var me = this;
         
@@ -22,7 +22,8 @@ Ext.define("HatimeriaCore.grid.Preview", {
         var first = response.records[0];
         var keys = null;
         var headers = me.config.headers || null;
-        var showAllData = headers == null;        
+        var showAllData = headers == null;
+        var storeFields;
         
         if(showAllData) {
             if(typeof first != 'object') {
@@ -37,7 +38,7 @@ Ext.define("HatimeriaCore.grid.Preview", {
             storeFields = Object.keys(headers);
         }
         
-        storeParams = {
+        var storeParams = {
             directFn: me.config.directFn,
             root: 'records',
             autoLoad: false,
@@ -72,7 +73,7 @@ Ext.define("HatimeriaCore.grid.Preview", {
         };
         
         var columns = [];
-        for(i in keys) {
+        for(var i in keys) {
             var key = keys[i];
             var column = {renderer: renderer, flex: 1, header: key}
             
@@ -85,7 +86,7 @@ Ext.define("HatimeriaCore.grid.Preview", {
             columns.push(column);
         }
         
-        gridParams = {
+        var gridParams = {
             store: store,
             margin: '10px',
             width: 800,

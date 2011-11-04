@@ -3,9 +3,9 @@
  */
 (function() {
     
-    Ext.require('HatimeriaCore.direct.ResponseHandler');
+    Ext.require('Hatimeria.core.response.DirectHandler');
     
-    Ext.define('HatimeriaCore.form.AgreementForm', {
+    Ext.define('Hatimeria.core.form.AgreementForm', {
         extend: 'Ext.form.Panel',
         config: {
             /**
@@ -90,7 +90,7 @@
          */
         loadTerms: function()
         {
-            Ext.create('HatimeriaCore.direct.ResponseHandler', {
+            Ext.create('Hatimeria.core.response.DirectHandler', {
                 fn: this.getDirectFn(),
                 params: this.getParams(),
                 scope: this,
