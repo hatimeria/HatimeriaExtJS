@@ -8,7 +8,7 @@
         mixins: {
             translationable: 'Hatimeria.core.mixins.Translationable'
         },
-        transDomain: 'Hatimeria',
+        transDomain: 'HatimeriaExtJSBundle',
         
         config: {
             
