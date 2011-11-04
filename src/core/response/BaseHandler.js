@@ -3,7 +3,7 @@
  */
 (function() {
     
-    Ext.define('HatimeriaCore.response.BaseHandler', {
+    Ext.define('Hatimeria.core.response.BaseHandler', {
         config: {
             
             /**
