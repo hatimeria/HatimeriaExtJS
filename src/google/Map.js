@@ -1,4 +1,4 @@
-Ext.define("Hatimeria.core.google.Map", {
+Ext.define("Hatimeria.google.Map", {
     config: {
         address: null,
         renderTo: null
