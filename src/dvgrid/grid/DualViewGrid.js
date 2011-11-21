@@ -316,7 +316,6 @@
             
             // to prevent duplicate events:
             this.view.clearListeners();
-            
             // Creating a new View instance:
             this.view = Ext.create(cfgView.className, {
                 deferInitialRefresh: _this.deferRowRender,
@@ -326,7 +325,7 @@
                 selModel: sm,
                 features: _this.features,
                 panel: _this,
-                el: _this.body.child('div.x-component'),
+                el: (_this.body.child('div.x-component') || _this.body.child('div.x-grid-view')),
                 ownerCt: _this,
                 actions: (initialConfig.actions ? initialConfig.actions : {})
             });
