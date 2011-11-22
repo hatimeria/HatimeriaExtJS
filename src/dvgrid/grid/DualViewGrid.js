@@ -369,7 +369,8 @@
             if (this.currentSortColumn)
             {
                 var oldColumn = this.headerCt.items.get(this.getColumnIndex(this.currentSortColumn));
-                if (typeof oldColumn == 'object');
+		// @todo chech if allright:
+                if (typeof oldColumn == 'object')
                 {
                     // Default visible column cannot be hidden!
                     if (!this.isDefaultVisible(this.currentSortColumn))
