@@ -23,6 +23,9 @@
             Ext.apply(config, cfg || {});
 
             this.callParent([config]);
+            
+            // always send records as an array
+            this.proxy.writer.allowSingle = false;
         },
 
         /**
