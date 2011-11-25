@@ -84,8 +84,9 @@
                     'margin-top': '7px'
                 },
                 listeners: {
-                    select:  function(cb) {
-                        _this.fireEvent('sorterchange', cb.getValue());
+                    select:  function(cb, records) {
+                        var record = records.pop();
+                        _this.fireEvent('sorterchange', record.get('field'), record.get('sort'));
                     }
                 }
             });
@@ -273,6 +274,7 @@
             for (var columnName in columns)
             {
                 cfg = columns[columnName];
+                
                 if (cfg.defaultVisible)
                 {
                     headerConfig = Ext.apply({text: this.__(columnName), dataIndex: columnName}, cfg);
@@ -282,7 +284,10 @@
                     headerConfig = Ext.apply({text: this.__(columnName), dataIndex: columnName, hidden: true}, cfg);
                 }
                 
+                // Remove unuseless properties:
                 delete headerConfig.defaultVisible;
+                delete headerConfig.defaultSort;
+                
                 appliedColumns.push(headerConfig);
             }
             
@@ -356,7 +361,7 @@
          * 
          * @param string fieldName
          */
-        onSortComboChange: function(fieldName)
+        onSortComboChange: function(fieldName, direction)
         {
             var index = this.getColumnIndex(fieldName);
             
@@ -369,7 +374,7 @@
             if (this.currentSortColumn)
             {
                 var oldColumn = this.headerCt.items.get(this.getColumnIndex(this.currentSortColumn));
-		// @todo chech if allright:
+                // @todo check if allright:
                 if (typeof oldColumn == 'object')
                 {
                     // Default visible column cannot be hidden!
@@ -393,7 +398,6 @@
             
             if (this.headerCt.rendered)
             {
-                
                 if (column.isHidden())
                 {
                     column.show();
@@ -403,13 +407,13 @@
             {
                 column.hidden = false;
             }
-
-            column.setSortState('ASC');
             
+            direction = (typeof direction != 'undefined') ? direction : 'ASC' ;
+            column.setSortState(direction);
             this.currentSortColumn = fieldName;
 
             // Fire sorting:
-            this.store.sort(fieldName, 'ASC');
+            this.store.sort(fieldName, direction);
         },
         
         /**

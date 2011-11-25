@@ -1,6 +1,6 @@
-    /* 
-     * Custom TilesView
-     */
+/* 
+ * Custom TilesView
+ */
 (function() {
     
     Ext.util.Format.truncate = function(value, len) {
