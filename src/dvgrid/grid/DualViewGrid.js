@@ -13,6 +13,21 @@
         mixins: {
             translationable: 'Hatimeria.core.mixins.Translationable'
         },
+        
+        // Class statics (ext feature):
+        inheritableStatics: {
+            
+            factories: {
+                gridView: 'Hatimeria.dvgrid.view.TableView',
+                tilesView: 'Hatimeria.dvgrid.view.TilesView',
+                combo: 'Hatimeria.dvgrid.form.SortComboBox'
+            },
+            
+            applyFactories: function(factories) {
+                Ext.apply(this.factories, factories)
+            }
+        },
+        
         transNS: 'dualviewgrid',
         
         /**
@@ -24,12 +39,12 @@
             tiles: {
                 viewType: 'tilesview', 
                 selType: 'tilesmodel',
-                className: 'Hatimeria.dvgrid.view.TilesView'
+                factory: 'tilesView'
             },
             grid : {
                 viewType: 'customtableview', 
                 selType: 'rowmodel',
-                className: 'Hatimeria.dvgrid.view.TableView'
+                factory: 'gridView'
             }
         },
         
@@ -76,7 +91,7 @@
                 throw new Error('Need to specify columnConfig');
             }
             
-            var comboboxSort = Ext.create('Hatimeria.dvgrid.form.SortComboBox', {
+            var comboboxSort = Ext.create(this.self.factories.combo, {
                 applyColumns: this.initialConfig.columnConfig,
                 cls: 'grid-select-order',
                 style: {
@@ -322,7 +337,7 @@
             // to prevent duplicate events:
             this.view.clearListeners();
             // Creating a new View instance:
-            this.view = Ext.create(cfgView.className, {
+            this.view = Ext.create(this.self.factories[cfgView.factory], {
                 deferInitialRefresh: _this.deferRowRender,
                 xtype: _this.viewType,
                 store: _this.store,
