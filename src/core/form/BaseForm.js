@@ -4,7 +4,37 @@ Ext.define("Hatimeria.core.form.BaseForm", {
         translationable: 'Hatimeria.core.mixins.Translationable'
     },
     transDomain: 'HatimeriaExtJSBundle',
+
     
+    /**
+     * Constructor
+     * 
+     * @param {} cfg
+     */
+    constructor: function(cfg)
+    {
+        var config = cfg || {};
+        
+        if (typeof this.submitConfig == 'object')
+        {
+            if (typeof this.submitConfig.submit == 'function')
+            {
+                Ext.merge(config, {api: {
+                    submit: this.submitConfig.submit    
+                }});
+            }
+        }
+
+        if (typeof cfg.submitConfig == 'object' && typeof cfg.submitConfig.submit == 'function')
+        {
+            Ext.merge(config, {api: {
+                submit: cfg.submitConfig.submit
+            }});
+        }
+        
+        this.callParent([config]);
+    },
+
     /**
      * Initialization
      */
@@ -29,10 +59,11 @@ Ext.define("Hatimeria.core.form.BaseForm", {
             success: config.success || function() {},
             formPanel: this
         });
+        
         var submitButton = {
             text: config.text,
-            cls: 'ux-button',
-            handler: function() {
+            cls: this.submitConfig.iconCls || 'ux-button',
+            handler: function(button) {
                 var form = this.up('form').getForm();
                 if (form.isValid())
                 {
@@ -58,16 +89,6 @@ Ext.define("Hatimeria.core.form.BaseForm", {
      */
     getFieldByName: function(name)
     {
-        var fields = this.getForm()._fields.items;
-        for (var i in fields)
-        {
-            var field = fields[i];
-            if (field.name == name)
-            {
-                return field;
-            }
-        }
-        
-        return false;
+        return this.getForm().findField(name);
     }
 });
