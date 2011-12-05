@@ -1,5 +1,8 @@
 /**
  * Base store
+ * 
+ * @class Hatimeria.core.store.BaseStore
+ * @extends Ext.data.DirectStore
  */
 (function() {
     
@@ -9,7 +12,8 @@
         /**
          * Constructor
          * 
-         * @param {} cfg
+         * @private
+         * @param {Object} cfg
          */
         constructor: function(cfg)
         {
@@ -29,9 +33,10 @@
         },
 
         /**
-         * Applies context-tag
+         * Applies global variables
          * 
-         * @param [] vars
+         * @param {Array} varnames
+         * @param {String} prefix
          */
         applyGlobalValues: function(varnames, prefix)
         {
@@ -60,7 +65,7 @@
         /**
          * Applying extraparams passed during creating store
          * 
-         * @param {} data
+         * @param {Object} data
          */
         applyExtraParams: function(data)
         {

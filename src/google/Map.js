@@ -1,8 +1,10 @@
 Ext.define("Hatimeria.google.Map", {
     config: {
+        
         address: null,
         renderTo: null
     },
+    
     /**
      * Constructor
      * 
@@ -20,7 +22,7 @@ Ext.define("Hatimeria.google.Map", {
     {
         this.geocoder.geocode( {
             'address': this.config.address
-            }, Ext.bind(this.handleGoogleResponse, this));
+        }, Ext.bind(this.handleGoogleResponse, this));
     },
     
     getContainer: function()

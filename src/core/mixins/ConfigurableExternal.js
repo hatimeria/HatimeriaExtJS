@@ -1,16 +1,21 @@
 /**
- * Callable
+ * Behavior enables ability of using external configs
+ * 
+ * @class Hatimeria.core.mixins.ConfigurableExternal
  */
 (function() {
     
-    Ext.require('Hatimeria.core.utils.ConfigManager');
-    
     Ext.define('Hatimeria.core.mixins.ConfigurableExternal', {
+        requires: [
+            'Hatimeria.core.utils.ConfigManager'
+        ],
         
         externalConfig: undefined,
         
         /**
          * Singleton: Mixins manager
+         * 
+         * @return {Hatimeria.core.utils.ConfigManager}
          */
         getConfigManager: function()
         {
@@ -20,7 +25,8 @@
         /**
          * Merge in external config (if exists)
          * 
-         * @param OPTONAL {} cfg
+         * @param {Object} cfg
+         * @return {Object}/{Boolean}
          */
         mergeExternal: function(cfg)
         {
@@ -43,6 +49,8 @@
         
         /**
          * Reference to connected object
+         * 
+         * @return {Object}/{Boolean}
          */
         getConnectedConfig: function()
         {

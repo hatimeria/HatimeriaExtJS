@@ -8,23 +8,28 @@
     Ext.define('Hatimeria.core.form.AgreementForm', {
         extend: 'Ext.form.Panel',
         config: {
+            
             /**
              * Direct function to content of terms
+             * @cfg {Function} directFn
              */
             directFn: function() {},
             
             /**
              * Optional request parameters
+             * @cfg {Object} params
              */
             params: {},
             
             /**
              * Label of form
+             * @cfg {String} label
              */
             label: 'Regulamin',
             
             /**
              * Label behind checkbox
+             * @cfg {String} checkboxLabel
              */
             checkboxLabel: 'Akceptuję requlamin'
         },
@@ -32,7 +37,8 @@
         /**
          * Constructor
          * 
-         * @param {} config
+         * @private
+         * @param {Object} config
          */
         constructor: function(config)
         {
@@ -44,6 +50,8 @@
         
         /**
          * Initializes form
+         * 
+         * @private
          */
         initComponent: function()
         {
@@ -87,6 +95,8 @@
         
         /**
          * Load terms of Agreement
+         * 
+         * @private
          */
         loadTerms: function()
         {
@@ -103,6 +113,7 @@
         /**
          * Updates a textarea field
          * 
+         * @private
          * @param string value
          */
         updateTerms: function(value)

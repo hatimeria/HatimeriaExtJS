@@ -1,5 +1,7 @@
 /**
  * Base Handler
+ * 
+ * @class Hatimeria.core.response.BaseHandler
  */
 (function() {
     
@@ -8,8 +10,7 @@
             
             /**
              * Window alert
-             * 
-             * @var string
+             * @cfg {String} failureWindowTitle
              */
             failureWindowTitle: 'alert'
         },
@@ -17,14 +18,16 @@
         /**
          * Error message
          * 
-         * @var mixed
+         * @private
+         * @property mixed
          */
         msg: undefined,
         
         /**
          * Global errors
          * 
-         * @var []
+         * @private
+         * @property {Array}
          */
         globalMsg: [],
         
@@ -41,9 +44,9 @@
         },
         
         /**
-         * Error 
+         * Error Callback
          * 
-         * @param {} result
+         * @param {Object} result
          */
         failure: function(result)
         {
@@ -86,7 +89,8 @@
         /**
          * Manage failure case
          * 
-         * @param {} result
+         * @private
+         * @param {Object} result
          */
         displayMessage: function()
         {
@@ -104,7 +108,8 @@
         /**
          * Marks message in specific place
          * 
-         * @param string index
+         * @private
+         * @param {String} index
          */
         markMessage: function(index)
         {

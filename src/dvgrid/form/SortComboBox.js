@@ -1,5 +1,8 @@
 /** 
  * Sorting combobox
+ * 
+ * @class Hatimeria.dvgrid.form.SortComboBox
+ * @extends Ext.form.ComboBox
  */
 
 (function() {
@@ -13,6 +16,7 @@
         
         /**
          * Initializes component
+         * @private
          */
         initComponent: function()
         {
@@ -36,8 +40,8 @@
         /**
          * Prepares store according to specified Model 
          * 
-         * @param {} columns
-         * @return []
+         * @param {Object} columns
+         * @return {Ext.data.Store}
          */
         prepareStore: function(columns)
         {

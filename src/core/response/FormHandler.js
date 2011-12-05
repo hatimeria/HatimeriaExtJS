@@ -1,19 +1,33 @@
 /**
  * Response handler
+ * 
+ * @class Hatimeria.core.response.FormHandler
+ * @extends Hatimeria.core.response.BaseHandler
  */
 (function() {
     
     Ext.define("Hatimeria.core.response.FormHandler", {
         extend: 'Hatimeria.core.response.BaseHandler',
         config: {
+            
+            /**
+             * Success callback
+             * @cfg {Function} success
+             */
             success: function() {},
+            
+            /**
+             * Form panel
+             * @cfg {Ext.form.Panel} formPanel
+             */
             formPanel: {}
         },
 
         /**
          * Constructor
          * 
-         * @param {} config
+         * @private
+         * @param {Object} config
          */
         constructor: function(config)
         {
@@ -26,8 +40,9 @@
         /**
          * Manage failure case
          * 
-         * @param Ext.form.Base form
-         * @param {} action
+         * @private
+         * @param {Ext.form.Base} form
+         * @param {Object} action
          */
         failure: function(form, action)
         {
@@ -37,7 +52,8 @@
         /**
          * Mark fields as invalid
          * 
-         * @param string index
+         * @private
+         * @param {String} index
          */
         markMessage: function(index)
         {

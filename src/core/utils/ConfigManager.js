@@ -1,19 +1,21 @@
 /**
  * Config Manager
  * 
- * @description Manager registers extra config for other classes that implements: Hatimeria.core.mixins.ConfigurableExternal
- * @usage:
- *   Before start application include:
- *   Ext.require("Hatimeria.core.utils.ConfigManager");
- *   Ext.onReady(function() {
+ * @class Hatimeria.core.utils.ConfigManager
+ * 
+ * Manager registers extra config for other classes that implements: Hatimeria.core.mixins.ConfigurableExternal
+ * 
+ *     Before start application include:
+ *     Ext.require("Hatimeria.core.utils.ConfigManager");
+ *     Ext.onReady(function() {
  *   
  *     var manager = Ext.ClassManager.get("Hatimeria.core.utils.ConfigManager");
- *     manager.register('TargetClass', {
- *       listeners: {
- *         afterrender: function() { console.log('IT WORKS'); }
- *       }
+ *       manager.register('TargetClass', {
+ *          listeners: {
+ *            afterrender: function() { console.log('IT WORKS'); }
+ *          }
+ *       });
  *     });
- *   });
  */
 (function() {
     
@@ -23,6 +25,8 @@
         /**
          * Map of classes
          * 
+         * @private
+         * @property {Object} map
          * [className => 'CustomClassName']
          */
         map: {},
@@ -30,8 +34,8 @@
         /**
          * Registers a new object
          * 
-         * @param string className
-         * @param string objectConfig
+         * @param {String} className
+         * @param {String} objectConfig
          */
         register: function(className, objectConfig)
         {
@@ -41,8 +45,8 @@
         /**
          * Gets object
          * 
-         * @param string classNames
-         * @return {}
+         * @param {String} classNames
+         * @return {Object}
          */
         get: function(className)
         {
@@ -52,7 +56,7 @@
         /**
          * Check if manager has class
          * 
-         * @param string className
+         * @param {String} className
          */
         has: function(className)
         {
@@ -62,7 +66,7 @@
         /**
          * Gets map of classes to custom classes
          * 
-         * @return {}
+         * @return {Object}
          */
         getMap: function()
         {

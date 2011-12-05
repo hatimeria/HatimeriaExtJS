@@ -5,6 +5,7 @@
 
 /**
  * Define Translation class.
+ * @hide
  */
 var ExposeTranslation = ExposeTranslation || {};
 

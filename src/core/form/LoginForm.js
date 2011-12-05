@@ -1,3 +1,9 @@
+/**
+ * Login Form
+ *
+ * @class Hatimeria.core.form.LoginForm
+ * @extends Hatimeria.core.form.BaseForm
+ */
 (function() {
 
     Ext.define("Hatimeria.core.form.LoginForm", {
@@ -8,7 +14,8 @@
         /**
          * Constructor
          * 
-         * @param {} cfg
+         * @private
+         * @param {Object} cfg
          */
         constructor: function(cfg)
         {
@@ -20,6 +27,8 @@
 
         /**
          * Initialize component
+         * 
+         * @private
          */
         initComponent: function()
         {
@@ -63,6 +72,8 @@
         
         /**
          * Hit enter on field
+         * 
+         * @private
          */
         onFieldEnter: function(field, event)
         {

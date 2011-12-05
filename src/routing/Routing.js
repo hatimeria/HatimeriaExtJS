@@ -9,6 +9,7 @@
 
 /**
  * define Routing class
+ * @hide
  */
 
 var Routing = Routing || {};

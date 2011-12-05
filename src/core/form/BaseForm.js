@@ -6,16 +6,30 @@ Ext.define("Hatimeria.core.form.BaseForm", {
     transDomain: 'HatimeriaExtJSBundle',
     
     /**
+     * @cfg {Object} submitConfig
+     * 
+     *     submitConfig: {
+     *         text: 'button text',
+     *         submit: DirectFN,
+     *         iconCls: 'buttnon-icon-class',
+     *         success: function() {
+     *             // After success
+     *         }
+     *     }
+     */
+    
+    /**
      * Submit button
      * 
-     * @var Ext.button.Button
+     * @private
+     * @property Ext.button.Button
      */
     submitHandler: undefined,
     
     /**
      * Constructor
      * 
-     * @param {} cfg
+     * @param {Object} cfg
      */
     constructor: function(cfg)
     {
@@ -40,6 +54,8 @@ Ext.define("Hatimeria.core.form.BaseForm", {
 
     /**
      * Initialization
+     * 
+     * @private
      */
     initComponent: function()
     {
@@ -58,6 +74,8 @@ Ext.define("Hatimeria.core.form.BaseForm", {
     
     /**
      * Mount submit features
+     * 
+     * @private
      */
     mountSubmit: function()
     {
@@ -93,7 +111,6 @@ Ext.define("Hatimeria.core.form.BaseForm", {
         var form = this.getForm();
         if (form.isValid())
         {
-            console.log(form)
             var el = this.up('window');
             if (Ext.isObject(el))
             {
@@ -106,6 +123,8 @@ Ext.define("Hatimeria.core.form.BaseForm", {
     
     /**
      * Submit handler
+     * 
+     * @return {Hatimeria.core.response.FormHandler}
      */
     getSubmitHandler: function()
     {
@@ -115,7 +134,8 @@ Ext.define("Hatimeria.core.form.BaseForm", {
     /**
      * Gets field by name
      * 
-     * @param string name
+     * @param {String} name
+     * @return {Ext.form.Field}
      */
     getFieldByName: function(name)
     {
@@ -124,6 +144,8 @@ Ext.define("Hatimeria.core.form.BaseForm", {
     
     /**
      * Event: fires when any action completes
+     * 
+     * @private
      */
     onAnyAction: function()
     {

@@ -11,7 +11,7 @@
 
             var combo = this;
 
-            if(this.store) {
+            if (this.store) {
                 this.store.on("load", function() {
                     if(combo.getValue()) {
                         combo.setValue(combo.getValue());
