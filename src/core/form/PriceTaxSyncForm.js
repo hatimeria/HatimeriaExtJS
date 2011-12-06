@@ -1,19 +1,38 @@
 /**
  * Netto Brutto sync form
+ * 
+ * @class Hatimeria.core.form.PriceTaxSyncForm
+ * @extends Ext.form.Panel
  */
 (function() {
     
     Ext.define('Hatimeria.core.form.PriceTaxSyncForm', {
         extend: 'Ext.form.Panel',
         config: {
+            
+            /**
+             * Tax rate
+             * @cfg {Integer} vat
+             */
             vat: 23,
+            
+            /**
+             * Name of netto field
+             * @cfg {String} nettoFieldName
+             */
             nettoFieldName: 'netto',
+            
+            /**
+             * Name of brutto field
+             * @cfg {String} 
+             */
             bruttoFieldName: 'brutto'
         },
         
         /**
          * Constructor
          * 
+         * @private
          * @param {} config
          */
         constructor: function(config)
@@ -24,6 +43,8 @@
         
         /**
          * Initialize components
+         * 
+         * @private
          */
         initComponent: function()
         {
@@ -71,8 +92,9 @@
         /**
          * Event: netto field changed
          * 
-         * @pram Ext.form.field.Text
-         * @param string value
+         * @private
+         * @param {Ext.form.field.Text} field
+         * @param {String} value
          */
         onNettoChange: function(field, value)
         {
@@ -85,10 +107,11 @@
         },
         
         /**
-         * Event: netto field changed
+         * Event: brutto field changed
          * 
-         * @pram Ext.form.field.Text
-         * @param string value
+         * @private
+         * @param {Ext.form.field.Text} field
+         * @param {String} value
          */
         onBruttoChange: function(field, value)
         {
@@ -107,14 +130,12 @@
         /**
          * Tax percentage
          * 
-         * @return float
+         * @return {Double}
          */
         getPercent: function()
         {
             return this.getVat() / 100;
         }
-        
-        
     });
     
 })();

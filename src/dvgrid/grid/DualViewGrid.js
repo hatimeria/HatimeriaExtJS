@@ -1,5 +1,9 @@
 /** 
  * Dual-View Grid
+ * Component built on Ext.grid.Panel with change view feature in run-time
+ * 
+ * @class Hatimeria.dvgrid.grid.DualViewGrid
+ * @extends Ext.grid.Panel
  */
 (function() {
     
@@ -28,12 +32,17 @@
             }
         },
         
+        /**
+         * Translation namespace
+         * @cfg {String} transNS
+         */
         transNS: 'dualviewgrid',
         
         /**
          * Types of views
          * 
-         * @var {}
+         * @private
+         * @property {Object}
          */
         userViews: {
             tiles: {
@@ -51,33 +60,73 @@
         /**
          * Columns config
          * 
-         * @var []
+         *     columnConfig: {
+         *         name: {defaultVisible: true, flex: true, align: 'left'},
+         *         price: {defaultVisible: false, width: 60, align: 'right', defaultSort: 'DESC'},
+         *         created_at: {defaultVisible: false, width: 100, align: 'center', defaultSort: 'DESC'},
+         *         updated_at: {defaultVisible: false, width: 100, align: 'center', defaultSort: 'DESC'},
+         *     }
+         *   
+         * @cfg {Object} columnConfig
          */
-        columnConfig: [],
+        columnConfig: {},
         
         /**
          * Curerent view type
          * 
-         * @var string
+         * @private
+         * @property {String}
          */
         currentViewName: undefined,
         
         /**
          * Sort combo box:
          * 
-         * @var Ext.form.field.ComboBox
+         * @private
+         * @property {Ext.form.field.ComboBox}
          */
         sortCombo: undefined,
         
         /**
          * Current sort column name added from combobox
          * 
-         * @var string
+         * @private
+         * @property {String}
          */
         currentSortColumn: undefined,
         
         /**
-         * initializes component
+         * Default view
+         * 
+         * @cfg {String} defaultView grid|tiles
+         */
+        defaultView: 'grid',
+        
+        /**
+         * Actions for grid/tiles
+         * 
+         *       actions: {
+         *           menu: {
+         *               header: '',
+         *               width: 50,
+         *               text: 'Menu',
+         *               align: 'center',
+         *               position: 'last',
+         *               cls: 'menucls',
+         *               handler: function(grid, view, record, el, index, event) {
+         *                   
+         *               }
+         *           }
+         *       }
+         *       
+         * @cfg {Object} actions
+         */
+        actions: {},
+        
+        /**
+         * Initializes component
+         * 
+         * @private
          */
         initComponent: function()
         {
@@ -168,11 +217,31 @@
             
             this.callParent();
             
-            this.addEvents([
+            this.addEvents(
+            
+                /**
+                 * @event sorterchange
+                 * @param {String} fieldName
+                 * @param {String} direction
+                 * Fires when sort mode is changed
+                 */
                 'sorterchange',
+                
+                /**
+                 * @event viewchange
+                 * @param {String} viewName
+                 * @param {Ext.view.View} view
+                 * Fires when view mode is changed
+                 */
                 'viewchange',
+                
+                /**
+                 * @event beforeviewchange
+                 * @param {String} viewType
+                 * Fires before change of view
+                 */
                 'beforeviewchange'
-            ]);
+            );
             
             this.on('sorterchange', this.onSortComboChange);
             this.store.on('sort', this.onSortGridChange, this);
@@ -181,6 +250,8 @@
         
         /**
          * Shows column according to sorters
+         * 
+         * @private
          */
         customizeSorters: function()
         {
@@ -198,8 +269,9 @@
         /**
          * Creates column configuration
          * 
-         * @param {} cols
-         * @return {}
+         * @private
+         * @param {Object} cols
+         * @return {Object}
          */
         getColumnsForGrid: function(colsConfig)
         {
@@ -211,7 +283,8 @@
         /**
          * Sort combo
          * 
-         * @return Ext.form.field.Combobox
+         * @private
+         * @return {Ext.form.field.Combobox}
          */
         getSortCombo: function()
         {
@@ -226,8 +299,9 @@
         /**
          * Add actions
          * 
-         * @param {} columns
-         * @return {}
+         * @private
+         * @param {Object} columns
+         * @return {Object}
          */
         addActions: function(columns)
         {
@@ -255,8 +329,9 @@
         /**
          * Creates action column
          * 
-         * @param {} config
-         * @return Ext.grid.column.Column
+         * @private
+         * @param {Object} config
+         * @return {Ext.grid.column.Column}
          */
         createActionColumn: function(name, cfg)
         {
@@ -280,7 +355,8 @@
         /**
          * Applies column config
          * 
-         * @param [] columns
+         * @private
+         * @param {Object} columns
          */
         createColumnsCollection: function(columns)
         {
@@ -315,7 +391,7 @@
         /**
          * Switches to custom view: tiles | grid
          * 
-         * @param string viewPrefix
+         * @param {String} viewPrefix tiles or grid
          */
         switchViewTo: function(viewPrefix)
         {
@@ -367,7 +443,7 @@
         /**
          * View name
          * 
-         * @return string
+         * @return {String}
          */
         getCurrentViewName: function()
         {
@@ -377,7 +453,8 @@
         /**
          * Event: Manage event on combobox sort change
          * 
-         * @param string fieldName
+         * @private
+         * @param {String} fieldName
          */
         onSortComboChange: function(fieldName, direction)
         {
@@ -437,7 +514,8 @@
         /**
          * Event: grid sort change
          * 
-         * @param [] Ext.util.Sorter sorters
+         * @private
+         * @param {Ext.util.Sorter[]} sorters
          */
         onSortGridChange: function(sorters)
         {
@@ -453,9 +531,9 @@
         },
         
         /**
-         * Schecks if column is default visible
+         * Checks if column is default visible
          * 
-         * @param string columnName
+         * @param {String} columnName
          */
         isDefaultVisible: function(columnName)
         {
@@ -468,9 +546,9 @@
         },
         
         /**
-         * Finds index of a column
+         * Finds index of a column by name
          * 
-         * @return index
+         * @return {Integer} index
          */
         getColumnIndex: function(columnName)
         {
@@ -488,7 +566,8 @@
         /**
          * Switches status button
          * 
-         * @param Ext.button.Button
+         * @private
+         * @param {Ext.button.Button}
          */
         switchActiveButton: function(button, name)
         {

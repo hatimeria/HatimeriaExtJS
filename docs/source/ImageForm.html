@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js"><span id='Hatimeria-core-form-ImageForm'>/**
+</span> * Image Form (upload of photo)
+ * 
+ * @class Hatimeria.core.form.ImageForm
+ * @extends Ext.form.Panel
+ */
+(function() {
+
+    Ext.define('Hatimeria.core.form.ImageForm', {
+        extend: 'Ext.form.Panel',
+        mixins: {
+            translationable: 'Hatimeria.core.mixins.Translationable'
+        },
+        transDomain: 'HatimeriaExtJSBundle',
+        
+        config: {
+            
+<span id='Hatimeria-core-form-ImageForm-css_var-int'>            /**
+</span>             * Image width
+             * 
+             * @var int
+             */
+            imgWidth: 100,
+            
+<span id='Hatimeria-core-form-ImageForm-css_var-100'>            /**
+</span>             * Image height
+             * 
+             * @var 100
+             */
+            imgHeight: 100,
+            
+<span id='Hatimeria-core-form-ImageForm-css_var-string'>            /**
+</span>             * Variable name
+             * 
+             * @var string
+             */
+            imgName: 'image',
+            
+<span id='Hatimeria-core-form-ImageForm-css_var-defaultImage'>            /**
+</span>             * Default image
+             * 
+             * @var {}
+             */
+            defaultImage: '',
+            
+<span id='Hatimeria-core-form-ImageForm-property-api'>            /**
+</span>             * Api for request procedures
+             * { submit: function() {}, remove: function() {} }
+             */
+            api: {},
+            
+<span id='Hatimeria-core-form-ImageForm-css_var-params'>            /**
+</span>             * Addition params from outside
+             * 
+             * @var {}
+             */
+            params: {}
+        },
+        
+<span id='Hatimeria-core-form-ImageForm-method-constructor'>        /**
+</span>         * Constructor
+         * 
+         * @private
+         * @param {} config
+         */
+        constructor: function(config)
+        {
+            this.initConfig(config);
+            this.callParent([config]);
+        },
+        
+<span id='Hatimeria-core-form-ImageForm-method-initComponent'>        /**
+</span>         * Initializes component
+         * 
+         * @private
+         */
+        initComponent: function()
+        {
+            var _this = this;
+            
+            // Image
+            var img = Ext.create('Ext.Img', {
+                id: 'image-form-img',
+                width: this.getImgWidth(),
+                height: this.getImgHeight()
+            });
+            
+            // Upload button
+            var uploadBtn = Ext.create('Ext.form.field.File', {
+                id: 'image-form-upload',
+                allowBlank: true,
+                name: this.getImgName(),
+                msgTarget: 'none',
+                fieldLabel: false,
+                buttonText: this.__(&quot;form.image.browse&quot;),
+                buttonOnly: true,
+                baseBodyCls: 'image-form-upload',
+                hidden: false,
+                listeners: {
+                    change: function()
+                    {
+                        _this.submitImage();
+                    }
+                }
+            });
+                       
+            // Delete button:
+            var deleteBtn = Ext.create('Ext.button.Button', {
+                text: this.__(&quot;form.image.delete&quot;),
+                scope: this,
+                handler: function()
+                {
+                    this.removeImage();
+                }
+            });
+            
+            var config = {
+                id: 'image-form',
+                layout: 'border',
+                border: false,
+                height: this.getImgHeight() + 5,
+                items: [
+                    {
+                        id: 'image-form-imgcontainer',
+                        xtype: 'panel',
+                        region: 'west',
+                        width: this.getImgWidth() + 5,
+                        height: this.getImgHeight() + 5,
+                        items: [ img ]
+                    },
+                    {
+                        id: 'image-form-form',
+                        region: 'center',
+                        padding: '0 0 0 10',
+                        border: false,
+                        xtype: 'form',
+                        method: 'POST',
+                        api: {
+                            submit: this.getApi().submit
+                        },
+                        fileUpload: true,
+                        layout: 'auto',
+                        items: [ 
+                            uploadBtn, 
+                            deleteBtn,
+                            {
+                                xtype: 'hiddenfield',
+                                id: 'current-image-path',
+                                name: this.getImgName()
+                            }
+                        ]
+                    }
+                ]
+            };
+            
+            Ext.apply(this, Ext.apply(config, this.initialConfig || {}));
+            this.callParent();
+            this.addEvents(
+                
+<span id='Hatimeria-core-form-ImageForm-event-imageloaded'>                /**
+</span>                 * @event imageloaded
+                 * Fires after load image
+                 */
+                'imageloaded',
+                
+<span id='Hatimeria-core-form-ImageForm-event-imageremove'>                /**
+</span>                 * @event imageremove
+                 * Fires after image remove
+                 */
+                'imageremove',
+                
+<span id='Hatimeria-core-form-ImageForm-event-beforeload'>                /**
+</span>                 * @event beforeload
+                 * Fires before image load
+                 */
+                'beforeload'
+            );
+        },
+        
+<span id='Hatimeria-core-form-ImageForm-method-setCurrent'>        /**
+</span>         * Sets current image
+         * 
+         * @param {String} path
+         */
+        setCurrent: function(path)
+        {
+            this
+                .getComponent('image-form-form')
+                .getComponent('current-image-path')
+                .setValue(path);
+                
+            this
+                .getComponent('image-form-imgcontainer')
+                .getComponent('image-form-img')
+                .setSrc(Ext.String.format('{0}?_dc={1}', path, (new Date()).getTime()));
+        },
+        
+<span id='Hatimeria-core-form-ImageForm-method-getCurrent'>        /**
+</span>         * Current path
+         * 
+         * @return {String}
+         */
+        getCurrent: function()
+        {
+            return this
+                .getComponent('image-form-form')
+                .getComponent('current-image-path')
+                .getValue();
+        },
+        
+<span id='Hatimeria-core-form-ImageForm-method-submitImage'>        /**
+</span>         * Submits image to temporary folder
+         * 
+         * @private
+         */
+        submitImage: function()
+        {
+            var _this = this;
+            this.fireEvent('beforeload', this);
+            this.getComponent('image-form-form').submit({
+                params: this.getParams(),
+                success: function(form, response) {
+                    _this.setCurrent(response.result.record);
+                    _this.fireEvent('imageloaded', response.result);
+                }
+            });
+        },
+        
+<span id='Hatimeria-core-form-ImageForm-method-removeImage'>        /**
+</span>         * Removes image
+         */
+        removeImage: function()
+        {
+            var _this = this;
+            if (typeof this.getApi().remove == 'function')
+            {
+                this.getApi().remove({}, function(form, response) {
+                    _this.fireEvent('imageremove', response);
+                    _this.setCurrent(_this.getDefaultImage());
+                });
+            }
+            else
+            {
+                _this.fireEvent('imageremove');
+                _this.setCurrent(_this.getDefaultImage());
+            }
+        },
+        
+<span id='Hatimeria-core-form-ImageForm-method-getSubmitData'>        /**
+</span>         * Current data
+         * 
+         * @return {String}
+         */
+        getSubmitData: function()
+        {
+            var data = {};
+            data[this.getImgName()] = this.getCurrent();
+            
+            return data;
+        }
+        
+    });
+
+})();
+</pre>
+</body>
+</html>

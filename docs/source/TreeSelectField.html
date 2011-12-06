@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js"><span id='Hatimeria-treeselect-field-TreeSelectField'>/**
+</span> * Combobox with tree panel (as boundlist)
+ *
+ * @class Hatimeria.treeselect.field.TreeSelectField
+ * @extends Hatimeria.core.field.DeferComboBox
+ */
+(function() {
+    
+    Ext.define('Hatimeria.core.field.CategoryComboBox', {
+        extend: 'Hatimeria.core.field.DeferComboBox',
+        requires: [
+            'Hatimeria.treeselect.tree.TreeSelectPanel',
+            'Hatimeria.treeselect.store.TreeSelectStore',
+            'Hatimeria.core.response.DirectHandler'
+        ],
+        alias: 'widget.ux-category',
+        config: {
+            directFn: Ext.emptyFn
+        },
+        
+<span id='Hatimeria-treeselect-field-TreeSelectField-method-constructor'>        /**
+</span>         * Constructor
+         * 
+         * @private
+         */
+        constructor: function(config)
+        {
+            this.initConfig(config);
+            this.callParent([config]);
+            
+            return this;
+        },
+        
+<span id='Hatimeria-treeselect-field-TreeSelectField-method-initComponent'>        /**
+</span>         * Initialize component
+         * 
+         * @private
+         */
+        initComponent: function()
+        {
+            var _this = this;
+            var config = {
+                valueField: 'id',
+                queryMode: 'local',
+                displayField: 'text',
+                store: Ext.create('Hatimeria.treeselect.store.TreeSelectStore', {
+                    root: {
+                        id: 'root',
+                        expanded: true,
+                        text: 'Wszystkie',
+                        children: []
+                    }
+                })
+            };
+            
+            Ext.apply(this, Ext.apply(config, this.initialConfig || {}));
+            this.callParent();
+            
+            this.on('afterrender', function() {
+                Ext.create('Hatimeria.core.response.DirectHandler', {
+                   fn: this.getDirectFn(),
+                   scope: this,
+                   success: function(result) {
+                       var nodes = result.record;
+                       var expand = function(nodes)
+                       {
+                           for (var i in nodes)
+                           {
+                               nodes[i].expanded = true;
+                               if (!nodes[i].children || nodes[i].children.length == 0)
+                               {
+                                   nodes[i].leaf = true;
+                               }
+                               expand(nodes[i].children)
+                           }
+                       }
+                       expand(nodes);
+                       
+                       _this.store.loadNodes(nodes);
+                   }
+                });
+            });
+        },
+        
+<span id='Hatimeria-treeselect-field-TreeSelectField-method-createPicker'>        /**
+</span>         * Creates a picker
+         * 
+         * @private
+         * @return {Ext.Component}
+         */
+        createPicker: function()
+        {
+            var picker = Ext.create('Hatimeria.treeselect.tree.TreeSelectPanel', {
+                ownerCt: this.ownerCt,
+                store: this.store
+            });
+            
+            this.mon(picker, {
+                itemclick: this.onItemClick,
+                scope: this
+            });
+            
+            this.mon(picker.getSelectionModel(), {
+                selectionChange: this.onListSelectionChange,
+                scope: this
+            });
+            
+            this.picker = picker;
+            
+            return picker;
+        }
+            
+    });
+    
+})();</pre>
+</body>
+</html>

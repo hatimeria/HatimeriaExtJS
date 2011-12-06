@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js"><span id='Hatimeria-core-response-FormHandler'>/**
+</span> * Response handler
+ * 
+ * @class Hatimeria.core.response.FormHandler
+ * @extends Hatimeria.core.response.BaseHandler
+ */
+(function() {
+    
+    Ext.define(&quot;Hatimeria.core.response.FormHandler&quot;, {
+        extend: 'Hatimeria.core.response.BaseHandler',
+        config: {
+            
+<span id='Hatimeria-core-response-FormHandler-cfg-success'>            /**
+</span>             * Success callback
+             * @cfg {Function} success
+             */
+            success: function() {},
+            
+<span id='Hatimeria-core-response-FormHandler-cfg-formPanel'>            /**
+</span>             * Form panel
+             * @cfg {Ext.form.Panel} formPanel
+             */
+            formPanel: {}
+        },
+
+<span id='Hatimeria-core-response-FormHandler-method-constructor'>        /**
+</span>         * Constructor
+         * 
+         * @private
+         * @param {Object} config
+         */
+        constructor: function(config)
+        {
+            this.callParent([config]);
+            this.initConfig(config);
+
+            return this;
+        },
+
+<span id='Hatimeria-core-response-FormHandler-method-failure'>        /**
+</span>         * Manage failure case
+         * 
+         * @private
+         * @param {Ext.form.Base} form
+         * @param {Object} action
+         */
+        failure: function(form, action)
+        {
+            this.callParent([action.result]);
+        },
+
+<span id='Hatimeria-core-response-FormHandler-method-markMessage'>        /**
+</span>         * Mark fields as invalid
+         * 
+         * @private
+         * @param {String} index
+         */
+        markMessage: function(index)
+        {
+            var field = this.getFormPanel().getFieldByName(index);
+            if (field)
+            {
+                field.markInvalid(this.msg[index]);
+            }
+            else
+            {
+                this.globalMsg.push(this.msg[index].join(', '));
+            }
+        }
+
+    });
+    
+})();</pre>
+</body>
+</html>

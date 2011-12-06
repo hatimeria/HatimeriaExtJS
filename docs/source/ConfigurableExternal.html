@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js"><span id='Hatimeria-core-mixins-ConfigurableExternal'>/**
+</span> * Behavior enables ability of using external configs
+ * 
+ * @class Hatimeria.core.mixins.ConfigurableExternal
+ */
+(function() {
+    
+    Ext.define('Hatimeria.core.mixins.ConfigurableExternal', {
+        requires: [
+            'Hatimeria.core.utils.ConfigManager'
+        ],
+        
+        externalConfig: undefined,
+        
+<span id='Hatimeria-core-mixins-ConfigurableExternal-method-getConfigManager'>        /**
+</span>         * Singleton: Mixins manager
+         * 
+         * @return {Hatimeria.core.utils.ConfigManager}
+         */
+        getConfigManager: function()
+        {
+            return Ext.ClassManager.get('Hatimeria.core.utils.ConfigManager');
+        },
+        
+<span id='Hatimeria-core-mixins-ConfigurableExternal-method-mergeExternal'>        /**
+</span>         * Merge in external config (if exists)
+         * 
+         * @param {Object} cfg
+         * @return {Object}/{Boolean}
+         */
+        mergeExternal: function(cfg)
+        {
+            var config = this.getConnectedConfig();
+            
+            if (config !== false)
+            {
+                if (typeof cfg != 'undefined')
+                {
+                    return Ext.merge(cfg, config);
+                }
+                else
+                {
+                    Ext.merge(this, config);
+                }
+            }
+            
+            return false;
+        },
+        
+<span id='Hatimeria-core-mixins-ConfigurableExternal-method-getConnectedConfig'>        /**
+</span>         * Reference to connected object
+         * 
+         * @return {Object}/{Boolean}
+         */
+        getConnectedConfig: function()
+        {
+            if (typeof this.externalConfig == 'undefined')
+            {
+                if (this.getConfigManager().has(this.$className))
+                {
+                    this.externalConfig = this.getConfigManager().get(this.$className);
+                }
+                else
+                {
+                    this.externalConfig = false;
+                }
+            }
+            
+            return this.externalConfig;
+        }
+    });
+    
+})();</pre>
+</body>
+</html>

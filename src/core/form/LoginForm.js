@@ -1,3 +1,9 @@
+/**
+ * Login Form
+ *
+ * @class Hatimeria.core.form.LoginForm
+ * @extends Hatimeria.core.form.BaseForm
+ */
 (function() {
 
     Ext.define("Hatimeria.core.form.LoginForm", {
@@ -8,7 +14,8 @@
         /**
          * Constructor
          * 
-         * @param {} cfg
+         * @private
+         * @param {Object} cfg
          */
         constructor: function(cfg)
         {
@@ -20,13 +27,17 @@
 
         /**
          * Initialize component
+         * 
+         * @private
          */
         initComponent: function()
         {
             this.submitConfig = {
                 text: this.__('submit'),
                 failureWindowTitle: this.__("failureTitle"),
-                success: function() { window.location = Routing.generate('homepage') }
+                success: function() { 
+                    window.location = Routing.generate('homepage'); 
+                }
             };
 
             var config = {
@@ -38,19 +49,38 @@
                     {
                         fieldLabel: this.__('login'),
                         name: '_username',
-                        allowBlank: false
+                        allowBlank: false,
+                        listeners: {
+                            specialkey: {scope: this, fn: this.onFieldEnter}
+                        }
                     },
                     {
                         fieldLabel: this.__('password'),
                         inputType: 'password',
                         name: '_password',
-                        allowBlank: false
+                        allowBlank: false,
+                        listeners: {
+                            specialkey: {scope: this, fn: this.onFieldEnter}
+                        }
                     }
                 ]
             };
-            Ext.apply(this, Ext.apply(config, this.initialConfig))
+            Ext.apply(this, Ext.apply(config, this.initialConfig));
 
             this.callParent();
+        },
+        
+        /**
+         * Hit enter on field
+         * 
+         * @private
+         */
+        onFieldEnter: function(field, event)
+        {
+            if (event.getKey() == event.ENTER)
+            {
+                this.submitForm();
+            }
         }
     });
     

@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js"><span id='Hatimeria-core-store-BaseStore'>/**
+</span> * Base store
+ * 
+ * @class Hatimeria.core.store.BaseStore
+ * @extends Ext.data.DirectStore
+ */
+(function() {
+    
+    Ext.define('Hatimeria.core.store.BaseStore', {
+        extend: 'Ext.data.DirectStore',
+
+<span id='Hatimeria-core-store-BaseStore-method-constructor'>        /**
+</span>         * Constructor
+         * 
+         * @private
+         * @param {Object} cfg
+         */
+        constructor: function(cfg)
+        {
+            var config = {
+                root: 'records',
+                idProperty: 'id',
+                remoteSort: true,
+                autoLoad: true,
+                paramsAsHash: true
+            };
+            Ext.apply(config, cfg || {});
+
+            this.callParent([config]);
+            
+            // always send records as an array
+            this.proxy.writer.allowSingle = false;
+        },
+
+<span id='Hatimeria-core-store-BaseStore-method-applyGlobalValues'>        /**
+</span>         * Applies global variables
+         * 
+         * @param {Array} varnames
+         * @param {String} prefix
+         */
+        applyGlobalValues: function(varnames, prefix)
+        {
+            var data = {}, varname;
+
+            if (!Ext.isDefined(prefix))
+            {
+                prefix = '_';
+            }
+
+            for (var i in varnames)
+            {
+                varname = varnames[i];
+                if (typeof window[prefix + varname] != 'undefined')
+                {
+                    if (window[prefix + varname] != '')
+                    {
+                        data[varname] = window[prefix + varname];
+                    }
+                }
+            }
+
+            this.applyExtraParams(data);
+        },
+
+<span id='Hatimeria-core-store-BaseStore-method-applyExtraParams'>        /**
+</span>         * Applying extraparams passed during creating store
+         * 
+         * @param {Object} data
+         */
+        applyExtraParams: function(data)
+        {
+            if (typeof this.proxy.extraParams != 'object')
+            {
+                this.proxy.extraParams = {};
+            }
+
+            Ext.apply(this.proxy.extraParams, data);
+        }
+    });
+
+})();
+</pre>
+</body>
+</html>

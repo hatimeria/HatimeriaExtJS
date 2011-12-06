@@ -1,5 +1,8 @@
 /**
- * Image Form
+ * Image Form (upload of photo)
+ * 
+ * @class Hatimeria.core.form.ImageForm
+ * @extends Ext.form.Panel
  */
 (function() {
 
@@ -57,6 +60,7 @@
         /**
          * Constructor
          * 
+         * @private
          * @param {} config
          */
         constructor: function(config)
@@ -67,6 +71,8 @@
         
         /**
          * Initializes component
+         * 
+         * @private
          */
         initComponent: function()
         {
@@ -149,17 +155,32 @@
             
             Ext.apply(this, Ext.apply(config, this.initialConfig || {}));
             this.callParent();
-            this.addEvents([
+            this.addEvents(
+                
+                /**
+                 * @event imageloaded
+                 * Fires after load image
+                 */
                 'imageloaded',
+                
+                /**
+                 * @event imageremove
+                 * Fires after image remove
+                 */
                 'imageremove',
+                
+                /**
+                 * @event beforeload
+                 * Fires before image load
+                 */
                 'beforeload'
-            ]);
+            );
         },
         
         /**
          * Sets current image
          * 
-         * @param string path
+         * @param {String} path
          */
         setCurrent: function(path)
         {
@@ -177,7 +198,7 @@
         /**
          * Current path
          * 
-         * @return string
+         * @return {String}
          */
         getCurrent: function()
         {
@@ -189,6 +210,8 @@
         
         /**
          * Submits image to temporary folder
+         * 
+         * @private
          */
         submitImage: function()
         {
@@ -226,7 +249,7 @@
         /**
          * Current data
          * 
-         * @return string
+         * @return {String}
          */
         getSubmitData: function()
         {

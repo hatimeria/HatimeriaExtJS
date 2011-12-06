@@ -1,5 +1,8 @@
-/* 
+/** 
  * Custom TableView
+ * 
+ * @class Hatimeria.dvgrid.view.TableView
+ * @extends Ext.view.Table
  */
 (function() {
     
@@ -10,7 +13,7 @@
         
         /**
          * Init component
-         * 
+         * @private
          */
         initComponent: function()
         {
@@ -23,6 +26,8 @@
         
         /**
          * Dispatch click on record
+         * 
+         * @private
          */
         dispatchItemClick: function(view, record, el, index, event)
         {
