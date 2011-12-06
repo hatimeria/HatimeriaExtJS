@@ -266,8 +266,11 @@
                 text: 'Click',
                 width: 100,
                 align: '',
+                sortable: false,
+                disabled: true,
+                hideable: false,
                 handler: function() {},
-                header: '',
+                header: false,
                 cls: ''
             }, cfg);
             
