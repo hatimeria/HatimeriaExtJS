@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js"><span id='Hatimeria-core-response-BaseHandler'>/**
+</span> * Base Handler
+ * 
+ * @class Hatimeria.core.response.BaseHandler
+ */
+(function() {
+    
+    Ext.define('Hatimeria.core.response.BaseHandler', {
+        config: {
+            
+<span id='Hatimeria-core-response-BaseHandler-cfg-failureWindowTitle'>            /**
+</span>             * Window alert
+             * @cfg {String} failureWindowTitle
+             */
+            failureWindowTitle: 'alert'
+        },
+        
+<span id='Hatimeria-core-response-BaseHandler-property-mixed'>        /**
+</span>         * Error message
+         * 
+         * @private
+         * @property mixed
+         */
+        msg: undefined,
+        
+<span id='Hatimeria-core-response-BaseHandler-property-globalMsg'>        /**
+</span>         * Global errors
+         * 
+         * @private
+         * @property {Array}
+         */
+        globalMsg: [],
+        
+<span id='Hatimeria-core-response-BaseHandler-method-constructor'>        /**
+</span>         * Constructor
+         * 
+         * @param {} config
+         */
+        constructor: function(config)
+        {
+            this.initConfig(config);
+            
+            return this;
+        },
+        
+<span id='Hatimeria-core-response-BaseHandler-method-failure'>        /**
+</span>         * Error Callback
+         * 
+         * @param {Object} result
+         */
+        failure: function(result)
+        {
+            this.globalMsg = [];
+            this.msg = result.msg;
+            var translationKey, i;
+
+            if (typeof this.msg == 'object')
+            {
+                for (var property in this.msg)
+                {
+                    if (property == 'global')
+                    {
+                        continue;
+                    }
+                    
+                    for (i in this.msg[property])
+                    {
+                        translationKey = 'validators:' + this.msg[property][i];
+                        if (ExposeTranslation.has(translationKey))
+                        {
+                            this.msg[property][i] = __(translationKey);
+                        }
+                    }
+
+                    this.markMessage(property);
+                }
+            }
+            else
+            {
+                this.globalMsg.push(this.msg);
+            }
+
+            if (this.globalMsg.length)
+            {
+                this.displayMessage();
+            }
+        },
+        
+<span id='Hatimeria-core-response-BaseHandler-method-displayMessage'>        /**
+</span>         * Manage failure case
+         * 
+         * @private
+         * @param {Object} result
+         */
+        displayMessage: function()
+        {
+            var msg = new Ext.XTemplate([
+                '&lt;ul style=&quot;list-style-type: square; list-style-position: outsite;&quot;&gt;',
+                    '&lt;tpl for=&quot;.&quot;&gt;',
+                        '&lt;li&gt;{.}&lt;/li&gt;',
+                    '&lt;/tpl&gt;',
+                '&lt;/ul&gt;'
+            ]).apply(this.globalMsg);
+            
+            Ext.Msg.alert(this.getFailureWindowTitle(), msg);
+        },
+        
+<span id='Hatimeria-core-response-BaseHandler-method-markMessage'>        /**
+</span>         * Marks message in specific place
+         * 
+         * @private
+         * @param {String} index
+         */
+        markMessage: function(index)
+        {
+            var msg = this.msg[index];
+            if (typeof msg == 'object')
+            {
+                msg = msg.join(', ');
+            }
+            
+            this.globalMsg.push(msg);
+        }
+
+    });
+    
+})();</pre>
+</body>
+</html>

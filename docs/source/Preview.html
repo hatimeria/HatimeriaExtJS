@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js">/* 
+ * Preview grid dynamically created with data returned by directFn
+ *  
+ */
+
+Ext.define(&quot;Hatimeria.core.grid.Preview&quot;, {
+    init: function() {
+        var me = this;
+        
+        if(typeof me.config.directParams == 'undefined') {
+            me.config.directParams = {};
+        }
+        
+        me.config.directFn(me.config.directParams, function(response) {me.loadData(response)});
+    },
+    
+    close: function() {
+        this.grid.close();
+    },
+    loadData: function(response) {
+        var me = this;
+        var first = response.records[0];
+        var keys = null;
+        var headers = me.config.headers || null;
+        var showAllData = headers == null;
+        var storeFields;
+        
+        if(showAllData) {
+            if(typeof first != 'object') {
+                alert('Empty recordset preview grid is not available');
+                return;
+            }
+            
+            keys = Object.keys(first);
+            storeFields = keys;
+        } else {
+            keys = headers;
+            storeFields = Object.keys(headers);
+        }
+        
+        var storeParams = {
+            directFn: me.config.directFn,
+            root: 'records',
+            autoLoad: false,
+            paramsAsHash: true,
+            remoteSort: true,
+            fields: storeFields
+        };
+        
+        var store = Ext.create(&quot;Ext.data.DirectStore&quot;, storeParams);
+        store.proxy.extraParams = me.config.directParams;
+        store.load();
+        
+        var renderer = function(value) {
+            if(typeof value == 'object') {
+                var html = '';
+                
+                for(key in value) {
+                    
+                    var keyValue = value[key];
+                    
+                    if(typeof keyValue == 'object') {
+                        keyValue = renderer(keyValue);
+                    }
+                    
+                    html += key + ': ' + keyValue + '&lt;br/&gt;';
+                }
+                
+                return html;
+            }
+            
+            return value;
+        };
+        
+        var columns = [];
+        for(var i in keys) {
+            var key = keys[i];
+            var column = {renderer: renderer, flex: 1, header: key}
+            
+            if(showAllData) {
+                column.dataIndex = key;
+            } else {
+                column.dataIndex = i;
+            }
+            
+            columns.push(column);
+        }
+        
+        var gridParams = {
+            store: store,
+            margin: '10px',
+            width: 800,
+            title: this.config.title || 'Preview grid',
+            columns: columns,
+            dockedItems: [{
+                    xtype: 'pagingtoolbar',
+                    store: store,
+                    dock: 'bottom',
+                    displayInfo: true
+            }]
+        };
+        
+        if(typeof this.config.renderTo != 'function') {
+            gridParams.renderTo = this.config.renderTo || Ext.fly('body');
+        }
+        
+        me.grid  = Ext.create(&quot;Ext.grid.Panel&quot;, gridParams);
+        
+        if(typeof this.config.renderTo == 'function') {
+            this.config.renderTo(me.grid);
+        }        
+    },
+    constructor: function(config){
+        this.initConfig(config);
+        
+        return this;
+    }
+});</pre>
+</body>
+</html>

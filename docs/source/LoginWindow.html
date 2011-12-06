@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js">(function() {
+    
+    Ext.define(&quot;Hatimeria.core.window.LoginWindow&quot;, {
+        extend: &quot;Ext.window.Window&quot;,
+        mixins: {
+            translationable: 'Hatimeria.core.mixins.Translationable'
+        },    
+        transDomain: 'HatimeriaExtJSBundle',
+        width: 300,
+        height: 180,
+        layout: {
+            type: 'fit',
+            align: 'center'
+        },  
+        initComponent: function() {
+            this.callParent();
+            this.title = this.__(&quot;window.login.title&quot;);
+            this.add(Ext.create(&quot;Hatimeria.core.form.LoginForm&quot;));
+        }
+    });
+    
+})();
+</pre>
+</body>
+</html>

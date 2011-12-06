@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js">/*
+ * Handle common http error codes: 404, 403
+ * 
+ * @todo 
+ * - 500 fatal without output
+ */ 
+
+if (typeof window.console != 'object')
+{
+    window.console = {
+        log: Ext.emptyFn,
+        error: Ext.emptyFn,
+        info: Ext.emptyFn,
+        debug: Ext.emptyFn
+    };
+}
+
+Ext.require('Ext.direct.Manager', function() {
+    
+<span id='global-method-createWindow'>    /**
+</span>     * Creates new window if does not exists yet.
+     */
+    var createWindow = function(mode, message)
+    {
+        // Only one window may appear:
+        if (Ext.WindowManager.get('error-window'))
+        {
+            return false;
+        }
+
+        if (mode == 'dev')
+        {
+            return Ext.create('Ext.window.Window', {
+                id: 'error-window',
+                title: __('HatimeriaExtJSBundle:direct.title'),
+                html: message,
+                width: 1000,
+                height: 600,
+                autoScroll: true,
+                bodyStyle: 'background: white; padding: 15px'
+            });
+        }
+        else
+        {
+            return Ext.create('Ext.window.Window', {
+                id: 'error-window',
+                extend: &quot;Ext.Window&quot;,
+                title: __('HatimeriaExtJSBundle:direct.title'),
+                html: message || ('&lt;p style=&quot;text-align:center; font-size: 14px; line-height: 20px;&quot;&gt;' + __('HatimeriaExtJSBundle:direct.try_later') + '&lt;/p&gt;'),
+                width: 350,
+                height: 200,
+                autoScroll: true,
+                bodyStyle: 'background: white; padding: 15px'
+            });
+        }
+    }
+    
+    Ext.direct.Manager.on('event', function(response) {
+        
+        // accesible if ext exception is thrown
+        var xhr = response.xhr;
+        
+        if (xhr) {
+            var errorWindow = createWindow(App.Direct.environment, (App.Direct.environment == 'prod' ? null : xhr.responseText));
+            
+            // status 0: when somebody cancells loading page (by escape or click some links)
+            if (errorWindow &amp;&amp; xhr.status !== 0)
+            {
+                errorWindow.show();
+            }
+        }
+
+        // normal response content;
+        var result = response.result;
+
+        if (!result) return;
+
+        // only errors are handled
+        if (typeof result.success != 'undefined'  &amp;&amp; result.success &amp;&amp; !result.exception) return;
+
+        switch(result.code)
+        {
+            case 404:
+                // @todo change to something better
+                createWindow('prod').show();
+                break;
+            case 403:
+                if (App.Direct.signinUrl) {
+                    window.location = App.Direct.signinUrl;
+                } else {
+                    createWindow('prod', __('HatimeriaExtJSBundle:direct.forbidden')).show();
+                }
+                break;
+        }
+    });
+
+    Ext.ns(&quot;App.Direct&quot;);
+});</pre>
+</body>
+</html>

@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js"><span id='Hatimeria-treeselect-store-TreeSelectStore'>/**
+</span> * @class Hatimeria.treeselect.store.TreeSelectStore
+ * @extends Ext.data.TreeStore
+ * 
+ * Store for TreeSelect (store must simulate Ext.data.Store)
+ */
+(function() {
+    
+    Ext.define('Hatimeria.treeselect.store.TreeSelectStore', {
+        extend: 'Ext.data.TreeStore',
+        
+        paramsAsHash: true,
+        
+<span id='Hatimeria-treeselect-store-TreeSelectStore-method-loadNodes'>        /**
+</span>         * Loads all nodes
+         * 
+         * @param {Object} nodes
+         */
+        loadNodes: function(nodes)
+        {
+            this.getRootNode().appendChild(nodes);
+            this.fireEvent('load', this);
+        },
+        
+<span id='Hatimeria-treeselect-store-TreeSelectStore-method-getCount'>        /**
+</span>         * Count of nodes (always one)
+         * 
+         * @return {Integer}
+         */
+        getCount: function()
+        { 
+            return 1; 
+        },
+        
+<span id='Hatimeria-treeselect-store-TreeSelectStore-method-findExact'>        /**
+</span>         * Search node
+         * 
+         * @param {String} field
+         * @param {String} value
+         */
+        findExact: function(field, value)
+        {
+            var find = function(nodes, field, value)
+            {
+                for (var i in nodes)
+                {
+                    if (nodes[i].get(field) == value)
+                    {
+                        return nodes[i];
+                    }
+                    else
+                    {
+                        return find(nodes[i].childNodes, field, value);
+                    }
+                }
+            };
+            
+            var record = find(this.getRootNode().childNodes, field, value);
+            
+            return record;
+        },
+        
+<span id='Hatimeria-treeselect-store-TreeSelectStore-method-getAt'>        /**
+</span>         * Get node from a pases position
+         * 
+         * @return {Ext.data.Model} records
+         */
+        getAt: function(record)
+        {
+            return record;
+        }
+    });
+    
+})();</pre>
+</body>
+</html>

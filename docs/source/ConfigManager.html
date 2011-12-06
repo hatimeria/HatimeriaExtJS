@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js"><span id='Hatimeria-core-utils-ConfigManager'>/**
+</span> * Config Manager
+ * 
+ * @class Hatimeria.core.utils.ConfigManager
+ * 
+ * Manager registers extra config for other classes that implements: Hatimeria.core.mixins.ConfigurableExternal
+ * 
+ *     Before start application include:
+ *     Ext.require(&quot;Hatimeria.core.utils.ConfigManager&quot;);
+ *     Ext.onReady(function() {
+ *   
+ *     var manager = Ext.ClassManager.get(&quot;Hatimeria.core.utils.ConfigManager&quot;);
+ *       manager.register('TargetClass', {
+ *          listeners: {
+ *            afterrender: function() { console.log('IT WORKS'); }
+ *          }
+ *       });
+ *     });
+ */
+(function() {
+    
+    Ext.define('Hatimeria.core.utils.ConfigManager', {
+        singleton: true,
+        
+<span id='Hatimeria-core-utils-ConfigManager-property-map'>        /**
+</span>         * Map of classes
+         * 
+         * @private
+         * @property {Object} map
+         * [className =&gt; 'CustomClassName']
+         */
+        map: {},
+        
+<span id='Hatimeria-core-utils-ConfigManager-method-register'>        /**
+</span>         * Registers a new object
+         * 
+         * @param {String} className
+         * @param {String} objectConfig
+         */
+        register: function(className, objectConfig)
+        {
+            this.map[className] = objectConfig;
+        },
+        
+<span id='Hatimeria-core-utils-ConfigManager-method-get'>        /**
+</span>         * Gets object
+         * 
+         * @param {String} classNames
+         * @return {Object}
+         */
+        get: function(className)
+        {
+            return this.map[className];
+        },
+        
+<span id='Hatimeria-core-utils-ConfigManager-method-has'>        /**
+</span>         * Check if manager has class
+         * 
+         * @param {String} className
+         */
+        has: function(className)
+        {
+            return (typeof (this.map[className]) != 'undefined');
+        },
+        
+<span id='Hatimeria-core-utils-ConfigManager-method-getMap'>        /**
+</span>         * Gets map of classes to custom classes
+         * 
+         * @return {Object}
+         */
+        getMap: function()
+        {
+            return this.map;
+        }
+        
+    });
+    
+})();</pre>
+</body>
+</html>

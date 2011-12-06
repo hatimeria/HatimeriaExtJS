@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js"><span id='Hatimeria-dvgrid-view-TilesView'>/**
+</span> * Custom TilesView
+ * 
+ * @class Hatimeria.dvgrid.view.TilesView
+ * @extends Ext.view.View
+ */
+(function() {
+    
+    Ext.util.Format.truncate = function(value, len) {
+        if (typeof len == 'undefined')
+        {
+            len = 20;
+        }
+        
+        if (value.length &gt; len)
+        {
+            value = value.substring(0, (len-3)) + '...';
+        }
+        
+        return value;
+    };
+    
+    Ext.define('Hatimeria.dvgrid.view.TilesView', {
+        extend: 'Ext.view.View',
+        alias: 'widget.tilesview',
+        
+        initComponent: function()
+        {
+            Ext.apply(this, {
+                tpl: new Ext.XTemplate(
+                    '&lt;ul&gt;',
+                        '&lt;tpl for=&quot;.&quot;&gt;',
+                            '&lt;li class=&quot;dvgrid-tile&quot;&gt;',
+                              '&lt;div class=&quot;icon&quot;&gt;',
+                                    '&lt;img src=&quot;{avatar}&quot; alt=&quot;{name}&quot; /&gt;' + this.renderActions(),
+                              '&lt;/div&gt;',
+                              '&lt;div class=&quot;title&quot;&gt;{name:truncate(20)}&lt;/div&gt;',
+                            '&lt;/li&gt;',
+                        '&lt;/tpl&gt;',
+                    '&lt;/ul&gt;'),
+                itemSelector: 'li.dvgrid-tile'
+            });
+
+            this.callParent();
+
+            this.on('itemclick', function(view, record, el, index, event) {
+                this.dispatchItemClick(view, record, el, index, event);
+            });
+            
+            this.on('itemmouseenter', this.onElementMouseEnter);
+        },
+
+<span id='Hatimeria-dvgrid-view-TilesView-method-renderActions'>        /**
+</span>         * Renders actions passed into grid
+         * 
+         * @private
+         * @return {String}
+         */
+        renderActions: function()
+        {
+            var actions = this.actions;
+            
+            if (typeof actions != 'object')
+            {
+                return '';
+            }
+
+            var tpl = new Ext.XTemplate([
+                '&lt;div class=&quot;actions&quot; style=&quot;display:none;&quot;&gt;',
+                    '&lt;tpl for=&quot;actions&quot;&gt;',
+                        '&lt;span class=&quot;button {cls}&quot;&gt;',
+                            '&lt;button class=&quot;{index}&quot;&gt;{text}&lt;/button&gt;',
+                        '&lt;/span&gt;',
+                    '&lt;/tpl&gt;',
+                '&lt;/div&gt;'
+            ]);
+
+            var buttons = [];
+            for (var index in actions)
+            {
+                buttons.push({
+                    cls: actions[index].cls,
+                    text: actions[index].text,
+                    index: index
+                });
+            }
+
+            return tpl.applyTemplate({
+                actions: buttons
+            });
+        },
+
+<span id='Hatimeria-dvgrid-view-TilesView-method-onHeaderResize'>        /**
+</span>         * Event: reacts when a header resizes
+         * @private
+         */
+        onHeaderResize: function()
+        {
+            // must be implemented
+        },
+        
+<span id='Hatimeria-dvgrid-view-TilesView-method-onHeaderHide'>        /**
+</span>         * Event: trigger when column header change display mode
+         * @private
+         */
+        onHeaderHide: function()
+        {
+            // must be implemented
+        },
+        
+<span id='Hatimeria-dvgrid-view-TilesView-method-onHeaderShow'>        /**
+</span>         * Event: trigger when column header change display mode
+         * @private
+         */
+        onHeaderShow: function()
+        {
+            // must be implemented
+        },
+
+<span id='Hatimeria-dvgrid-view-TilesView-method-dispatchItemClick'>        /**
+</span>         * Dispatch click on record
+         * 
+         * @private
+         */
+        dispatchItemClick: function(view, record, el, index, event)
+        {
+            var actions = this.ownerCt.initialConfig.actions;
+            if (typeof actions == 'object')
+            {
+                var cls = Ext.get(event.target).dom.className;
+
+                if (cls &amp;&amp; actions[cls] &amp;&amp; typeof actions[cls].handler == 'function')
+                {
+                    actions[cls].handler(this.ownerCt, view, record, el, index, event);
+                    
+                    return true;
+                }
+            }
+            
+            this.ownerCt.fireEvent('itemareaclick', view, record, el, index, event);
+            
+            return true;
+        },
+        
+<span id='Hatimeria-dvgrid-view-TilesView-method-onElementMouseEnter'>        /**
+</span>         * Event: mouse over tile
+         * @private
+         */
+        onElementMouseEnter: function(view, record, el)
+        {
+            if (el.mouseEnterIsBound)
+            {
+                return ;
+            }
+            el.mouseEnterIsBound = true;
+
+            var element = Ext.get(el);
+            var triggerEnter = function() {
+                var actions = Ext.get(this).select('.actions');
+                actions.setStyle({opacity: 0, display: 'block'});
+                actions.fadeIn({opacity: .75, duration: 200});
+            };
+            
+            element.on('mouseenter', triggerEnter);
+            element.on('mouseleave', function() {
+                var actions = Ext.get(this).select('.actions');
+                actions.setStyle({opacity: 0, display: 'block'});
+                actions.fadeIn({opacity: 0, duration: 100});
+            });
+            triggerEnter.call(el);
+        }        
+    });
+
+})();
+</pre>
+</body>
+</html>
