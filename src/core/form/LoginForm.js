@@ -47,9 +47,20 @@
                 defaultType: 'textfield',
                 items: [
                     {
+                        border: 0,
+                        width: 250,
+                        style:
+                            'margin:20px auto;',
+                        html: '<img src="/bundles/hatimeriaadmin/images/hatimeria_v_220.png"/>'
+                    },
+                    {
                         fieldLabel: this.__('login'),
                         name: '_username',
                         allowBlank: false,
+                        width: 400,
+                        height: 25,
+                        style:
+                            'margin-left:25px;',
                         listeners: {
                             specialkey: {scope: this, fn: this.onFieldEnter}
                         }
@@ -59,9 +70,21 @@
                         inputType: 'password',
                         name: '_password',
                         allowBlank: false,
+                        width: 400,
+                        height: 25,
+                        style:
+                            'margin-left:25px;',
                         listeners: {
                             specialkey: {scope: this, fn: this.onFieldEnter}
                         }
+                    },
+                    {
+                        border: 0,
+                        width: 270,
+                        id: 'logo',
+                        style:
+                            'margin:10px 125px;',
+                        html: '<img src="/bundles/hatimeriaadmin/images/hatimeria.ico"/><p>Powereb by Hatimeria</p> <a href="http://www.hatimeria.pl">www.hatimeria.pl</a>'
                     }
                 ]
             };
