@@ -13,20 +13,22 @@
             /**
              * Parameters
              * 
-             * @var string
+             * @cfg {Object} params Persist params
              */
             params: {},
             
             /**
              * Data
              * 
-             * @var Data
+             * @cfg {Object} data
              */
             data: undefined
         },
         
         /**
          * Initializes component
+         * 
+         * @private
          */
         initComponent: function()
         {
@@ -49,10 +51,36 @@
             this.callParent();
             
             this.addEvents([
+                
+                /**
+                 * Save data
+                 * @event save 
+                 */
                 'save',
+                
+                /**
+                 * After save
+                 * @event aftersave
+                 */
                 'aftersave',
+                
+                /**
+                 * Error during save data
+                 * @event errorsave
+                 */
                 'errorsave',
-                'populate'
+                
+                /**
+                 * Populating form with data
+                 * @event populate
+                 */
+                'populate',
+                
+                /**
+                 * Event rises when all is OK and window may be killed
+                 * @event beforekill
+                 */
+                'beforekill'
             ]);
             
             this.on({
@@ -71,6 +99,8 @@
         
         /**
          * Loads data and trigger populating forms
+         * 
+         * @private
          */
         loadData: function()
         {
@@ -109,7 +139,7 @@
         /**
          * Tabs panel with forms
          * 
-         * @return Ext.tab.Panel
+         * @return {Ext.tab.Panel}
          */
         getTabs: function()
         {
@@ -118,6 +148,9 @@
         
         /**
          * Event: saves data
+         * 
+         * @private
+         * @return {Boolean}
          */
         save: function()
         {
@@ -178,7 +211,7 @@
         /**
          * Populating forms
          * 
-         * @param {} data
+         * @param {Object} data
          */
         populate: function(data)
         {
@@ -189,7 +222,7 @@
         /**
          * Returns dirty data from forms
          * 
-         * @return {}
+         * @return {Object}
          */
         getFormsData: function()
         {
@@ -198,6 +231,8 @@
         
         /**
          * Sets Title
+         * 
+         * @param {Object} data
          */
         setWindowTitle: function(data)
         {
@@ -205,9 +240,9 @@
         },
         
         /**
-         * Forms valid?
+         * All forms valid?
          * 
-         * @return valid
+         * @return {Boolean}
          */
         formsValid: function()
         {
@@ -216,6 +251,8 @@
         
         /**
          * First dirty tab
+         * 
+         * @return {Hatimeria.edit.form.BaseForm}
          */
         getFirstDirtyTab: function()
         {
@@ -225,7 +262,7 @@
         /**
          * Mark Dirty
          * 
-         * @param {} messages
+         * @param {Object} messages
          */
         markDirty: function(messages)
         {
@@ -239,9 +276,10 @@
         },
         
         /**
-         * Event: fires when user attempt to save changes
+         * Action run when user attempt to save changes
          * 
-         * @return bool
+         * @private
+         * @return Boolena
          */
         beforeSave: function()
         {
@@ -251,6 +289,7 @@
         /**
          * Event: fires when user attempts to close a window
          * 
+         * @private
          * @return bool
          */
         onBeforeClose: function()
@@ -264,10 +303,12 @@
                 Ext.Msg.confirm('Uwaga!', 'Wszystkie wprowadzone zmiany w formularzach zostaną utracone<br/>Czy zamknąć okno?', function(response) {
                     if (response == 'yes')
                     {
+                        _this.fireEvent('beforekill', _this);
                         // All forms agrees to close?
                         if (_this.getTabs().beforeClose())
                         {
                             // Kill:
+                            _this.fireEvent('kill')
                             _this.destroy();
                         }
                     }
@@ -285,7 +326,7 @@
         /**
          * Switch to custom tab
          * 
-         * @param int number
+         * @param {Integer} number
          */
         switchTab: function(number)
         {

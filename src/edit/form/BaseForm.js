@@ -17,14 +17,14 @@
             /**
              * PanelViewer
              * 
-             * @var Hatimeria.edit.panel.VTabsPanel
+             * @cfg {Hatimeria.edit.panel.VTabsPanel} panelViewer
              */
             panelViewer: undefined,
             
             /**
              * Data
              * 
-             * @var {}
+             * @cfg {Object} dataCollection
              */
             dataCollection: {}
         },
@@ -32,33 +32,37 @@
         /**
          * Optional params passed to EditWindow
          * 
-         * @var {}
+         * @property {} params
          */
         params: {},
         
         /**
-         * Array width local-form fields
+         * Array width local-form fields using in validation 
+         * (changes as checked according to followed fields)
          * 
-         * @var []
+         * @property [] localFields
          */
         localFields: [],
         
         /**
          * Default data which is set by defaults
          * 
-         * @var {}
+         * @private
+         * @property {String} defaultDataSnapshoot
          */
         defaultDataSnapshoot: undefined,
         
         /**
          * Locked?
          * 
-         * @var bool
+         * @cfg {Boolean} locked
          */
         locked: false,
         
         /**
          * Initialize component
+         * 
+         * @private
          */
         initComponent: function()
         {
@@ -76,7 +80,8 @@
         /**
          * Sets Data
          * 
-         * @param {} data
+         * @param {Object} data
+         * @param {Object} params
          */
         populate: function(data, params)
         {
@@ -88,7 +93,9 @@
         },
         
         /**
-         * Gets form values
+         * Gets values from form
+         * 
+         * @return {Object}
          */
         retrieveData: function()
         {
@@ -106,7 +113,7 @@
         /**
          * Optional parameters
          * 
-         * @return {}
+         * @return {Object}
          */
         getParams: function()
         {
@@ -116,7 +123,8 @@
         /**
          * Optional parameter
          * 
-         * @return mixed
+         * @param {String} key
+         * @return {Object}/{Boolean}
          */
         getParam: function(key)
         {
@@ -125,10 +133,9 @@
         
         /**
          * Validates form
+         * Must return bool value
          * 
-         * @important must return bool value
-         * 
-         * @return bool
+         * @return {Boolean}
          */
         isValid: function()
         {
@@ -137,10 +144,11 @@
         
         /**
          * Event: fires when user attempt to close a window
+         * Must return bool value
          * 
-         * @important must return bool value
          * 
-         * @return bool
+         * @private
+         * @return {Boolean}
          */
         onBeforeClose: function()
         {
@@ -149,10 +157,11 @@
         
         /**
          * Event: fires when user attempts to save form
+         * Must return bool value
          * 
-         * @important must return bool value
-         * 
-         * @return bool
+         * @private
+         * @param {Hatimeria.edit.window.BaseWindow} window
+         * @return {boolean}
          */
         onBeforeSave: function(window)
         {
@@ -161,9 +170,9 @@
         
         /**
          * Creates snapshop of data 
-         * (need localFields array)
+         * (need set localFields array)
          * 
-         * @retrun string (JSON)
+         * @retrun {String} (JSON)
          */
         createDataSnapshoot: function()
         {
@@ -188,7 +197,7 @@
         /**
          * Default data snapshoot
          * 
-         * @return string (JSON)
+         * @return {String} (JSON)
          */
         getDefaultDataSnapshoot: function()
         {
@@ -197,9 +206,9 @@
         
         /**
          * Gets flag modified 
+         * Must return bool value or undefined
          * 
-         * @important must return bool value or undefined
-         * @return bool
+         * @return {boolean}
          */
         isFormModified: function()
         {
@@ -214,7 +223,7 @@
         /**
          * Is UI locked?
          * 
-         * @return bool
+         * @return {Boolean}
          */
         isLocked: function()
         {
@@ -223,9 +232,9 @@
         
         /**
          * Lock form
+         * Disabling causes avoiding gettins values from form
          * 
-         * @important (disabling causes avoiding gettins values from form)
-         * @return bool
+         * @return {boolean}
          */
         lock: function()
         {
@@ -240,7 +249,7 @@
         /**
          * Unlocks UI
          * 
-         * @return bool
+         * @return {Boolean}
          */
         unlock: function()
         {

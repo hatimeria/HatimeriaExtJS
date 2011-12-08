@@ -17,46 +17,64 @@
             /**
              * List of tabs
              * 
-             * @var {<name1>: {title: <tabname>, icon: <icon>, item: <formpanel>}, <name2>: {...}}
+             * @cfg {Object} tabsConfig
+             *     tabsConfig: {
+             *         info: {
+             *             title: "info", 
+             *             icon: "icon",
+             *             item: {Hatimeria.edit.form.BaseForm}
+             *         }, 
+             *         users: {
+             *             title: "users", 
+             *             icon: "icon",
+             *             item: {Hatimeria.edit.form.BaseForm}
+             *         }
+             *     }
              */
             tabsConfig: {},
             
             /**
              * First activate tab
              * 
-             * @var mixed
+             * @cfg {Integer/String} activatedTab
              */
             activatedTab: 0,
             
             /**
              * Current enabled panel
              * 
-             * @var Ext.panel.Panel
+             * @cfg {Ext.panel.Panel} currentItem
              */
             currentItem: undefined,
             
             /**
              * Current enabled tab
              * 
-             * @var Ext.Element
+             * @private
+             * @property {Ext.Element} currentTab
              */
             currentTab: undefined,
             
             /**
              * Current enabled tab
              * 
-             * @var string
+             * @private
+             * @property {String}  currentTabName
              */
             currentTabName: undefined,
             
             /**
-             * Record
+             * Copy of Record
+             * 
+             * @cfg {Object} dataCollection
              */
             dataCollection: {}
         },
         
         /**
          * Initialize component
+         * 
+         * @private
          */
         initComponent: function()
         {
@@ -116,8 +134,8 @@
         /**
          * Check whether component alias is panel form
          * 
-         * @param string alias
-         * @return bool
+         * @param {String} alias
+         * @return {Boolean}
          */
         isTabForm: function(alias)
         {
@@ -126,6 +144,8 @@
         
         /**
          * Configure tabs
+         * 
+         * @private
          */
         configureTabs: function()
         {
@@ -143,7 +163,8 @@
         /**
          * Prepares store
          * 
-         * @return Ext.data.Store
+         * @private
+         * @return {Ext.data.Store}
          */
         prepareTabStore: function()
         {
@@ -169,7 +190,7 @@
         /**
          * Prepare items
          * 
-         * @return [] Ext.panel.Panel
+         * @return {Array} of {Ext.panel.Panel}
          */
         getActivatedItem: function()
         {
@@ -204,11 +225,12 @@
         /**
          * Event: click Tab
          * 
-         * @param Ext.view.View view
-         * @param Ext.data.Record record
-         * @param Ext.Element el
-         * @param int index
-         * @param Ext.ObjectEvent event
+         * @private
+         * @param {Ext.view.View} view
+         * @param {Ext.data.Record} record
+         * @param {Ext.Element} el
+         * @param {integer} index
+         * @param {Ext.Event} event
          */
         onTabClick: function(view, record, el, index, events)
         {
@@ -240,7 +262,8 @@
         /**
          * Creates a new tab and adds to Container
          * 
-         * @return Ext.panel.Panel
+         * @param {String} tabId
+         * @return {Ext.panel.Panel}
          */
         createTab: function(tabId)
         {
@@ -271,7 +294,7 @@
         /**
          * Gets slot panel
          * 
-         * @return Ext.panel.Panel
+         * @return {Ext.panel.Panel}
          */
         getSlotPanel: function()
         {
@@ -281,7 +304,7 @@
         /**
          * Gets tab panel
          * 
-         * @return Ext.view.View
+         * @return {Ext.view.View}
          */
         getTabsPanel: function()
         {
@@ -291,7 +314,8 @@
         /**
          * Gets tab by id
          * 
-         * @return Ext.panel.Panel
+         * @param {String} name
+         * @return {Ext.panel.Panel}
          */
         getTab: function(name)
         {
@@ -302,6 +326,8 @@
         
         /**
          * Event: Inits features of panel after rendering
+         * 
+         * @private
          */
         initPanelViewer: function(viewer)
         {
@@ -317,7 +343,7 @@
         /**
          * Applies data to all forms
          * 
-         * @param {} data
+         * @param {Object} data
          */
         populate: function(data)
         {
@@ -334,7 +360,7 @@
         /**
          * Retrieves dirty data from forms
          * 
-         * @return {}
+         * @return {Object}
          */
         retrieveFormData: function()
         {
@@ -354,7 +380,7 @@
         /**
          * Valdates data
          * 
-         * @return bool
+         * @return {Boolean}
          */
         isValid: function()
         {

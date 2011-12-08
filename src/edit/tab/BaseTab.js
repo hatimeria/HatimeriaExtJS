@@ -12,9 +12,9 @@
         config: {
             
             /**
-             * Data
+             * Copy of data of populating window
              * 
-             * @var {}
+             * @cfg {}
              */
             dataCollection: {}
         },
@@ -22,15 +22,15 @@
         /**
          * Dirty forms
          * 
-         * @var []
+         * @private
          */
         dirtyForms: [],
         
         /**
          * Check whether component alias is panel form
          * 
-         * @param string alias
-         * @return bool
+         * @param {String} alias
+         * @return {Boolean}
          */
         isTabForm: function(alias)
         {
@@ -40,7 +40,7 @@
         /**
          * Process all tabs
          * 
-         * @param function callback
+         * @param {Function} callback
          */
         processTabs: function(callback)
         {
@@ -55,10 +55,10 @@
         },
         
         /**
-         * Populate 
+         * Populate
          * 
-         * @param {} data 
-         * @param {} params
+         * @param {Object} data 
+         * @param {Object} params
          */
         populate: function(data, params)
         {
@@ -70,9 +70,9 @@
         },
         
         /**
-         * Retrieves dirty data from forms
+         * Retrieves dirty data from all forms
          * 
-         * @return {}
+         * @return {Object}
          */
         retrieveFormData: function()
         {
@@ -88,7 +88,7 @@
         /**
          * Validates all forms
          * 
-         * @return bool
+         * @return {Boolean}
          */
         formsValid: function()
         {
@@ -108,7 +108,7 @@
         /**
          * Dirty forms
          * 
-         * @return []
+         * @return {Array}
          */
         getDirtyForms: function()
         {
@@ -118,8 +118,9 @@
         /**
          * Post validate (after XHR)
          * 
-         * @param string fieldName
-         * @param string message
+         * @private
+         * @param {String} fieldName
+         * @param {String} message
          */
         postValidate: function(fieldName, message)
         {
@@ -152,7 +153,8 @@
         /**
          * Action executed when user attempt close a window
          * 
-         * @return bool
+         * @private
+         * @return {Boolean}
          */
         beforeClose: function()
         {
@@ -171,8 +173,8 @@
         /**
          * Action executed before save data
          * 
-         * @param Hatimeria.edit.window.EditWindow window
-         * @return bool
+         * @param {Hatimeria.edit.window.EditWindow} window
+         * @return {Boolean}
          */
         beforeSave: function(window)
         {
@@ -191,7 +193,7 @@
         /**
          * Check if any of forms were modified
          * 
-         * @retrun bool
+         * @retrun {Boolean}
          */
         hasModifiedForms: function()
         {
