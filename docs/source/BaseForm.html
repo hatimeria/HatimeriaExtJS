@@ -15,163 +15,271 @@
   </script>
 </head>
 <body onload="prettyPrint(); highlight();">
-  <pre class="prettyprint lang-js">Ext.define(&quot;Hatimeria.core.form.BaseForm&quot;, {
-    extend: &quot;Ext.form.Panel&quot;,
-    mixins: {
-        translationable: 'Hatimeria.core.mixins.Translationable'
-    },
-    transDomain: 'HatimeriaExtJSBundle',
+  <pre class="prettyprint lang-js"><span id='Hatimeria-edit-form-BaseForm'>/** 
+</span> * Form embeded in VTabsPanel, BaseTab
+ * 
+ * @class Hatimeria.edit.form.BaseForm
+ * @extends Ext.form.Panel
+ */
+(function() {
     
-<span id='global-cfg-submitConfig'>    /**
-</span>     * @cfg {Object} submitConfig
-     * 
-     *     submitConfig: {
-     *         text: 'button text',
-     *         submit: DirectFN,
-     *         iconCls: 'buttnon-icon-class',
-     *         success: function() {
-     *             // After success
-     *         }
-     *     }
-     */
-    
-<span id='global-property-Ext.button.Button'>    /**
-</span>     * Submit button
-     * 
-     * @private
-     * @property Ext.button.Button
-     */
-    submitHandler: undefined,
-    
-<span id='global-method-constructor'>    /**
-</span>     * Constructor
-     * 
-     * @param {Object} cfg
-     */
-    constructor: function(cfg)
-    {
-        var config = cfg || {};
+    Ext.define('Hatimeria.edit.form.BaseForm', {
+        extend: 'Ext.form.Panel',
+        mixins: {
+            translationable: 'Hatimeria.core.mixins.Translationable'
+        },
+        alias: 'widget.baseform',
+        config: {
+            
+<span id='Hatimeria-edit-form-BaseForm-cfg-panelViewer'>            /**
+</span>             * PanelViewer
+             * 
+             * @cfg {Hatimeria.edit.panel.VTabsPanel} panelViewer
+             */
+            panelViewer: undefined,
+            
+<span id='Hatimeria-edit-form-BaseForm-cfg-dataCollection'>            /**
+</span>             * Data
+             * 
+             * @cfg {Object} dataCollection
+             */
+            dataCollection: {}
+        },
         
-        if (typeof this.submitConfig == 'object' &amp;&amp; typeof this.submitConfig.submit == 'function')
+<span id='Hatimeria-edit-form-BaseForm-property-params'>        /**
+</span>         * Optional params passed to EditWindow
+         * 
+         * @property {} params
+         */
+        params: {},
+        
+<span id='Hatimeria-edit-form-BaseForm-property-localFields'>        /**
+</span>         * Array width local-form fields using in validation 
+         * (changes as checked according to followed fields)
+         * 
+         * @property [] localFields
+         */
+        localFields: [],
+        
+<span id='Hatimeria-edit-form-BaseForm-property-defaultDataSnapshoot'>        /**
+</span>         * Default data which is set by defaults
+         * 
+         * @private
+         * @property {String} defaultDataSnapshoot
+         */
+        defaultDataSnapshoot: undefined,
+        
+<span id='Hatimeria-edit-form-BaseForm-cfg-locked'>        /**
+</span>         * Locked?
+         * 
+         * @cfg {Boolean} locked
+         */
+        locked: false,
+        
+<span id='Hatimeria-edit-form-BaseForm-method-initComponent'>        /**
+</span>         * Initialize component
+         * 
+         * @private
+         */
+        initComponent: function()
         {
-            Ext.merge(config, {api: {
-                submit: this.submitConfig.submit    
-            }});
-        }
+            this.callParent();
+            
+            this.addEvents('populate');
+            this.on('afterrender', function() {
+                if (this.locked)
+                {
+                    this.lock();
+                }
+            });
+        },
         
-        if (typeof cfg == 'object' &amp;&amp; typeof cfg.submitConfig == 'object' &amp;&amp; typeof cfg.submitConfig.submit == 'function')
+<span id='Hatimeria-edit-form-BaseForm-method-populate'>        /**
+</span>         * Sets Data
+         * 
+         * @param {Object} data
+         * @param {Object} params
+         */
+        populate: function(data, params)
         {
-            Ext.merge(config, {api: {
-                submit: cfg.submitConfig.submit
-            }});
-        }
+            this.params = params || {};
+            this.fireEvent('populate', data);
+            this.setDataCollection(Ext.clone(data));
+            this.getForm().setValues(data);
+            this.defaultDataSnapshoot = this.createDataSnapshoot();
+        },
         
-        this.callParent([config]);
-    },
-
-<span id='global-method-initComponent'>    /**
-</span>     * Initialization
-     * 
-     * @private
-     */
-    initComponent: function()
-    {
-        if (this.submitConfig)
+<span id='Hatimeria-edit-form-BaseForm-method-retrieveData'>        /**
+</span>         * Gets values from form
+         * 
+         * @return {Object}
+         */
+        retrieveData: function()
         {
-            this.mountSubmit();
-        }
+            return this.getForm().getValues();
+        },
         
-        this.callParent();
-        
-        this.getForm().on({
-            actionfailed: {scope: this, fn: this.onAnyAction},
-            actioncomplete: {scope: this, fn: this.onAnyAction}
-        });
-    },
-    
-<span id='global-method-mountSubmit'>    /**
-</span>     * Mount submit features
-     * 
-     * @private
-     */
-    mountSubmit: function()
-    {
-        var config = this.submitConfig;
-        this.submitHandler = Ext.create(&quot;Hatimeria.core.response.FormHandler&quot;, {
-            failureWindowTitle: config.failureWindowTitle || this.__('form.alert_title'),
-            success: config.success || function() {},
-            formPanel: this
-        });
-        
-        var submitButton = {
-            text: config.text,
-            scope: this,
-            cls: this.submitConfig.iconCls || 'ux-button',
-            handler: function(button) {
-                this.submitForm();
-            }
-        };
-        
-        if (!this.buttons)
+<span id='Hatimeria-edit-form-BaseForm-method-resetData'>        /**
+</span>         * Resets fields in form
+         */
+        resetData: function()
         {
-            this.buttons = [];
-        }
+            this.getForm().reset();
+        },
         
-        this.buttons.push(submitButton);
-    },
-    
-<span id='global-method-submitForm'>    /**
-</span>     * Submits form
-     */
-    submitForm: function()
-    {
-        var form = this.getForm();
-        if (form.isValid())
+<span id='Hatimeria-edit-form-BaseForm-method-getParams'>        /**
+</span>         * Optional parameters
+         * 
+         * @return {Object}
+         */
+        getParams: function()
         {
-            var el = this.up('window');
-            if (Ext.isObject(el))
+            return this.params;
+        },
+        
+<span id='Hatimeria-edit-form-BaseForm-method-getParam'>        /**
+</span>         * Optional parameter
+         * 
+         * @param {String} key
+         * @return {Object}/{Boolean}
+         */
+        getParam: function(key)
+        {
+            return (typeof this.params[key] != 'undefined') ? this.params[key] : false ;
+        },
+        
+<span id='Hatimeria-edit-form-BaseForm-method-isValid'>        /**
+</span>         * Validates form
+         * Must return bool value
+         * 
+         * @return {Boolean}
+         */
+        isValid: function()
+        {
+            return this.getForm().isValid();
+        },
+        
+<span id='Hatimeria-edit-form-BaseForm-method-onBeforeClose'>        /**
+</span>         * Event: fires when user attempt to close a window
+         * Must return bool value
+         * 
+         * 
+         * @private
+         * @return {Boolean}
+         */
+        onBeforeClose: function()
+        {
+            return true;
+        },
+        
+<span id='Hatimeria-edit-form-BaseForm-method-onBeforeSave'>        /**
+</span>         * Event: fires when user attempts to save form
+         * Must return bool value
+         * 
+         * @private
+         * @param {Hatimeria.edit.window.BaseWindow} window
+         * @return {boolean}
+         */
+        onBeforeSave: function(window)
+        {
+            return true;
+        },
+        
+<span id='Hatimeria-edit-form-BaseForm-method-createDataSnapshoot'>        /**
+</span>         * Creates snapshop of data 
+         * (need set localFields array)
+         * 
+         * @retrun {String} (JSON)
+         */
+        createDataSnapshoot: function()
+        {
+            if (typeof this.localFields == 'object' &amp;&amp; this.localFields.length &gt; 0)
             {
-                this.mask = new Ext.LoadMask(el, {msg: 'Czekaj...'});
-                this.mask.show();
+                var snapshoot = {};
+                var field;
+                var data = this.retrieveData();
+                
+                for (var i in this.localFields)
+                {
+                    field = this.localFields[i];
+                    snapshoot[field]= data[field];
+                }
+                
+                return JSON.stringify(snapshoot);
             }
-            form.submit(this.getSubmitHandler());
-        }
-    },
+            
+            return false;
+        },
     
-<span id='global-method-getSubmitHandler'>    /**
-</span>     * Submit handler
-     * 
-     * @return {Hatimeria.core.response.FormHandler}
-     */
-    getSubmitHandler: function()
-    {
-        return this.submitHandler;
-    },
-    
-<span id='global-method-getFieldByName'>    /**
-</span>     * Gets field by name
-     * 
-     * @param {String} name
-     * @return {Ext.form.Field}
-     */
-    getFieldByName: function(name)
-    {
-        return this.getForm().findField(name);
-    },
-    
-<span id='global-method-onAnyAction'>    /**
-</span>     * Event: fires when any action completes
-     * 
-     * @private
-     */
-    onAnyAction: function()
-    {
-        if (Ext.isObject(this.mask))
+<span id='Hatimeria-edit-form-BaseForm-method-getDefaultDataSnapshoot'>        /**
+</span>         * Default data snapshoot
+         * 
+         * @return {String} (JSON)
+         */
+        getDefaultDataSnapshoot: function()
         {
-            this.mask.hide();
+            return this.defaultDataSnapshoot;
+        },
+        
+<span id='Hatimeria-edit-form-BaseForm-method-isFormModified'>        /**
+</span>         * Gets flag modified 
+         * Must return bool value or undefined
+         * 
+         * @return {boolean}
+         */
+        isFormModified: function()
+        {
+            if (typeof this.localFields == 'object' &amp;&amp; this.localFields.length &gt; 0)
+            {
+                return (this.getDefaultDataSnapshoot() != this.createDataSnapshoot(this.retrieveData()));
+            }
+            
+            return undefined;
+        },
+        
+<span id='Hatimeria-edit-form-BaseForm-method-isLocked'>        /**
+</span>         * Is UI locked?
+         * 
+         * @return {Boolean}
+         */
+        isLocked: function()
+        {
+            return this.locked;
+        },
+        
+<span id='Hatimeria-edit-form-BaseForm-method-lock'>        /**
+</span>         * Lock form
+         * Disabling causes avoiding gettins values from form
+         * 
+         * @return {boolean}
+         */
+        lock: function()
+        {
+            if (this.rendered)
+            {
+                this.getEl().mask();
+            }
+            
+            this.locked = true;
+        },
+        
+<span id='Hatimeria-edit-form-BaseForm-method-unlock'>        /**
+</span>         * Unlocks UI
+         * 
+         * @return {Boolean}
+         */
+        unlock: function()
+        {
+            if (this.rendered)
+            {
+                this.getEl().unmask();
+            }
+            
+            this.locked = false;
         }
-    }
-});
-</pre>
+        
+    });
+    
+})();</pre>
 </body>
 </html>
