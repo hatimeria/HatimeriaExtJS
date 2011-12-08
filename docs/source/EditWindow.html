@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js"><span id='Hatimeria-edit-window-EditWindow'>/**
+</span> * Edit Window
+ * 
+ * @class Hatimeria.edit.window.EditWindow
+ * @extends Ext.window.Window
+ */
+(function() {
+    
+    Ext.define('Hatimeria.edit.window.EditWindow', {
+        extend: 'Ext.window.Window',
+        config: {
+            
+<span id='Hatimeria-edit-window-EditWindow-cfg-params'>            /**
+</span>             * Parameters
+             * 
+             * @cfg {Object} params Persist params
+             */
+            params: {},
+            
+<span id='Hatimeria-edit-window-EditWindow-cfg-data'>            /**
+</span>             * Data
+             * 
+             * @cfg {Object} data
+             */
+            data: undefined
+        },
+        
+<span id='Hatimeria-edit-window-EditWindow-method-initComponent'>        /**
+</span>         * Initializes component
+         * 
+         * @private
+         */
+        initComponent: function()
+        {
+            var config = {
+                width: 960,
+                height: 600,
+                buttons: [
+                    Ext.create('Ext.button.Button', {
+                        itemId: 'btn-save',
+                        text: this.__('window.save'),
+                        scope: this,
+                        cls: 'ux-btn-save ext-pink-button',
+                        handler: this.save
+                    })
+                ]
+            };
+            
+            Ext.apply(this.initialConfig, Ext.apply(config, this.initialConfig || {}));
+            
+            this.callParent();
+            
+            this.addEvents([
+                
+<span id='Hatimeria-edit-window-EditWindow-event-save'>                /**
+</span>                 * Save data
+                 * @event save 
+                 */
+                'save',
+                
+<span id='Hatimeria-edit-window-EditWindow-event-aftersave'>                /**
+</span>                 * After save
+                 * @event aftersave
+                 */
+                'aftersave',
+                
+<span id='Hatimeria-edit-window-EditWindow-event-errorsave'>                /**
+</span>                 * Error during save data
+                 * @event errorsave
+                 */
+                'errorsave',
+                
+<span id='Hatimeria-edit-window-EditWindow-event-populate'>                /**
+</span>                 * Populating form with data
+                 * @event populate
+                 */
+                'populate',
+                
+<span id='Hatimeria-edit-window-EditWindow-event-beforekill'>                /**
+</span>                 * Event rises when all is OK and window may be killed
+                 * @event beforekill
+                 */
+                'beforekill'
+            ]);
+            
+            this.on({
+                afterrender: function() {
+                    if (this.activateTab)
+                    {
+                        this.switchTab(this.activateTab);
+                    }
+                    this.loadData();
+                },
+                beforeclose: function() {
+                    return this.onBeforeClose();
+                }
+            });
+        },
+        
+<span id='Hatimeria-edit-window-EditWindow-method-loadData'>        /**
+</span>         * Loads data and trigger populating forms
+         * 
+         * @private
+         */
+        loadData: function()
+        {
+            if (typeof this.getData() == 'object')
+            {
+                this.populate(this.getData());
+                this.fireEvent('populate', this.getData());
+                return true;
+            }
+            
+            var mask = new Ext.LoadMask(this, {msg: this.__('window.loading')});
+            mask.show();
+            
+            var params = {};
+            Ext.apply(params, this.getParams() || {});
+            
+            Ext.create('Hatimeria.core.response.DirectHandler', {
+                fn: this.api.load,
+                params: params,
+                scope: this,
+                success: function(result) {
+                    this.populate(result.record);
+                    this.fireEvent('populate', result.record);
+                    mask.hide();
+                },
+                error: function() {
+                    mask.hide();
+                    
+                    return true;
+                }
+            });
+            
+            return true;
+        },
+        
+<span id='Hatimeria-edit-window-EditWindow-method-getTabs'>        /**
+</span>         * Tabs panel with forms
+         * 
+         * @return {Ext.tab.Panel}
+         */
+        getTabs: function()
+        {
+            return this.getComponent('window-edit-tabs');
+        },
+        
+<span id='Hatimeria-edit-window-EditWindow-method-save'>        /**
+</span>         * Event: saves data
+         * 
+         * @private
+         * @return {Boolean}
+         */
+        save: function()
+        {
+            if (!this.formsValid())
+            {
+                // Switch first invalid tab (form)
+                this.getTabs().setActiveTab(this.getFirstDirtyTab());
+                
+                return false;
+            }
+            
+            if (this.beforeSave())
+            {
+                this.doSave(this);
+            }
+            
+            return true;
+        },
+        
+<span id='Hatimeria-edit-window-EditWindow-method-doSave'>        /**
+</span>         * Saves data
+         */
+        doSave: function()
+        {
+            var data = this.getFormsData();
+            
+            this.fireEvent('save', data);
+            
+            // Merging with incomming params:
+            Ext.apply(data, this.getParams() || {});
+            
+            var mask = new Ext.LoadMask(this.getEl(), {msg: this.__('window.saving')});
+            mask.show();
+            
+            Ext.create('Hatimeria.core.response.DirectHandler', {
+                fn: this.api.submit,
+                scope: this,
+                params: data,
+                success: function(result) {
+                    this.fireEvent('aftersave', this, data, result.record);
+                    mask.hide();
+                    this.destroy();
+                },
+                error: function(response) {
+                    mask.hide();
+                    this.fireEvent('errorsave', response, data);
+                    
+                    if (typeof response.msg == 'object')
+                    {
+                        this.markDirty(response.msg);
+                    }
+                    
+                    return true;
+                }
+            });
+        },
+        
+<span id='Hatimeria-edit-window-EditWindow-method-populate'>        /**
+</span>         * Populating forms
+         * 
+         * @param {Object} data
+         */
+        populate: function(data)
+        {
+            this.setWindowTitle(data);
+            this.getTabs().populate(data, this.getParams() || {});
+        },
+        
+<span id='Hatimeria-edit-window-EditWindow-method-getFormsData'>        /**
+</span>         * Returns dirty data from forms
+         * 
+         * @return {Object}
+         */
+        getFormsData: function()
+        {
+            return this.getTabs().retrieveFormData();
+        },
+        
+<span id='Hatimeria-edit-window-EditWindow-method-setWindowTitle'>        /**
+</span>         * Sets Title
+         * 
+         * @param {Object} data
+         */
+        setWindowTitle: function(data)
+        {
+            
+        },
+        
+<span id='Hatimeria-edit-window-EditWindow-method-formsValid'>        /**
+</span>         * All forms valid?
+         * 
+         * @return {Boolean}
+         */
+        formsValid: function()
+        {
+            return this.getTabs().formsValid();
+        },
+        
+<span id='Hatimeria-edit-window-EditWindow-method-getFirstDirtyTab'>        /**
+</span>         * First dirty tab
+         * 
+         * @return {Hatimeria.edit.form.BaseForm}
+         */
+        getFirstDirtyTab: function()
+        {
+            return this.getTabs().getComponent(this.getTabs().getDirtyForms()[0]);
+        },
+        
+<span id='Hatimeria-edit-window-EditWindow-method-markDirty'>        /**
+</span>         * Mark Dirty
+         * 
+         * @param {Object} messages
+         */
+        markDirty: function(messages)
+        {
+            for (var name in messages)
+            {
+                // Only first item from object:
+                this.getTabs().postValidate(name, messages[name]);
+                
+                break;
+            }
+        },
+        
+<span id='Hatimeria-edit-window-EditWindow-method-beforeSave'>        /**
+</span>         * Action run when user attempt to save changes
+         * 
+         * @private
+         * @return Boolena
+         */
+        beforeSave: function()
+        {
+            return this.getTabs().beforeSave(this);
+        },
+        
+<span id='Hatimeria-edit-window-EditWindow-method-onBeforeClose'>        /**
+</span>         * Event: fires when user attempts to close a window
+         * 
+         * @private
+         * @return bool
+         */
+        onBeforeClose: function()
+        {
+            var _this = this;
+            
+            if (this.getTabs().hasModifiedForms())
+            {
+                // Some forms were modified, stop killing window, show confirm:
+                
+                Ext.Msg.confirm('Uwaga!', 'Wszystkie wprowadzone zmiany w formularzach zostaną utracone&lt;br/&gt;Czy zamknąć okno?', function(response) {
+                    if (response == 'yes')
+                    {
+                        _this.fireEvent('beforekill', _this);
+                        // All forms agrees to close?
+                        if (_this.getTabs().beforeClose())
+                        {
+                            // Kill:
+                            _this.fireEvent('kill')
+                            _this.destroy();
+                        }
+                    }
+                });
+                
+                return false;
+            }
+            else
+            {
+                // All forms agrees to close?
+                return this.getTabs().beforeClose();
+            }
+        },
+        
+<span id='Hatimeria-edit-window-EditWindow-method-switchTab'>        /**
+</span>         * Switch to custom tab
+         * 
+         * @param {Integer} number
+         */
+        switchTab: function(number)
+        {
+            this.getTabs().setActiveTab(number);
+        }
+        
+    });
+    
+})();</pre>
+</body>
+</html>
