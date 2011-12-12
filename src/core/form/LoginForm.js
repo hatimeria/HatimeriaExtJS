@@ -21,6 +21,12 @@
         {
             var config = cfg || {};
             config.url = Routing.generate('fos_user_security_check');
+            
+            if(config.logoUri) {
+               this.logoUri = config.logoUri;
+            } else {
+               this.logoUri = "/bundles/hatimeriaadmin/images/hatimeria_v_220.png"
+            }
 
             this.callParent([config]);
         },
@@ -51,7 +57,7 @@
                         width: 250,
                         style:
                             'margin:20px auto;',
-                        html: '<img src="/bundles/hatimeriaadmin/images/hatimeria_v_220.png"/>'
+                        html: '<img src="' + this.logoUri + '"/>'
                     },
                     {
                         fieldLabel: this.__('login'),
@@ -81,10 +87,10 @@
                     {
                         border: 0,
                         width: 270,
-                        id: 'logo',
+                        id: 'hatimeria-powered-by',
                         style:
                             'margin:10px 125px;',
-                        html: '<img src="/bundles/hatimeriaadmin/images/hatimeria.ico"/><p>Powereb by Hatimeria</p> <a href="http://www.hatimeria.pl">www.hatimeria.pl</a>'
+                        html: '<img src="/bundles/hatimeriaadmin/images/hatimeria.ico"/><p>Powered by Hatimeria</p> <a href="http://www.hatimeria.pl">www.hatimeria.pl</a>'
                     }
                 ]
             };
