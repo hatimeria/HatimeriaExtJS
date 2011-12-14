@@ -8,7 +8,6 @@
     
     Ext.define('Hatimeria.treeselect.field.TreeSelectField', {
         extend: 'Ext.form.field.ComboBox',
-        //extend: 'Hatimeria.core.field.DeferComboBox',
         requires: [
             'Hatimeria.core.field.DeferComboBox',
             'Hatimeria.treeselect.panel.TreeSelectPanel',
