@@ -64,7 +64,7 @@
                     },
                     {
                         xtype: 'panel',
-                        id: 'agreement-field',
+                        itemId: 'agreement-field',
                         layout: 'auto',
                         autoScroll: true,
                         width: this.initialConfig.width || 350,

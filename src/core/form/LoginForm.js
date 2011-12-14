@@ -50,49 +50,35 @@
                 layout: 'auto',
                 bodyPadding: 10,
                 border: 0,
-                defaultType: 'textfield',
-                items: [
+                defaults: {
+                    labelWidth: 80,
+                    labelAlign: 'right',
+                    width: 300,
+                    border: 0
+                },
+                items: this.getFieldsConfig([
                     {
-                        border: 0,
-                        width: 250,
-                        style:
-                            'margin:20px auto;',
-                        html: '<img src="' + this.logoUri + '"/>'
-                    },
-                    {
+                        xtype: 'textfield',
                         fieldLabel: this.__('login'),
                         name: '_username',
                         allowBlank: false,
-                        width: 400,
                         height: 25,
-                        style:
-                            'margin-left:25px;',
                         listeners: {
                             specialkey: {scope: this, fn: this.onFieldEnter}
                         }
                     },
                     {
+                        xtype: 'textfield',
                         fieldLabel: this.__('password'),
                         inputType: 'password',
                         name: '_password',
                         allowBlank: false,
-                        width: 400,
                         height: 25,
-                        style:
-                            'margin-left:25px;',
                         listeners: {
                             specialkey: {scope: this, fn: this.onFieldEnter}
                         }
-                    },
-                    {
-                        border: 0,
-                        width: 270,
-                        id: 'hatimeria-powered-by',
-                        style:
-                            'margin:10px 125px;',
-                        html: '<img src="/bundles/hatimeriaadmin/images/hatimeria.ico"/><p>Powered by Hatimeria</p> <a href="http://www.hatimeria.pl">www.hatimeria.pl</a>'
                     }
-                ]
+                ])
             };
             Ext.apply(this, Ext.apply(config, this.initialConfig));
 
@@ -110,6 +96,38 @@
             {
                 this.submitForm();
             }
+        },
+        
+        /**
+         * Fields configuration 
+         * Method adds branded theme
+         * 
+         * @param {Array} fieldsConfig
+         */
+        getFieldsConfig: function(fieldsConfig)
+        {
+            var fields = [
+                {
+                    border: 0,
+                    width: 250,
+                    style:
+                        'margin:20px auto;',
+                    html: '<img src="' + this.logoUri + '"/>'
+                }
+            ];
+            
+            fields.push(fieldsConfig);
+            
+            fields.push({
+                border: 0,
+                width: 270,
+                id: 'hatimeria-powered-by',
+                style:
+                    'margin:10px 125px;',
+                html: '<img src="/bundles/hatimeriaadmin/images/hatimeria.ico"/><p>Powered by Hatimeria</p> <a href="http://www.hatimeria.pl">www.hatimeria.pl</a>'
+            });
+            
+            return fields;
         }
     });
     
