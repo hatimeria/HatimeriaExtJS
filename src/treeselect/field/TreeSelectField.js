@@ -6,14 +6,16 @@
  */
 (function() {
     
-    Ext.define('Hatimeria.core.field.CategoryComboBox', {
-        extend: 'Hatimeria.core.field.DeferComboBox',
+    Ext.define('Hatimeria.treeselect.field.TreeSelectField', {
+        extend: 'Ext.form.field.ComboBox',
+        //extend: 'Hatimeria.core.field.DeferComboBox',
         requires: [
-            'Hatimeria.treeselect.tree.TreeSelectPanel',
+            'Hatimeria.core.field.DeferComboBox',
+            'Hatimeria.treeselect.panel.TreeSelectPanel',
             'Hatimeria.treeselect.store.TreeSelectStore',
             'Hatimeria.core.response.DirectHandler'
         ],
-        alias: 'widget.ux-category',
+        alias: 'widget.ux-treeselect',
         config: {
             directFn: Ext.emptyFn
         },
@@ -38,7 +40,6 @@
          */
         initComponent: function()
         {
-            var _this = this;
             var config = {
                 valueField: 'id',
                 queryMode: 'local',
@@ -53,32 +54,39 @@
                 })
             };
             
-            Ext.apply(this, Ext.apply(config, this.initialConfig || {}));
+            Ext.apply(this, Ext.apply(config, this.initialConfig));
             this.callParent();
-            
-            this.on('afterrender', function() {
-                Ext.create('Hatimeria.core.response.DirectHandler', {
-                   fn: this.getDirectFn(),
-                   scope: this,
-                   success: function(result) {
-                       var nodes = result.record;
-                       var expand = function(nodes)
-                       {
-                           for (var i in nodes)
-                           {
-                               nodes[i].expanded = true;
-                               if (!nodes[i].children || nodes[i].children.length == 0)
-                               {
-                                   nodes[i].leaf = true;
-                               }
-                               expand(nodes[i].children)
-                           }
-                       }
-                       expand(nodes);
-                       
-                       _this.store.loadNodes(nodes);
-                   }
-                });
+            this.loadStore();
+        },
+        
+        /**
+         * Loads nodes to TreeStore
+         * 
+         * @private
+         */
+        loadStore: function()
+        {
+            Ext.create('Hatimeria.core.response.DirectHandler', {
+                fn: this.getDirectFn(),
+                scope: this,
+                success: function(result) {
+                    var nodes = result.record;
+                    var expand = function(nodes)
+                    {
+                        for (var i in nodes)
+                        {
+                            nodes[i].expanded = true;
+                            if (!nodes[i].children || nodes[i].children.length == 0)
+                            {
+                                nodes[i].leaf = true;
+                            }
+                            expand(nodes[i].children)
+                        }
+                    }
+                    expand(nodes);
+
+                    this.store.loadNodes(nodes);
+                }
             });
         },
         
@@ -90,7 +98,7 @@
          */
         createPicker: function()
         {
-            var picker = Ext.create('Hatimeria.treeselect.tree.TreeSelectPanel', {
+            var picker = Ext.create('Hatimeria.treeselect.panel.TreeSelectPanel', {
                 ownerCt: this.ownerCt,
                 store: this.store
             });

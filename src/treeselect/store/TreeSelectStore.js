@@ -50,9 +50,15 @@
                     }
                     else
                     {
-                        return find(nodes[i].childNodes, field, value);
+                        var record = find(nodes[i].childNodes, field, value);
+                        if (record != false)
+                        {
+                            return record;
+                        }
                     }
                 }
+                
+                return false;
             };
             
             var record = find(this.getRootNode().childNodes, field, value);

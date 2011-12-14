@@ -6,7 +6,7 @@
     
     Ext.require('Hatimeria.core.response.DirectHandler');
     
-    Ext.define('Hatimeria.treeselect.tree.TreeSelectPanel', {
+    Ext.define('Hatimeria.treeselect.panel.TreeSelectPanel', {
         extend: 'Ext.tree.Panel',
         
         startWidth: undefined,
