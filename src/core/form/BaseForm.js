@@ -50,6 +50,29 @@ Ext.define("Hatimeria.core.form.BaseForm", {
         }
         
         this.callParent([config]);
+        
+        // Data may be also returned in 'record':
+        Ext.form.action.DirectLoad.override({
+            onSuccess: function(response){
+                var result = this.processResponse(response),
+                    form = this.form;
+                    
+                // HACK:
+                if (!result.data && result.record)   
+                {
+                    result.data = result.record;
+                }
+                    
+                if (result === true || !result.success || !result.data) {
+                    this.failureType = Ext.form.action.Action.LOAD_FAILURE;
+                    form.afterAction(this, false);
+                    return;
+                }
+                form.clearInvalid();
+                form.setValues(result.data || result.record);
+                form.afterAction(this, true);
+            }
+        });
     },
 
     /**
