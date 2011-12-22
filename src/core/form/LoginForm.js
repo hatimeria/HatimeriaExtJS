@@ -22,7 +22,7 @@
             var config = cfg || {};
             config.url = Routing.generate('fos_user_security_check');
             
-            if(config.logoUri) {
+            if (config.logoUri) {
                this.logoUri = config.logoUri;
             } else {
                this.logoUri = "/bundles/hatimeriaadmin/images/hatimeria_v_220.png"
@@ -108,11 +108,12 @@
         {
             var fields = [
                 {
+                    xtype: 'image',
                     border: 0,
-                    width: 250,
-                    style:
-                        'margin:20px auto;',
-                    html: '<img src="' + this.logoUri + '"/>'
+                    width: 220,
+                    height: 50,
+                    src: this.logoUri ,
+                    style: {margin: '20px auto'}
                 }
             ];
             
@@ -122,8 +123,7 @@
                 border: 0,
                 width: 270,
                 id: 'hatimeria-powered-by',
-                style:
-                    'margin:10px 125px;',
+                style: {margin: '10px 125px'},
                 html: '<img src="/bundles/hatimeriaadmin/images/hatimeria.ico"/><p>Powered by Hatimeria</p> <a href="http://www.hatimeria.pl">www.hatimeria.pl</a>'
             });
             
