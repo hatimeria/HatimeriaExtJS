@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js"><span id='global-property-'>/**
+</span> * Test unit
+ * 
+ * @hide
+ */
+(function() {
+    
+    Ext.ns('TestUnit');
+    
+    var createNew = function(text) {
+        Ext.getCmp('test-panel').add(Ext.create('Ext.panel.Panel', {
+            html: text,
+            border: 0,
+            padding: 5,
+            margin: 5,
+            style: {
+                'border-bottom': '1px solid #eee'
+            }
+        }));
+    };
+    
+    TestUnit = {
+        init: function()
+        {
+            Ext.create('Ext.panel.Panel', {
+                id: 'test-panel',
+                title: 'Testy',
+                width: 800,
+                layout: 'auto',
+                scroll: true,
+                renderTo: 'ext-app'
+            });
+        },
+        
+        group: function(name)
+        {
+            Ext.getCmp('test-panel').add(Ext.create('Ext.panel.Panel', {
+                html: '&lt;span style=&quot;font-weight: bold;&quot;&gt;'+name+':&lt;/span&gt;',
+                border: 0,
+                padding: 5,
+                margin: 5,
+                style: {
+                    'border-bottom': '2px solid #eee'
+                }
+            }));
+        },
+        
+        test: function(expression, value, description)
+        {
+            var 
+                html = &quot;&quot;,
+                cls,
+                result;
+            
+            if (expression === value)
+            {
+                result = '&lt;span style=&quot;color: #00B235; font-weight: bold;&quot;&gt;OK&lt;/span&gt;';
+                cls = &quot;ok&quot;;
+            }
+            else
+            {
+                result = '&lt;span style=&quot;color: #F00; font-weight: bold;&quot;&gt;Failed&lt;/span&gt;';
+                cls = &quot;failed&quot;;
+            }
+            
+            html = Ext.String.format('&lt;span style=&quot;font-weight: bold;&quot;&gt;Testig:&lt;/span&gt; &lt;span&gt;{0}:&lt;/span&gt; &lt;span class=&quot;result_{1}&quot;&gt;{2}&lt;/span&gt;', description, cls, result);
+            
+            createNew(html);
+        },
+        
+        isType: function(object, type, description)
+        {
+            var 
+                html = &quot;&quot;,
+                cls,
+                result;
+            
+            if (typeof object === type)
+            {
+                result = '&lt;span style=&quot;color: #00B235; font-weight: bold;&quot;&gt;OK&lt;/span&gt;';
+                cls = &quot;ok&quot;;
+            }
+            else
+            {
+                result = '&lt;span style=&quot;color: #F00; font-weight: bold;&quot;&gt;Failed&lt;/span&gt;';
+                cls = &quot;failed&quot;;
+            }
+            
+            html = Ext.String.format('&lt;span style=&quot;font-weight: bold;&quot;&gt;Testig Type:&lt;/span&gt; &lt;span&gt;{0}&lt;/span&gt; should be &lt;em style=&quot;font-weight: bold;&quot;&gt;{1}&lt;/e&gt;, is: &lt;em style=&quot;font-weight: bold;&quot;&gt;{2}&lt;/em&gt; &lt;span class=&quot;result_{3}&quot;&gt;{4}&lt;/span&gt;', description, type, typeof object, cls, result);
+            
+            createNew(html);
+        }
+    }
+   
+})();</pre>
+</body>
+</html>

@@ -1,5 +1,7 @@
-/* 
+/**
  * Test unit
+ * 
+ * @hide
  */
 (function() {
     

@@ -1,5 +1,8 @@
 /**
  * Response handler
+ * 
+ * @class Hatimeria.core.response.DirectHandler
+ * @extends Hatimeria.core.response.BaseHandler
  */
 (function() {
     
@@ -10,21 +13,21 @@
             /**
              * Direct callback function
              * 
-             * @var function
+             * @cfg {Function} fn
              */
             fn: function(callback) { callback(); },
             
             /**
              * Request parameters
              * 
-             * @var {}
+             * @cfg {Object} params
              */
             params: {},
             
             /**
              * Success case
              * 
-             * @var function
+             * @cfg {Function} success
              */
             success: undefined,
             
@@ -32,14 +35,14 @@
              * Failure case
              * !!! Error function must return TRUE to run failure method !!!
              * 
-             * @var function
+             * @cfg {Function} error
              */
             error: undefined,
             
             /**
              * Scope of functions success, error
              * 
-             * @var {}
+             * @cfg {Object} scope
              */
             scope: undefined
         },
@@ -47,14 +50,16 @@
         /**
          * Response
          * 
-         * @var {}
+         * @private
+         * @property {Object}
          */
         response: undefined,
         
         /**
          * Constructor
          * 
-         * @param {} config
+         * @private
+         * @param {Object} config
          */
         constructor: function(config)
         {
@@ -67,6 +72,8 @@
 
         /**
          * Call request
+         * 
+         * @private
          */
         init: function()
         {
@@ -90,8 +97,9 @@
         /**
          * Event: response
          * 
-         * @param {} result
-         * @param {} response
+         * @private
+         * @param {Object} result
+         * @param {Object} response
          */
         onResponse: function(result, response)
         {
@@ -124,8 +132,9 @@
         /**
          * Manage success:false case
          * 
-         * @param {} result
-         * @param {} response
+         * @private
+         * @param {Object} result
+         * @param {Object} response
          */
         failure: function(result, response)
         {
@@ -135,13 +144,12 @@
         /**
          * Response of request
          * 
-         * @return {}
+         * @return {Object}
          */
         getResponse: function()
         {
             return this.response;
         }
-        
     });
     
 })();

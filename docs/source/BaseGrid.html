@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js">/* 
+ * BaseGrid
+ */
+(function() {
+    
+    Ext.define('Hatimeria.core.grid.BaseGrid', {
+        extend: 'Ext.grid.Panel',
+        
+        initComponent: function()
+        {
+            this.callParent();
+            
+            this.on({
+                itemcontextmenu: {
+                    scope: this,
+                    fn: this.onContextMenu
+                },
+                itemdblclick: {
+                    scope: this, 
+                    fn: function(grid, record, el, index) {
+                        this.onEditClick(record, index);
+                    }
+                }
+            });
+        },
+        
+<span id='global-method-getContextMenuItems'>        /**
+</span>         * Items for context menu
+         * 
+         * @return []
+         */
+        getContextMenuItems: function(record, index)
+        {
+            return [
+                {
+                    text: 'Edytuj',
+                    cls: 'ux-edit',
+                    scope: this,
+                    handler: function() {
+                        this.onEditClick(record, index);
+                    }
+                },
+                {
+                    text: 'Usuń',
+                    cls: 'ux-remove',
+                    scope: this,
+                    handler: function() {
+                        this.onRemoveClick(record, index);
+                    }
+                }
+            ];
+        },
+        
+<span id='global-method-onContextMenu'>        /**
+</span>         * Event: right click on row
+         * 
+         * @param Ext.tree.Panel
+         * @param Ext.data.Node
+         * @param DOMElement el
+         * @param int index
+         * @param Ext.Object.Event event
+         */
+        onContextMenu: function(grid, record, el, index, event)
+        {
+            Ext.create('Ext.menu.Menu', {
+                items: this.getContextMenuItems(record, index)
+            }).showAt(event.getXY());
+            
+            event.stopEvent();
+        },
+        
+<span id='global-method-onEditClick'>        /**
+</span>         * Event: edit click
+         * 
+         * @param Ext.data.Model record
+         * @param int index
+         */
+        onEditClick: function(record, index)
+        {
+            // Abstract
+        },
+
+<span id='global-method-onRemoveClick'>        /**
+</span>         * Event: edit click
+         * 
+         * @param Ext.data.Model record
+         * @param int index
+         */
+        onRemoveClick: function(record, index)
+        {
+            // Abstract
+        }
+        
+    });
+    
+})();
+</pre>
+</body>
+</html>

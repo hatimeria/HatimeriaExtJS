@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js"><span id='Hatimeria-core-response-DirectHandler'>/**
+</span> * Response handler
+ * 
+ * @class Hatimeria.core.response.DirectHandler
+ * @extends Hatimeria.core.response.BaseHandler
+ */
+(function() {
+    
+    Ext.define('Hatimeria.core.response.DirectHandler', {
+        extend: 'Hatimeria.core.response.BaseHandler',
+        config: {
+            
+<span id='Hatimeria-core-response-DirectHandler-cfg-fn'>            /**
+</span>             * Direct callback function
+             * 
+             * @cfg {Function} fn
+             */
+            fn: function(callback) { callback(); },
+            
+<span id='Hatimeria-core-response-DirectHandler-cfg-params'>            /**
+</span>             * Request parameters
+             * 
+             * @cfg {Object} params
+             */
+            params: {},
+            
+<span id='Hatimeria-core-response-DirectHandler-cfg-success'>            /**
+</span>             * Success case
+             * 
+             * @cfg {Function} success
+             */
+            success: undefined,
+            
+<span id='Hatimeria-core-response-DirectHandler-cfg-error'>            /**
+</span>             * Failure case
+             * !!! Error function must return TRUE to run failure method !!!
+             * 
+             * @cfg {Function} error
+             */
+            error: undefined,
+            
+<span id='Hatimeria-core-response-DirectHandler-cfg-scope'>            /**
+</span>             * Scope of functions success, error
+             * 
+             * @cfg {Object} scope
+             */
+            scope: undefined
+        },
+        
+<span id='Hatimeria-core-response-DirectHandler-property-response'>        /**
+</span>         * Response
+         * 
+         * @private
+         * @property {Object}
+         */
+        response: undefined,
+        
+<span id='Hatimeria-core-response-DirectHandler-method-constructor'>        /**
+</span>         * Constructor
+         * 
+         * @private
+         * @param {Object} config
+         */
+        constructor: function(config)
+        {
+            this.callParent([config]);
+            this.initConfig(config);
+            this.init();
+            
+            return this;
+        },
+
+<span id='Hatimeria-core-response-DirectHandler-method-init'>        /**
+</span>         * Call request
+         * 
+         * @private
+         */
+        init: function()
+        {
+            var _this = this;
+            if (typeof this.getFn() != 'function')
+            {
+                throw new Error('Must specify fn parameter');
+            }
+            
+            this.getFn()(this.getParams() || {}, function(result, response) {
+                try {
+                    _this.onResponse(result, response);
+                }
+                catch(e)
+                {
+                    console.error(e);
+                }
+            });
+        },
+        
+<span id='Hatimeria-core-response-DirectHandler-method-onResponse'>        /**
+</span>         * Event: response
+         * 
+         * @private
+         * @param {Object} result
+         * @param {Object} response
+         */
+        onResponse: function(result, response)
+        {
+            this.response = response;
+            var scope = this.getScope() || this;
+            
+            if (result.success)
+            {
+                if (typeof this.getSuccess() == 'function')
+                {
+                    this.getSuccess().call(scope, result);
+                }
+            }
+            else
+            {
+                if (typeof this.getError() == 'function')
+                {
+                    if (this.getError().call(scope, result, response))
+                    {
+                        this.failure(result, response);
+                    }
+                }
+                else
+                {
+                    this.failure(result, response);
+                }
+            }
+        },
+        
+<span id='Hatimeria-core-response-DirectHandler-method-failure'>        /**
+</span>         * Manage success:false case
+         * 
+         * @private
+         * @param {Object} result
+         * @param {Object} response
+         */
+        failure: function(result, response)
+        {
+            this.callParent([result]);
+        },
+        
+<span id='Hatimeria-core-response-DirectHandler-method-getResponse'>        /**
+</span>         * Response of request
+         * 
+         * @return {Object}
+         */
+        getResponse: function()
+        {
+            return this.response;
+        }
+    });
+    
+})();
+</pre>
+</body>
+</html>

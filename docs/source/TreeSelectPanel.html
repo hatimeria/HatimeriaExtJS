@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js"><span id='Hatimeria-treeselect-tree-TreeSelectPanel'>/**
+</span> * @class Hatimeria.treeselect.tree.TreeSelectPanel
+ * @extends Ext.tree.Panel
+ */
+(function() {
+    
+    Ext.require('Hatimeria.core.response.DirectHandler');
+    
+    Ext.define('Hatimeria.treeselect.tree.TreeSelectPanel', {
+        extend: 'Ext.tree.Panel',
+        
+        startWidth: undefined,
+        
+<span id='Hatimeria-treeselect-tree-TreeSelectPanel-method-initComponent'>        /**
+</span>         * Initializes panel
+         * @private
+         */
+        initComponent: function()
+        {
+            var config = {
+                floating: true,
+                title: false,
+                width: 200,
+                height: 150
+            };
+            
+            Ext.apply(this, Ext.apply(config, this.initialConfig || {}));
+            this.callParent();
+        },
+        
+<span id='Hatimeria-treeselect-tree-TreeSelectPanel-method-getNode'>        /**
+</span>         * Selects current node
+         * 
+         * @private
+         * @param {Ext.data.Model} node
+         */
+        getNode: function(node)
+        {
+            
+        }
+    });
+    
+})();
+</pre>
+</body>
+</html>

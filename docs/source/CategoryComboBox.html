@@ -1,5 +1,22 @@
-/** 
- * ComboBox
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js"><span id='global-property-'>/** 
+</span> * ComboBox
  */
 (function() {
     
@@ -23,8 +40,8 @@
             this.callParent();
         },
         
-        /**
-         * Selects current node
+<span id='global-method-getNode'>        /**
+</span>         * Selects current node
          * 
          * @param Ext.data.Store.ImplicitModel
          */
@@ -39,8 +56,8 @@
         
         paramsAsHash: true,
         
-        /**
-         * Loads all nodes
+<span id='global-method-loadNodes'>        /**
+</span>         * Loads all nodes
          * 
          * @param {} nodes
          */
@@ -50,8 +67,8 @@
             this.fireEvent('load', this);
         },
         
-        /**
-         * Count of nodes (always one)
+<span id='global-method-getCount'>        /**
+</span>         * Count of nodes (always one)
          * 
          * @return int
          */
@@ -60,8 +77,8 @@
             return 1; 
         },
         
-        /**
-         * Search node
+<span id='global-method-findExact'>        /**
+</span>         * Search node
          */
         findExact: function(field, value)
         {
@@ -85,8 +102,8 @@
             return record;
         },
         
-        /**
-         * Get node from a pases position
+<span id='global-method-getAt'>        /**
+</span>         * Get node from a pases position
          */
         getAt: function(record)
         {
@@ -102,8 +119,8 @@
             directFn: Ext.emptyFn
         },
         
-        /**
-         * Constructor
+<span id='global-method-constructor'>        /**
+</span>         * Constructor
          */
         constructor: function(config)
         {
@@ -113,8 +130,8 @@
             return this;
         },
         
-        /**
-         * Initialize component
+<span id='global-method-initComponent'>        /**
+</span>         * Initialize component
          */
         initComponent: function()
         {
@@ -162,8 +179,8 @@
             });
         },
         
-        /**
-         * Creates a picker
+<span id='global-method-createPicker'>        /**
+</span>         * Creates a picker
          * 
          * @return Ext.Component
          */
@@ -192,3 +209,6 @@
     });
     
 })();
+</pre>
+</body>
+</html>

@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js"><span id='Hatimeria-dvgrid-view-TableView'>/** 
+</span> * Custom TableView
+ * 
+ * @class Hatimeria.dvgrid.view.TableView
+ * @extends Ext.view.Table
+ */
+(function() {
+    
+    Ext.define('Hatimeria.dvgrid.view.TableView', {
+        extend: 'Ext.view.Table',
+        
+        alias: 'widget.customtableview',
+        
+<span id='Hatimeria-dvgrid-view-TableView-method-initComponent'>        /**
+</span>         * Init component
+         * @private
+         */
+        initComponent: function()
+        {
+            this.callParent();
+            
+            this.on('itemclick', function(view, record, el, index, event) {
+                this.dispatchItemClick(view, record, el, index, event);
+            });
+        },
+        
+<span id='Hatimeria-dvgrid-view-TableView-method-dispatchItemClick'>        /**
+</span>         * Dispatch click on record
+         * 
+         * @private
+         */
+        dispatchItemClick: function(view, record, el, index, event)
+        {
+            var actions = this.ownerCt.initialConfig.actions;
+            if (typeof actions == 'object')
+            {
+                var cls = Ext.get(event.target).dom.className;
+
+                if (cls &amp;&amp; actions[cls] &amp;&amp; typeof actions[cls].handler == 'function')
+                {
+                    actions[cls].handler(this.ownerCt, view, record, el, index, event);
+                    
+                    return true;
+                }
+            }
+            
+            this.ownerCt.fireEvent('itemareaclick', view, record, el, index, event);
+            
+            return true;
+        }
+    });
+    
+})();</pre>
+</body>
+</html>

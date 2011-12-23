@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js"><span id='global-property-'>/**
+</span> * Agreement Form
+ */
+(function() {
+    
+    Ext.require('Hatimeria.core.response.DirectHandler');
+    
+    Ext.define('Hatimeria.core.form.AgreementForm', {
+        extend: 'Ext.form.Panel',
+        config: {
+            
+<span id='global-cfg-directFn'>            /**
+</span>             * Direct function to content of terms
+             * @cfg {Function} directFn
+             */
+            directFn: function() {},
+            
+<span id='global-cfg-params'>            /**
+</span>             * Optional request parameters
+             * @cfg {Object} params
+             */
+            params: {},
+            
+<span id='global-cfg-label'>            /**
+</span>             * Label of form
+             * @cfg {String} label
+             */
+            label: 'Regulamin',
+            
+<span id='global-cfg-checkboxLabel'>            /**
+</span>             * Label behind checkbox
+             * @cfg {String} checkboxLabel
+             */
+            checkboxLabel: 'Akceptuję requlamin'
+        },
+        
+<span id='global-method-constructor'>        /**
+</span>         * Constructor
+         * 
+         * @private
+         * @param {Object} config
+         */
+        constructor: function(config)
+        {
+            this.initConfig(config);
+            this.callParent([config]);
+            
+            return this;
+        },
+        
+<span id='global-method-initComponent'>        /**
+</span>         * Initializes form
+         * 
+         * @private
+         */
+        initComponent: function()
+        {
+            var config = {
+                border: false,
+                items: [
+                    {
+                        xtype: 'label',
+                        text: this.getLabel()
+                    },
+                    {
+                        xtype: 'panel',
+                        id: 'agreement-field',
+                        layout: 'auto',
+                        autoScroll: true,
+                        width: this.initialConfig.width || 350,
+                        bodyStyle: {
+                            background: '#FFF',
+                            overflow: 'auto'
+                        },
+                        margin: '5 0',
+                        height: 100,
+                        html: ''
+                    },
+                    {
+                        xtype: 'checkbox',
+                        fieldLabel: false,
+                        boxLabel: this.getCheckboxLabel()+'&lt;em class=&quot;ux-required&quot;&gt;*&lt;/em&gt;',
+                        name: 'agreement'
+                    }
+                ]
+            };
+            Ext.apply(this, Ext.apply(config, this.initComponent || {}));
+            
+            this.callParent();
+            
+            this.on('afterrender', function() {
+                this.loadTerms();
+            });
+        },
+        
+<span id='global-method-loadTerms'>        /**
+</span>         * Load terms of Agreement
+         * 
+         * @private
+         */
+        loadTerms: function()
+        {
+            Ext.create('Hatimeria.core.response.DirectHandler', {
+                fn: this.getDirectFn(),
+                params: this.getParams(),
+                scope: this,
+                success: function(result) {
+                    this.updateTerms(result.record);
+                }
+            });
+        },
+        
+<span id='global-method-updateTerms'>        /**
+</span>         * Updates a textarea field
+         * 
+         * @private
+         * @param string value
+         */
+        updateTerms: function(value)
+        {
+            this.getComponent('agreement-field').update(value);
+        }
+    });
+    
+})();
+</pre>
+</body>
+</html>

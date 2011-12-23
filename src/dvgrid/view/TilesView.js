@@ -1,6 +1,9 @@
-    /* 
-     * Custom TilesView
-     */
+/**
+ * Custom TilesView
+ * 
+ * @class Hatimeria.dvgrid.view.TilesView
+ * @extends Ext.view.View
+ */
 (function() {
     
     Ext.util.Format.truncate = function(value, len) {
@@ -50,7 +53,8 @@
         /**
          * Renders actions passed into grid
          * 
-         * @return string
+         * @private
+         * @return {String}
          */
         renderActions: function()
         {
@@ -88,6 +92,7 @@
 
         /**
          * Event: reacts when a header resizes
+         * @private
          */
         onHeaderResize: function()
         {
@@ -96,6 +101,7 @@
         
         /**
          * Event: trigger when column header change display mode
+         * @private
          */
         onHeaderHide: function()
         {
@@ -104,6 +110,7 @@
         
         /**
          * Event: trigger when column header change display mode
+         * @private
          */
         onHeaderShow: function()
         {
@@ -112,6 +119,8 @@
 
         /**
          * Dispatch click on record
+         * 
+         * @private
          */
         dispatchItemClick: function(view, record, el, index, event)
         {
@@ -135,6 +144,7 @@
         
         /**
          * Event: mouse over tile
+         * @private
          */
         onElementMouseEnter: function(view, record, el)
         {

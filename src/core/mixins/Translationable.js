@@ -1,13 +1,21 @@
 /** 
- * Tranlation layer
- * 
+ * Tranlation
  * Component should be mixex to each other components
+ * 
+ * @class Hatimeria.core.mixins.Translationable
  */
 (function() {
     
     Ext.define('Hatimeria.core.mixins.Translationable', {
         extend: 'Ext.Base',
         
+        /**
+         * Translate by key
+         * 
+         * @param {String} key
+         * @param {Object} placeholders
+         * @return {String}
+         */
         __: function(key, placeholders)
         {
             var _placeholders = placeholders || {};

@@ -6,8 +6,8 @@
             translationable: 'Hatimeria.core.mixins.Translationable'
         },    
         transDomain: 'HatimeriaExtJSBundle',
-        width: 300,
-        height: 180,
+        width: 510,
+        height: 270,
         layout: {
             type: 'fit',
             align: 'center'
