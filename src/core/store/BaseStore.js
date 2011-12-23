@@ -70,7 +70,17 @@
             }
 
             Ext.apply(this.proxy.extraParams, data);
-        }
+        },
+        
+        /**
+         * Override extra params
+         * 
+         * @param {} data
+         */        
+        setExtraParams: function(data)
+        {
+            this.proxy.extraParams = data;
+        }        
     });
 
 })();
