@@ -109,21 +109,25 @@ Ext.define("Hatimeria.core.form.BaseForm", {
             formPanel: this
         });
         
-        var submitButton = {
-            text: config.text,
-            scope: this,
-            cls: this.submitConfig.iconCls || 'ux-button',
-            handler: function(button) {
-                this.submitForm();
-            }
-        };
-        
-        if (!this.buttons)
+        // Add button only if submitConfig.text defined:
+        if (config.text)
         {
-            this.buttons = [];
+            var submitButton = {
+                text: config.text,
+                scope: this,
+                cls: this.submitConfig.iconCls || 'ux-button',
+                handler: function(button) {
+                    this.submitForm();
+                }
+            };
+
+            if (!this.buttons)
+            {
+                this.buttons = [];
+            }
+
+            this.buttons.push(submitButton);
         }
-        
-        this.buttons.push(submitButton);
     },
     
     /**
