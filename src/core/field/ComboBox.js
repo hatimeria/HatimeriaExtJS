@@ -8,9 +8,6 @@
     
     Ext.define('Hatimeria.core.field.ComboBox', {
         extend: 'Ext.form.field.ComboBox',
-        mixins: {
-            clearable: 'Hatimeria.core.field.mixin.Clearable'
-        },
         
         /**
          * @cfg firstSelected
