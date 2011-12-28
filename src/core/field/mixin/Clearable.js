@@ -1,5 +1,10 @@
 /**
- * Clearable
+ * Clearable field
+ * 
+ * usage:
+ *     mixins: {
+ *       clearable: 'Hatimeria.core.field.mixin.Clearable'
+ *     }
  * 
  * @class Hatimeria.core.field.mixin.Clearable
  */

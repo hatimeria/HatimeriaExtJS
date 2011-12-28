@@ -17,7 +17,7 @@
         
         /**
          * @cfg hiddenIfOne
-         * Hides combo when 1) store has one record 2) value indicats on that record
+         * Hides combo when store has one record
          */
         hiddenIfOne: false,
         
@@ -34,9 +34,16 @@
         initComponent: function()
         {
             this.addEvents(
+            
+                /**
+                 * @event firstseleted
+                 * Fires when 
+                 */
+                'firstselected',
+                
                 /**
                  * @event onehidden
-                 * Fires when flag: 
+                 * Fires when flag
                  */
                 'onehidden',
                 
@@ -74,6 +81,7 @@
             if (this.firstSelected && typeof this.initialConfig.value == 'undefined')
             {
                 this.select(this.getStore().first());
+                this.fireEvent('firstselected', this, this.getValue());
                 this.checkChange();
             }
             
