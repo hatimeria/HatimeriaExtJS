@@ -110,7 +110,7 @@ Ext.define("Hatimeria.core.form.BaseForm", {
         });
         
         // Add button only if submitConfig.text defined:
-        if (config.text)
+        if (typeof config.text != 'undefined')
         {
             var submitButton = {
                 text: config.text,
