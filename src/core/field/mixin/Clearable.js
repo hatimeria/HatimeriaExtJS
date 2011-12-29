@@ -23,7 +23,7 @@
          * @private
          */
         onTrigger2Click: function() {
-            var val = this.getValue()
+            var val = this.getValue();
             this.reset();
             this.blur();
             Ext.get(this.inputEl).addCls('x-form-empty-field');

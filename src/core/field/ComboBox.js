@@ -8,6 +8,15 @@
     
     Ext.define('Hatimeria.core.field.ComboBox', {
         extend: 'Ext.form.field.ComboBox',
+        mixins: {
+            clearable: 'Hatimeria.core.field.mixin.Clearable'
+        },
+        
+        /**
+         * @cfg clearable
+         * Adds clear feature to field
+         */
+        clearable: false,
         
         /**
          * @cfg firstSelected
@@ -26,6 +35,21 @@
          * Auto select each new added record to store
          */
         newAutoSelect: false,
+        
+        /**
+         * Constructor
+         * 
+         * @param {Object} config
+         */
+        constructor: function(config)
+        {
+            if (!Ext.isObject(config) || !config.clearable)
+            {
+                this.trigger2Cls = undefined;
+            }
+            
+            return this.callParent(arguments);
+        },
         
         /**
          * Initialize
@@ -48,10 +72,16 @@
                 'onehidden',
                 
                 /**
-                 * @vent oneadded
+                 * @event oneadded
                  * Fires when one is added to store
                  */
-                'oneadded'
+                'oneadded',
+                
+                /**
+                 * @event reset
+                 * Fires when clear button is triggered
+                 */
+                'reset'
             );
             
             this.callParent();

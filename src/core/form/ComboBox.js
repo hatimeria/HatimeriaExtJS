@@ -1,3 +1,6 @@
+/**
+ * @depreciated
+ */
 Ext.define('Hatimeria.core.form.ComboBox', {
     extend: 'Ext.form.field.ComboBox',
     alias: 'widget.xcombo',

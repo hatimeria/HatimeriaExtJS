@@ -1,5 +1,7 @@
 /**
  * ComboBox with "auto select value" feature
+ * 
+ * @depreciated
  */
 (function() {
     
