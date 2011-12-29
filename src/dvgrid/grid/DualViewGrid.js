@@ -257,12 +257,12 @@
         {
             var sorter = this.store.sorters.first();
             
-            if (typeof sorter == 'object')
+            if (Ext.isObject(sorter) && sorter)
             {
                 var column = this.headerCt.items.get(this.getColumnIndex(sorter.property));
                 this.currentSortColumn = sorter.property;
                 column.hidden = false;
-                column.setSortState('ASC');
+                column.setSortState(sorter.direction || 'DESC');
             }
         },
         
