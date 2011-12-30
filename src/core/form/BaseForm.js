@@ -1,5 +1,6 @@
 Ext.define("Hatimeria.core.form.BaseForm", {
     extend: "Ext.form.Panel",
+    requires: 'Ext.form.action.DirectLoad',
     mixins: {
         translationable: 'Hatimeria.core.mixins.Translationable'
     },

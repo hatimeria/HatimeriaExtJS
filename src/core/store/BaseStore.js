@@ -8,6 +8,13 @@
     
     Ext.define('Hatimeria.core.store.BaseStore', {
         extend: 'Ext.data.DirectStore',
+        config: {
+            root: 'records',
+            idProperty: 'id',
+            remoteSort: true,
+            autoLoad: true,
+            paramsAsHash: true
+        },
 
         /**
          * Constructor
@@ -17,16 +24,11 @@
          */
         constructor: function(cfg)
         {
-            var config = {
-                root: 'records',
-                idProperty: 'id',
-                remoteSort: true,
-                autoLoad: true,
-                paramsAsHash: true
-            };
-            Ext.apply(config, cfg || {});
-
-            this.callParent([config]);
+            Ext.apply(this.config, cfg || {});
+            this.initConfig(cfg);
+            
+            Ext.require(this.config.model);
+            this.callParent([this.config]);
             
             // always send records as an array
             this.proxy.writer.allowSingle = false;
