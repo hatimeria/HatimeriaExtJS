@@ -1,5 +1,8 @@
 Ext.require('Ext.data.reader.Json', function() {
     
+    /**
+     * Override JsonReader to deeply look at object property, according to "mapping"
+     */
     Ext.data.reader.Json.override('createAccessor', function() {
         var re = /[\[\.]/;
 
