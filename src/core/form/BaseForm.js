@@ -145,7 +145,7 @@ Ext.define("Hatimeria.core.form.BaseForm", {
                 this.mask.show();
             }
             
-            if ((form.api && form.api.submit) || (form.submitConfig && form.submitConfig.submit))
+            if ((form.api && form.api.submit) || (form.submitConfig && form.submitConfig.submit) || form.url)
             {
                 // First way: submit via form API:
                 form.submit(this.getSubmitHandler());
