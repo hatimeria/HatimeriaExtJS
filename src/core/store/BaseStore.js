@@ -30,8 +30,10 @@
             Ext.require(this.config.model);
             this.callParent([this.config]);
             
-            // always send records as an array
-            this.proxy.writer.allowSingle = false;
+            if(this.proxy.write) {
+                // always send records as an array
+                this.proxy.writer.allowSingle = false;                
+            }
         },
 
         /**

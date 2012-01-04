@@ -53,6 +53,8 @@ Ext.define("Hatimeria.core.form.BaseForm", {
             }});
         }
         
+        this.addEvents('recordsaved');
+        
         this.callParent([config]);
         
         // Data may be also returned in 'record':
@@ -136,34 +138,84 @@ Ext.define("Hatimeria.core.form.BaseForm", {
     {
         var _this = this;
         var form = this.getForm();
-        if (form.isValid())
+        if (!form.isValid())
         {
-            var el = this.up('window') || this.up('form');
-            if (Ext.isObject(el))
+            return;
+        }
+        var el = this.up('window') || this.up('container') || this;
+
+        if (this.isFormProxyEnabled())
+        {
+            form.submit(this.getSubmitHandler());
+            // @todo add recordsaved fire event when successfull
+        }
+        else
+        {
+            if (this.isRecordProxyEnabled())
             {
-                this.mask = new Ext.LoadMask(el, {msg: 'Czekaj...'});
-                this.mask.show();
-            }
-            
-            if ((form.api && form.api.submit) || (form.submitConfig && form.submitConfig.submit) || form.url)
-            {
-                // First way: submit via form API:
-                form.submit(this.getSubmitHandler());
-            }
-            else
-            {
-                // Second way: submit via model proxy:
-                if (form.getRecord() && !Ext.isEmpty(form.getRecord().proxy.api))
-                {
-                    var record = this.getForm().getRecord();
-                    Ext.apply(record.data, this.getFormValues());
-                    record.save({callback: function(rec, result) {
-                        result.success ? _this.getSubmitHandler().success(_this, result.records[0].data) : _this.getSubmitHandler().failure(result.response.result) ;
-                        _this.onAnyAction();
-                    }});
-                }
+                _this.saveRecord();
+            } 
+            else {
+                Ext.Msg.show({
+                    msg: "No record bound to form, api or submit config provided"
+                });
+                
+                return;
             }
         }
+        
+        if (Ext.isObject(el))
+        {
+            this.mask = new Ext.LoadMask(el, {msg: 'Czekaj...'});
+            this.mask.show();
+        }        
+    },
+    
+    /**
+     * Check if form has configured API
+     * 
+     * @return {Boolean}
+     */
+    isFormProxyEnabled: function()
+    {
+        var form = this.getForm();
+        
+        return (form.api && form.api.submit) || form.url;
+    },
+    
+    /**
+     * Check if record has configured proxy
+     * 
+     * @return {Boolean}
+     */
+    isRecordProxyEnabled: function()
+    {
+        var form = this.getForm();
+        
+        return form.getRecord() && !Ext.isEmpty(form.getRecord().proxy.api)
+    },
+    
+    /**
+     * Save record (only if record proxy configured)
+     */
+    saveRecord: function()
+    {
+        var form = this.getForm();
+        var _this = this;
+        var record = form.getRecord();
+        Ext.apply(record.data, form.getValues());
+        record.save(
+        {
+            success: function(rec, result, success) {
+                _this.onAnyAction();
+                _this.fireEvent('recordsaved');
+                _this.getSubmitHandler().success(_this, result.records[0].data);
+            },
+            failure: function(rec, result, success) {
+                _this.onAnyAction();
+                _this.getSubmitHandler().failure(_this, {result: {msg: result.error}})
+            }
+        });
     },
     
     /**

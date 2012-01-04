@@ -58,11 +58,6 @@
             {
                 for (var property in this.msg)
                 {
-                    if (property == 'global')
-                    {
-                        continue;
-                    }
-                    
                     for (i in this.msg[property])
                     {
                         translationKey = 'validators:' + this.msg[property][i];
