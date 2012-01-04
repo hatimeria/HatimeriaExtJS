@@ -58,13 +58,19 @@
         markMessage: function(index)
         {
             var field = this.getFormPanel().getFieldByName(index);
+            var text = this.msg[index];
             if (field)
             {
-                field.markInvalid(this.msg[index]);
+                field.markInvalid(text);
             }
             else
             {
-                this.globalMsg.push(this.msg[index].join(', '));
+                if(typeof msg == 'object') {
+                    this.globalMsg.push(text.join(', '));
+                } else {
+                    this.globalMsg.push(text);
+                }
+                
             }
         }
 
