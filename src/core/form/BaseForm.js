@@ -144,20 +144,18 @@ Ext.define("Hatimeria.core.form.BaseForm", {
         }
         var el = this.up('window') || this.up('container') || this;
 
-
-        if ((form.api && form.api.submit) || (form.submitConfig && form.submitConfig.submit))
+        if (this.isFormProxyEnabled())
         {
-            // First way: submit via form API:
             form.submit(this.getSubmitHandler());
             // @todo add recordsaved fire event when successfull
         }
         else
         {
-            // Second way: submit via model proxy:
-            if (form.getRecord() && !Ext.isEmpty(form.getRecord().proxy.api))
+            if (this.isRecordProxyEnabled())
             {
                 _this.saveRecord();
-            } else {
+            } 
+            else {
                 Ext.Msg.show({
                     msg: "No record bound to form, api or submit config provided"
                 });
@@ -173,6 +171,33 @@ Ext.define("Hatimeria.core.form.BaseForm", {
         }        
     },
     
+    /**
+     * Check if form has configured API
+     * 
+     * @return {Boolean}
+     */
+    isFormProxyEnabled: function()
+    {
+        var form = this.getForm();
+        
+        return (form.api && form.api.submit) || form.url;
+    },
+    
+    /**
+     * Check if record has configured proxy
+     * 
+     * @return {Boolean}
+     */
+    isRecordProxyEnabled: function()
+    {
+        var form = this.getForm();
+        
+        return form.getRecord() && !Ext.isEmpty(form.getRecord().proxy.api)
+    },
+    
+    /**
+     * Save record (only if record proxy configured)
+     */
     saveRecord: function()
     {
         var form = this.getForm();
@@ -191,7 +216,6 @@ Ext.define("Hatimeria.core.form.BaseForm", {
                 _this.getSubmitHandler().failure(_this, {result: {msg: result.error}})
             }
         });
-            
     },
     
     /**
