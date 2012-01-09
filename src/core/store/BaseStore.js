@@ -7,13 +7,12 @@
 (function() {
     
     Ext.define('Hatimeria.core.store.BaseStore', {
-        extend: 'Ext.data.DirectStore',
+        extend: 'Ext.data.Store',
+        requires: ['Ext.data.proxy.Direct'],
         config: {
-            root: 'records',
             idProperty: 'id',
             remoteSort: true,
-            autoLoad: true,
-            paramsAsHash: true
+            autoLoad: true
         },
 
         /**
@@ -24,17 +23,41 @@
          */
         constructor: function(cfg)
         {
-            Ext.apply(this.config, cfg || {});
+            var config = {};
+            
+            if(typeof cfg != 'object') {
+                cfg = {};
+            }
             this.initConfig(cfg);
             
-            Ext.require(this.config.model);
-            this.callParent([this.config]);
+            Ext.apply(config, this.config);
             
-            if(this.proxy.write) {
-                // always send records as an array
-                this.proxy.writer.allowSingle = false;                
-            }
+            var proxy = {
+                paramsAsHash: true,
+                type: 'direct',
+                reader: {
+                    root: 'records',
+                    type: 'json'
+                },
+                writer: {
+                    type: 'json',
+                    allowSingle: false
+                }
+            };
+            Ext.copyTo(proxy, this, 'paramOrder,paramsAsHash,directFn,api,simpleSortMode');
+            Ext.copyTo(proxy.reader, this, 'totalProperty,root,idProperty');
+            Ext.copyTo(proxy, cfg, 'paramOrder,paramsAsHash,directFn,api,simpleSortMode');
+            Ext.copyTo(proxy.reader, cfg, 'totalProperty,root,idProperty');
+            config.proxy = proxy;
+            config.model = this.model;
+            config.proxy.directFn = this.directFn;
+            
+            this.callParent([config]);
         },
+        
+        onClassExtended: function(cls, data) {
+            cls.prototype.superclass.superclass.$onExtended(cls, data);
+        },        
 
         /**
          * Applies global variables

@@ -3,7 +3,9 @@ Ext.define("Hatimeria.core.model.DirectModel", {
     
     onClassExtended: function(cls, data) {
         
-        data.idProperty = data.fields[0].name;
+        if(!data.idProperty) {
+            data.idProperty = typeof data.fields[0] == 'string' ? data.fields[0] : data.fields[0].name;
+        }
         
         if(typeof data.api == 'string') {
             var controller = data.api;
@@ -11,8 +13,7 @@ Ext.define("Hatimeria.core.model.DirectModel", {
                 update: Actions[controller].update,
                 destroy: Actions[controller].destroy,
                 create: Actions[controller].create,
-                // @deprecated
-                remove: Actions[controller].remove
+                read: Actions[controller].read
             }
         }
         
