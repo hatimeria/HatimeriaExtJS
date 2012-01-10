@@ -49,9 +49,13 @@
             Ext.copyTo(proxy, cfg, 'paramOrder,paramsAsHash,directFn,api,simpleSortMode');
             Ext.copyTo(proxy.reader, cfg, 'totalProperty,root,idProperty');
             config.proxy = proxy;
-            config.model = this.model;
-            config.proxy.directFn = this.directFn;
-            
+            if(!config.model) {
+                config.model = this.model;
+            }
+            if(!config.proxy.directFn) {
+                config.proxy.directFn = this.directFn;
+            }
+
             this.callParent([config]);
         },
         
