@@ -40,7 +40,7 @@
                 }
                 else
                 {
-                    Ext.merge(this, config);
+                    return Ext.merge(this, config);
                 }
             }
             
@@ -52,13 +52,17 @@
          * 
          * @return {Object}/{Boolean}
          */
-        getConnectedConfig: function()
+        getConnectedConfig: function(cls)
         {
+            if(typeof cls == 'undefined') {
+                cls = this.$className;
+            }
+            
             if (typeof this.externalConfig == 'undefined')
             {
-                if (this.getConfigManager().has(this.$className))
+                if (this.getConfigManager().has(cls))
                 {
-                    this.externalConfig = this.getConfigManager().get(this.$className);
+                    this.externalConfig = this.getConfigManager().get(cls);
                 }
                 else
                 {
