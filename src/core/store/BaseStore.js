@@ -49,15 +49,32 @@
             Ext.copyTo(proxy, cfg, 'paramOrder,paramsAsHash,directFn,api,simpleSortMode');
             Ext.copyTo(proxy.reader, cfg, 'totalProperty,root,idProperty');
             config.proxy = proxy;
-            config.model = this.model;
-            config.proxy.directFn = this.directFn;
-            
+            if(!config.model) {
+                config.model = this.model;
+            }
+            if(!config.proxy.directFn) {
+                config.proxy.directFn = this.directFn;
+            }
+
             this.callParent([config]);
         },
         
         onClassExtended: function(cls, data) {
-            cls.prototype.superclass.superclass.$onExtended(cls, data);
-        },        
+            // method body from Ext.data.Store
+            var model = data.model;
+
+            if (typeof model == 'string') {
+                var onBeforeClassCreated = data.onBeforeClassCreated;
+
+                data.onBeforeClassCreated = function(cls, data) {
+                    var me = this;
+
+                    Ext.require(model, function() {
+                        onBeforeClassCreated.call(me, cls, data);
+                    });
+                };
+            }
+        },      
 
         /**
          * Applies global variables
