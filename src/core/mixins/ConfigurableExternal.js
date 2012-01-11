@@ -12,6 +12,10 @@
         
         externalConfig: undefined,
         
+        construct: function() {
+            
+        },
+        
         /**
          * Singleton: Mixins manager
          * 

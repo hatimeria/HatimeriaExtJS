@@ -1,5 +1,6 @@
 Ext.define("Hatimeria.core.model.DirectModel", {
     extend: 'Ext.data.Model',
+    requires: ['Hatimeria.core.mixins.ConfigurableExternal'],
     
     onClassExtended: function(cls, data) {
         
