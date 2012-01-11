@@ -84,13 +84,7 @@
             }
             
             this.getFn()(this.getParams() || {}, function(result, response) {
-                try {
-                    _this.onResponse(result, response);
-                }
-                catch(e)
-                {
-                    console.error(e);
-                }
+                _this.onResponse(result, response);
             });
         },
         
