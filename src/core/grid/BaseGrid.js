@@ -23,13 +23,21 @@
          *       clone: 'Klonuj',
          *     }
          *  or   
-         *     rowActions: "edit, remove, string" 
+         *     rowActions: "edit, remove, clone" 
          */
         rowActions: {},
         
         /**
+         * Docked components (paging, add)
+         * 
+         * @cfg {Array} dockedComponents
+         */
+        dockedElements: ['paging'],
+        
+        /**
          * Class name of edit window
          * 
+         * @private
          * @property {String}
          */
         windowEditClass: false,
@@ -49,6 +57,7 @@
          */
         initComponent: function()
         {
+            this.dockedItems = this.getDockedElements();
             this.callParent();
             var actions = this.getRowActions();
             
@@ -67,6 +76,49 @@
                     }
                 }
             });
+        },
+        
+        /**
+         * Docked elements
+         * 
+         * @return {Array}
+         */
+        getDockedElements: function()
+        {
+            var items = [];
+            
+            // With paging?
+            if (Ext.Array.contains(this.dockedElements, 'paging'))
+            {
+                items.push({
+                    xtype: 'pagingtoolbar',
+                    dock: 'bottom',
+                    store: this.store,
+                    displayInfo: true,
+                    displayMsg: 'Rekordy {0} - {1} z {2}',
+                    emptyMsg: "Brak rekordów"       
+                })
+            }
+            
+            // With add-button ?
+            if (Ext.Array.contains(this.dockedElements, 'add'))
+            {
+                items.push({
+                    xtype: 'toolbar',
+                    docked: 'top',
+                    items: [{
+                        xtype: 'button',
+                        iconCls: 'icon-user-add',
+                        text: 'Dodaj',
+                        scope: this,
+                        handler: function() {
+                            Ext.create(this.getWindowEditClass()).show();
+                        }
+                    }]
+                });
+            }
+            
+            return items;
         },
         
         /**
@@ -168,12 +220,13 @@
         
         /**
          * Event: right click on row
+         * @private
          * 
          * @param {Ext.tree.Panel} grid
          * @param {Ext.data.Node} record
          * @param {DOMElement} el
-         * @param int index
-         * @param Ext.Object.Event event
+         * @param {Number} index
+         * @param {Ext.Object.Event} event
          */
         onContextMenu: function(grid, record, el, index, event)
         {
@@ -186,9 +239,10 @@
         
         /**
          * Event: edit click
+         * @private
          * 
-         * @param Ext.data.Model record
-         * @param int index
+         * @param {Ext.data.Model} record
+         * @param {Number} index
          */
         onEditClick: function(record)
         {
@@ -199,9 +253,10 @@
         
         /**
          * Cloning record
+         * @private
          * 
-         * @param Ext.data.Model record
-         * @param int index
+         * @param {Ext.data.Model} record
+         * @param {Number} index
          */
         onCloneClick: function(record, index)
         {
@@ -214,8 +269,9 @@
 
         /**
          * Event: remove click
+         * @private
          * 
-         * @param Ext.data.Model record
+         * @param {Ext.data.Model} record
          */
         onRemoveClick: function(record)
         {
