@@ -3,6 +3,22 @@
  * 
  * @class Hatimeria.core.grid.BaseGrid
  * @extends Ext.grid.Panel
+ * 
+ *    @example
+ *    Ext.define('Foo.Bar', {
+ *      extend: 'Hatimeria.core.grid.BaseGrid',
+ *      
+ *      initComponent: function() {
+ *        Ext.apply(this, {
+ *          ...
+ *          windowEditClass: 'Foo.BarWindow',
+ *          rowActions: ['edit', 'clone', 'remove'],
+ *          dockedElements: ['paging', 'add]
+ *          ...
+ *        });
+ *      }
+ *    });
+ *    
  */
 (function() {
     
@@ -31,9 +47,9 @@
         rowActions: {},
         
         /**
-         * Docked components (paging, add)
+         * Docked elements (already defined: "paging", "add")
          * 
-         * @cfg {Array} dockedComponents
+         * @cfg {Array} dockedElements
          */
         dockedElements: ['paging'],
         
@@ -233,11 +249,14 @@
          */
         onContextMenu: function(grid, record, el, index, event)
         {
-            Ext.create('Ext.menu.Menu', {
-                items: this.getContextMenuItems(record, index)
-            }).showAt(event.getXY());
-            
-            event.stopEvent();
+            if (!Ext.isEmpty(this.getRowActions()))
+            {
+                Ext.create('Ext.menu.Menu', {
+                    items: this.getContextMenuItems(record, index)
+                }).showAt(event.getXY());
+
+                event.stopEvent();
+            }
         },
         
         /**
