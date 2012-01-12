@@ -1,3 +1,16 @@
+/**
+ * Price widget
+ * @example
+ *   {
+ *      xtype: 'price',
+ *      data: {
+ *          price: 123
+ *      }
+ *   }
+ * 
+ * @class Hatimeria.core.text.Price
+ * @extends Ext.container.Container
+ */
 Ext.define('Hatimeria.core.text.Price', {
     extend: 'Ext.container.Container',
     alias: 'widget.price',

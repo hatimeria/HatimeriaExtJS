@@ -39,12 +39,12 @@
              *         info: {
              *             title: &quot;info&quot;, 
              *             icon: &quot;icon&quot;,
-             *             item: {Hatimeria.edit.form.BaseForm}
+             *             item: {Hatimeria.edit.form.EditForm}
              *         }, 
              *         users: {
              *             title: &quot;users&quot;, 
              *             icon: &quot;icon&quot;,
-             *             item: {Hatimeria.edit.form.BaseForm}
+             *             item: {Hatimeria.edit.form.EditForm}
              *         }
              *     }
              */
@@ -53,7 +53,7 @@
 <span id='Hatimeria-edit-panel-VTabsPanel-cfg-activatedTab'>            /**
 </span>             * First activate tab
              * 
-             * @cfg {Integer/String} activatedTab
+             * @cfg {Number}/{String} activatedTab
              */
             activatedTab: 0,
             
@@ -246,7 +246,7 @@
          * @param {Ext.view.View} view
          * @param {Ext.data.Record} record
          * @param {Ext.Element} el
-         * @param {integer} index
+         * @param {Number} index
          * @param {Ext.Event} event
          */
         onTabClick: function(view, record, el, index, events)

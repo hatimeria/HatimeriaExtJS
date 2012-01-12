@@ -1,3 +1,9 @@
+/**
+ * Base form class
+ * 
+ * @class Hatimeria.core.form.BaseForm
+ * @extends Ext.form.Panel
+ */
 Ext.define("Hatimeria.core.form.BaseForm", {
     extend: "Ext.form.Panel",
     requires: [
@@ -34,6 +40,7 @@ Ext.define("Hatimeria.core.form.BaseForm", {
      * Constructor
      * 
      * @param {Object} cfg
+     * @private
      */
     constructor: function(cfg)
     {

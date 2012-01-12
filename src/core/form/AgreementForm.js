@@ -1,52 +1,37 @@
 /**
  * Agreement Form
+ * 
+ * @class Hatimeria.core.form.AgreementForm
+ * @extends Ext.form.Panel
  */
 (function() {
     
-    Ext.require('Hatimeria.core.response.DirectHandler');
-    
     Ext.define('Hatimeria.core.form.AgreementForm', {
+        requires: ["Hatimeria.core.response.DirectHandler"],
         extend: 'Ext.form.Panel',
-        config: {
-            
-            /**
-             * Direct function to content of terms
-             * @cfg {Function} directFn
-             */
-            directFn: function() {},
-            
-            /**
-             * Optional request parameters
-             * @cfg {Object} params
-             */
-            params: {},
-            
-            /**
-             * Label of form
-             * @cfg {String} label
-             */
-            label: 'Regulamin',
-            
-            /**
-             * Label behind checkbox
-             * @cfg {String} checkboxLabel
-             */
-            checkboxLabel: 'Akceptuję requlamin'
-        },
-        
         /**
-         * Constructor
-         * 
-         * @private
-         * @param {Object} config
+         * Direct function to content of terms
+         * @cfg {Function} directFn
          */
-        constructor: function(config)
-        {
-            this.initConfig(config);
-            this.callParent([config]);
-            
-            return this;
-        },
+        directFn: Ext.emptyFn,
+
+        /**
+         * Optional request parameters
+         * @cfg {Object} params
+         */
+        params: {},
+
+        /**
+         * Label of form
+         * @cfg {String} label
+         */
+        label: 'Regulamin',
+
+        /**
+         * Label behind checkbox
+         * @cfg {String} checkboxLabel
+         */
+        checkboxLabel: 'Akceptuję requlamin',       
         
         /**
          * Initializes form
@@ -60,7 +45,7 @@
                 items: [
                     {
                         xtype: 'label',
-                        text: this.getLabel()
+                        text: this.label
                     },
                     {
                         xtype: 'panel',
@@ -79,7 +64,7 @@
                     {
                         xtype: 'checkbox',
                         fieldLabel: false,
-                        boxLabel: this.getCheckboxLabel()+'<em class="ux-required">*</em>',
+                        boxLabel: this.checkboxLabel+'<em class="ux-required">*</em>',
                         name: 'agreement'
                     }
                 ]
@@ -101,8 +86,8 @@
         loadTerms: function()
         {
             Ext.create('Hatimeria.core.response.DirectHandler', {
-                fn: this.getDirectFn(),
-                params: this.getParams(),
+                fn: this.directFn,
+                params: this.params,
                 scope: this,
                 success: function(result) {
                     this.updateTerms(result.record);

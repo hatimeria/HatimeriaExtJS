@@ -38,6 +38,12 @@
         {
             var config = cfg || {};
             config.url = Routing.generate('fos_user_security_check');
+            
+            if (config.logoUri) {
+               this.logoUri = config.logoUri;
+            } else {
+               this.logoUri = &quot;/bundles/hatimeriaadmin/images/hatimeria_v_220.png&quot;
+            }
 
             this.callParent([config]);
         },
@@ -61,49 +67,35 @@
                 layout: 'auto',
                 bodyPadding: 10,
                 border: 0,
-                defaultType: 'textfield',
-                items: [
+                defaults: {
+                    labelWidth: 80,
+                    labelAlign: 'right',
+                    width: 300,
+                    border: 0
+                },
+                items: this.getFieldsConfig([
                     {
-                        border: 0,
-                        width: 250,
-                        style:
-                            'margin:20px auto;',
-                        html: '&lt;img src=&quot;/bundles/hatimeriaadmin/images/hatimeria_v_220.png&quot;/&gt;'
-                    },
-                    {
+                        xtype: 'textfield',
                         fieldLabel: this.__('login'),
                         name: '_username',
                         allowBlank: false,
-                        width: 400,
                         height: 25,
-                        style:
-                            'margin-left:25px;',
                         listeners: {
                             specialkey: {scope: this, fn: this.onFieldEnter}
                         }
                     },
                     {
+                        xtype: 'textfield',
                         fieldLabel: this.__('password'),
                         inputType: 'password',
                         name: '_password',
                         allowBlank: false,
-                        width: 400,
                         height: 25,
-                        style:
-                            'margin-left:25px;',
                         listeners: {
                             specialkey: {scope: this, fn: this.onFieldEnter}
                         }
-                    },
-                    {
-                        border: 0,
-                        width: 270,
-                        id: 'logo',
-                        style:
-                            'margin:10px 125px;',
-                        html: '&lt;img src=&quot;/bundles/hatimeriaadmin/images/hatimeria.ico&quot;/&gt;&lt;p&gt;Powereb by Hatimeria&lt;/p&gt; &lt;a href=&quot;http://www.hatimeria.pl&quot;&gt;www.hatimeria.pl&lt;/a&gt;'
                     }
-                ]
+                ])
             };
             Ext.apply(this, Ext.apply(config, this.initialConfig));
 
@@ -121,6 +113,38 @@
             {
                 this.submitForm();
             }
+        },
+        
+<span id='Hatimeria-core-form-LoginForm-method-getFieldsConfig'>        /**
+</span>         * Fields configuration 
+         * Method adds branded theme
+         * 
+         * @param {Array} fieldsConfig
+         */
+        getFieldsConfig: function(fieldsConfig)
+        {
+            var fields = [
+                {
+                    xtype: 'image',
+                    border: 0,
+                    width: 220,
+                    height: 50,
+                    src: this.logoUri ,
+                    style: {margin: '20px auto'}
+                }
+            ];
+            
+            fields.push(fieldsConfig);
+            
+            fields.push({
+                border: 0,
+                width: 270,
+                id: 'hatimeria-powered-by',
+                style: {margin: '10px 125px'},
+                html: '&lt;img src=&quot;/bundles/hatimeriaadmin/images/hatimeria.ico&quot;/&gt;&lt;p&gt;Powered by Hatimeria&lt;/p&gt; &lt;a href=&quot;http://www.hatimeria.pl&quot;&gt;www.hatimeria.pl&lt;/a&gt;'
+            });
+            
+            return fields;
         }
     });
     

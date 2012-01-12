@@ -8,6 +8,7 @@
     
     Ext.define('Hatimeria.core.field.ComboBox', {
         extend: 'Ext.form.field.ComboBox',
+        alias: 'widget.h-combobox',
         mixins: {
             clearable: 'Hatimeria.core.field.mixin.Clearable'
         },
@@ -85,8 +86,7 @@
             );
             
             this.callParent();
-            
-            if (this.queryMode == 'remote')
+            if (!Ext.isEmpty(this.store.proxy))
             {
                 this.getStore().on('load', function(store) {
                     this.onStoreLoaded(store);
@@ -113,6 +113,11 @@
                 this.select(this.getStore().first());
                 this.fireEvent('firstselected', this, this.getValue());
                 this.checkChange();
+            } 
+            
+            if(this.value) {
+                console.log(this.value, this.store.getAt(0));
+                this.validate();
             }
             
             if (this.hiddenIfOne && store.getCount() == 1)

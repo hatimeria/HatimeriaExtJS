@@ -1,23 +1,37 @@
+/** 
+ * Google map
+ * 
+ * @class Hatimeria.google.Map
+ */
 Ext.define("Hatimeria.google.Map", {
-    config: {
-        
-        address: null,
-        renderTo: null
-    },
+    /**
+     * Address for geocoder
+     * 
+     * @cfg {String} address
+     */    
+    address: null,
+    /**
+     * Dom element id in which map will be placed
+     * 
+     * @cfg {String} renderTo
+     */    
+    renderTo: null,
     
     /**
      * Constructor
      * 
-     * @param {} config
+     * @param {Object} config
      */
     constructor: function(config)
     {
-        this.initConfig(config);
         this.geocoder = new google.maps.Geocoder();
 
         return this;
     },
     
+    /**
+     * Renders map
+     */    
     render: function()
     {
         this.geocoder.geocode( {
@@ -25,11 +39,21 @@ Ext.define("Hatimeria.google.Map", {
         }, Ext.bind(this.handleGoogleResponse, this));
     },
     
+    /**
+     * Get container dom element
+     *
+     * @private
+     */
     getContainer: function()
     {
         return document.getElementById(this.config.renderTo);
     },
     
+    /**
+     * Get localization from google service
+     *
+     * @private
+     */
     handleGoogleResponse: function(results, status)
     {
         if (status == google.maps.GeocoderStatus.OK) {

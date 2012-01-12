@@ -22,12 +22,12 @@
              *         info: {
              *             title: "info", 
              *             icon: "icon",
-             *             item: {Hatimeria.edit.form.BaseForm}
+             *             item: {Hatimeria.edit.form.EditForm}
              *         }, 
              *         users: {
              *             title: "users", 
              *             icon: "icon",
-             *             item: {Hatimeria.edit.form.BaseForm}
+             *             item: {Hatimeria.edit.form.EditForm}
              *         }
              *     }
              */
@@ -36,7 +36,7 @@
             /**
              * First activate tab
              * 
-             * @cfg {Integer/String} activatedTab
+             * @cfg {Number}/{String} activatedTab
              */
             activatedTab: 0,
             
@@ -229,7 +229,7 @@
          * @param {Ext.view.View} view
          * @param {Ext.data.Record} record
          * @param {Ext.Element} el
-         * @param {integer} index
+         * @param {Number} index
          * @param {Ext.Event} event
          */
         onTabClick: function(view, record, el, index, events)

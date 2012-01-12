@@ -38,7 +38,7 @@ var Routing = Routing || {};
      *    regexify(['a', '.']); // returns 'a|\.'
      *    regexify(['a', '.'], '$'); // returns 'a|\.|$'
      *
-     * @param {Array|string}  separators  a list of separators.
+     * @param {Array}/{String}  separators  a list of separators.
      * @param {String}        unescaped   a meta character to use in regexp.
      * @return {String}      the regexp part, ready to use.
      */
@@ -180,7 +180,7 @@ var Routing = Routing || {};
       /**
        * route url separator list.
        *
-       * @type {String|Array}
+       * @type {String}/{Array}
        * @api public
        */
       segmentSeparators: ['/', '.'],
@@ -195,7 +195,7 @@ var Routing = Routing || {};
        * generate a route url from route id and params.
        *
        * @param {String}  route_id  the id of route to generate url for.
-       * @param {Objects} params    the parameters to append to the route.
+       * @param {Object} params    the parameters to append to the route.
        * @return {String} generated url.
        * @api public
        */

@@ -1,5 +1,10 @@
 /**
  * Base store
+ * @example
+ *     Ext.define("Foo.BarStore", {
+ *      extend: 'Hatimeria.core.store.BaseStore'
+ *      model: 'Foo.BarModel"
+ *     });
  * 
  * @class Hatimeria.core.store.BaseStore
  * @extends Ext.data.DirectStore

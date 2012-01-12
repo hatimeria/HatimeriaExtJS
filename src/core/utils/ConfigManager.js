@@ -6,9 +6,10 @@
  * Manager registers extra config for other classes that implements: Hatimeria.core.mixins.ConfigurableExternal
  * 
  *     Before start application include:
+ * @example
  *     Ext.require("Hatimeria.core.utils.ConfigManager");
  *     Ext.onReady(function() {
- *   
+ * 
  *     var manager = Ext.ClassManager.get("Hatimeria.core.utils.ConfigManager");
  *       manager.register('TargetClass', {
  *          listeners: {

@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js"><span id='Hatimeria-core-field-ComboBox'>/**
+</span> * Hatimeria Combo
+ * 
+ * @class Hatimeria.core.field.ComboBox
+ * @extends Ext.form.field.ComboBox
+ */
+(function() {
+    
+    Ext.define('Hatimeria.core.field.ComboBox', {
+        extend: 'Ext.form.field.ComboBox',
+        alias: 'widget.h-combobox',
+        mixins: {
+            clearable: 'Hatimeria.core.field.mixin.Clearable'
+        },
+        
+<span id='Hatimeria-core-field-ComboBox-cfg-clearable'>        /**
+</span>         * @cfg clearable
+         * Adds clear feature to field
+         */
+        clearable: false,
+        
+<span id='Hatimeria-core-field-ComboBox-cfg-firstSelected'>        /**
+</span>         * @cfg firstSelected
+         * Triggers select on first record found in store (if no value passed)
+         */
+        firstSelected: false,
+        
+<span id='Hatimeria-core-field-ComboBox-cfg-hiddenIfOne'>        /**
+</span>         * @cfg hiddenIfOne
+         * Hides combo when store has one record
+         */
+        hiddenIfOne: false,
+        
+<span id='Hatimeria-core-field-ComboBox-cfg-newAutoSelect'>        /**
+</span>         * @cfg newAutoSelect
+         * Auto select each new added record to store
+         */
+        newAutoSelect: false,
+        
+<span id='Hatimeria-core-field-ComboBox-method-constructor'>        /**
+</span>         * Constructor
+         * 
+         * @param {Object} config
+         */
+        constructor: function(config)
+        {
+            if (!Ext.isObject(config) || !config.clearable)
+            {
+                this.trigger2Cls = undefined;
+            }
+            
+            return this.callParent(arguments);
+        },
+        
+<span id='Hatimeria-core-field-ComboBox-method-initComponent'>        /**
+</span>         * Initialize
+         * @private
+         */
+        initComponent: function()
+        {
+            this.addEvents(
+            
+<span id='Hatimeria-core-field-ComboBox-event-firstseleted'>                /**
+</span>                 * @event firstseleted
+                 * Fires when 
+                 */
+                'firstselected',
+                
+<span id='Hatimeria-core-field-ComboBox-event-onehidden'>                /**
+</span>                 * @event onehidden
+                 * Fires when flag
+                 */
+                'onehidden',
+                
+<span id='Hatimeria-core-field-ComboBox-event-oneadded'>                /**
+</span>                 * @event oneadded
+                 * Fires when one is added to store
+                 */
+                'oneadded',
+                
+<span id='Hatimeria-core-field-ComboBox-event-reset'>                /**
+</span>                 * @event reset
+                 * Fires when clear button is triggered
+                 */
+                'reset'
+            );
+            
+            this.callParent();
+            if (!Ext.isEmpty(this.store.proxy))
+            {
+                this.getStore().on('load', function(store) {
+                    this.onStoreLoaded(store);
+                }, this);
+            }
+            else
+            {
+                this.onStoreLoaded(this.getStore());
+            }
+            
+            this.getStore().on('add', this.onNewAdded, this);
+        },
+        
+<span id='Hatimeria-core-field-ComboBox-method-onStoreLoaded'>        /**
+</span>         * Event: fires when a store is ready
+         * 
+         * @private
+         * @param {Ext.data.Store} store
+         */
+        onStoreLoaded: function(store)
+        {
+            if (this.firstSelected &amp;&amp; typeof this.initialConfig.value == 'undefined')
+            {
+                this.select(this.getStore().first());
+                this.fireEvent('firstselected', this, this.getValue());
+                this.checkChange();
+            } 
+            
+            if(this.value) {
+                console.log(this.value, this.store.getAt(0));
+                this.validate();
+            }
+            
+            if (this.hiddenIfOne &amp;&amp; store.getCount() == 1)
+            {
+                this.fireEvent('onehidden', this, store.first());
+                this.hide();
+            }
+        },
+        
+<span id='Hatimeria-core-field-ComboBox-method-onNewAdded'>        /**
+</span>         * Event: fires when new record is added
+         * @private
+         */
+        onNewAdded: function(store, records)
+        {
+            if (this.newAutoSelect)
+            {
+                var record = records[0];
+                this.select(record);
+                this.fireEvent('oneadded', this, record);
+            }
+        }
+    });
+    
+})();</pre>
+</body>
+</html>

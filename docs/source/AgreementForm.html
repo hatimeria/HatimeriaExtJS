@@ -15,57 +15,42 @@
   </script>
 </head>
 <body onload="prettyPrint(); highlight();">
-  <pre class="prettyprint lang-js"><span id='global-property-'>/**
+  <pre class="prettyprint lang-js"><span id='Hatimeria-core-form-AgreementForm'>/**
 </span> * Agreement Form
+ * 
+ * @class Hatimeria.core.form.AgreementForm
+ * @extends Ext.form.Panel
  */
 (function() {
     
-    Ext.require('Hatimeria.core.response.DirectHandler');
-    
     Ext.define('Hatimeria.core.form.AgreementForm', {
+        requires: [&quot;Hatimeria.core.response.DirectHandler&quot;],
         extend: 'Ext.form.Panel',
-        config: {
-            
-<span id='global-cfg-directFn'>            /**
-</span>             * Direct function to content of terms
-             * @cfg {Function} directFn
-             */
-            directFn: function() {},
-            
-<span id='global-cfg-params'>            /**
-</span>             * Optional request parameters
-             * @cfg {Object} params
-             */
-            params: {},
-            
-<span id='global-cfg-label'>            /**
-</span>             * Label of form
-             * @cfg {String} label
-             */
-            label: 'Regulamin',
-            
-<span id='global-cfg-checkboxLabel'>            /**
-</span>             * Label behind checkbox
-             * @cfg {String} checkboxLabel
-             */
-            checkboxLabel: 'Akceptuję requlamin'
-        },
-        
-<span id='global-method-constructor'>        /**
-</span>         * Constructor
-         * 
-         * @private
-         * @param {Object} config
+<span id='Hatimeria-core-form-AgreementForm-cfg-directFn'>        /**
+</span>         * Direct function to content of terms
+         * @cfg {Function} directFn
          */
-        constructor: function(config)
-        {
-            this.initConfig(config);
-            this.callParent([config]);
-            
-            return this;
-        },
+        directFn: Ext.emptyFn,
+
+<span id='Hatimeria-core-form-AgreementForm-cfg-params'>        /**
+</span>         * Optional request parameters
+         * @cfg {Object} params
+         */
+        params: {},
+
+<span id='Hatimeria-core-form-AgreementForm-cfg-label'>        /**
+</span>         * Label of form
+         * @cfg {String} label
+         */
+        label: 'Regulamin',
+
+<span id='Hatimeria-core-form-AgreementForm-cfg-checkboxLabel'>        /**
+</span>         * Label behind checkbox
+         * @cfg {String} checkboxLabel
+         */
+        checkboxLabel: 'Akceptuję requlamin',       
         
-<span id='global-method-initComponent'>        /**
+<span id='Hatimeria-core-form-AgreementForm-method-initComponent'>        /**
 </span>         * Initializes form
          * 
          * @private
@@ -77,11 +62,11 @@
                 items: [
                     {
                         xtype: 'label',
-                        text: this.getLabel()
+                        text: this.label
                     },
                     {
                         xtype: 'panel',
-                        id: 'agreement-field',
+                        itemId: 'agreement-field',
                         layout: 'auto',
                         autoScroll: true,
                         width: this.initialConfig.width || 350,
@@ -96,7 +81,7 @@
                     {
                         xtype: 'checkbox',
                         fieldLabel: false,
-                        boxLabel: this.getCheckboxLabel()+'&lt;em class=&quot;ux-required&quot;&gt;*&lt;/em&gt;',
+                        boxLabel: this.checkboxLabel+'&lt;em class=&quot;ux-required&quot;&gt;*&lt;/em&gt;',
                         name: 'agreement'
                     }
                 ]
@@ -110,7 +95,7 @@
             });
         },
         
-<span id='global-method-loadTerms'>        /**
+<span id='Hatimeria-core-form-AgreementForm-method-loadTerms'>        /**
 </span>         * Load terms of Agreement
          * 
          * @private
@@ -118,8 +103,8 @@
         loadTerms: function()
         {
             Ext.create('Hatimeria.core.response.DirectHandler', {
-                fn: this.getDirectFn(),
-                params: this.getParams(),
+                fn: this.directFn,
+                params: this.params,
                 scope: this,
                 success: function(result) {
                     this.updateTerms(result.record);
@@ -127,7 +112,7 @@
             });
         },
         
-<span id='global-method-updateTerms'>        /**
+<span id='Hatimeria-core-form-AgreementForm-method-updateTerms'>        /**
 </span>         * Updates a textarea field
          * 
          * @private

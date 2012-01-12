@@ -1,3 +1,15 @@
+/**
+ * Direct model
+ * @example
+ *     Ext.define("Foo.BarModel", {
+ *      extend: 'Hatimeria.core.model.DirectModel'
+ *      fields: ['id','name'],
+ *      api: 'FooBundle_BarController'
+ *     });
+ * 
+ * @class Hatimeria.core.model.DirectModel
+ * @extends Ext.data.Model
+ */
 Ext.define("Hatimeria.core.model.DirectModel", {
     extend: 'Ext.data.Model',
     requires: ['Hatimeria.core.mixins.ConfigurableExternal'],

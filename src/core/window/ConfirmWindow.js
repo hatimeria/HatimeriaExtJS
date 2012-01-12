@@ -1,5 +1,8 @@
 /** 
  * Confirm Window
+ * 
+ * @class Hatimeria.core.window.ConfirmWindow
+ * @extends Ext.window.Window
  */
 (function() {
     

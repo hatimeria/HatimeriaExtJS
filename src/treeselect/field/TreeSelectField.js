@@ -2,14 +2,14 @@
  * Combobox with tree panel (as boundlist)
  *
  * @class Hatimeria.treeselect.field.TreeSelectField
- * @extends Hatimeria.core.field.DeferComboBox
+ * @extends Hatimeria.core.field.ComboBox
  */
 (function() {
     
     Ext.define('Hatimeria.treeselect.field.TreeSelectField', {
         extend: 'Ext.form.field.ComboBox',
         requires: [
-            'Hatimeria.core.field.DeferComboBox',
+            'Hatimeria.core.field.ComboBox',
             'Hatimeria.treeselect.panel.TreeSelectPanel',
             'Hatimeria.treeselect.store.TreeSelectStore',
             'Hatimeria.core.response.DirectHandler'

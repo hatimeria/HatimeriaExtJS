@@ -252,7 +252,7 @@
         /**
          * First dirty tab
          * 
-         * @return {Hatimeria.edit.form.BaseForm}
+         * @return {Hatimeria.edit.form.EditForm}
          */
         getFirstDirtyTab: function()
         {
@@ -326,7 +326,7 @@
         /**
          * Switch to custom tab
          * 
-         * @param {Integer} number
+         * @param {Number} number
          */
         switchTab: function(number)
         {

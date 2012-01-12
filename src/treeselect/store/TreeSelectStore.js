@@ -25,7 +25,7 @@
         /**
          * Count of nodes (always one)
          * 
-         * @return {Integer}
+         * @return {Number}
          */
         getCount: function()
         { 

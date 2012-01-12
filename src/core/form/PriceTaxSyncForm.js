@@ -12,7 +12,7 @@
             
             /**
              * Tax rate
-             * @cfg {Integer} vat
+             * @cfg {Number} vat
              */
             vat: 23,
             

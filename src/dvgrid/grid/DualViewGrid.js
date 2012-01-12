@@ -548,7 +548,7 @@
         /**
          * Finds index of a column by name
          * 
-         * @return {Integer} index
+         * @return {Number} index
          */
         getColumnIndex: function(columnName)
         {

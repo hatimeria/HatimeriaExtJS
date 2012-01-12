@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js"><span id='Hatimeria-core-field-mixin-Clearable'>/**
+</span> * Clearable field
+ * 
+ * usage:
+ *     mixins: {
+ *       clearable: 'Hatimeria.core.field.mixin.Clearable'
+ *     }
+ * 
+ * @class Hatimeria.core.field.mixin.Clearable
+ */
+(function() {
+    
+    Ext.define('Hatimeria.core.field.mixin.Clearable', {
+        
+<span id='Hatimeria-core-field-mixin-Clearable-property-trigger2Cls'>        /**
+</span>         * Clear trigger
+         */
+        trigger2Cls: 'x-form-clear-trigger',
+        
+<span id='Hatimeria-core-field-mixin-Clearable-method-onTrigger2Click'>        /**
+</span>         * Event fires when a second tigger is clicked
+         * 
+         * @private
+         */
+        onTrigger2Click: function() {
+            var val = this.getValue();
+            this.reset();
+            this.blur();
+            Ext.get(this.inputEl).addCls('x-form-empty-field');
+            this.fireEvent('reset', this, val);
+        }
+    });
+    
+})();</pre>
+</body>
+</html>

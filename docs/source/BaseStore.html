@@ -17,6 +17,11 @@
 <body onload="prettyPrint(); highlight();">
   <pre class="prettyprint lang-js"><span id='Hatimeria-core-store-BaseStore'>/**
 </span> * Base store
+ * @example
+ *     Ext.define(&quot;Foo.BarStore&quot;, {
+ *      extend: 'Hatimeria.core.store.BaseStore'
+ *      model: 'Foo.BarModel&quot;
+ *     });
  * 
  * @class Hatimeria.core.store.BaseStore
  * @extends Ext.data.DirectStore
@@ -24,7 +29,13 @@
 (function() {
     
     Ext.define('Hatimeria.core.store.BaseStore', {
-        extend: 'Ext.data.DirectStore',
+        extend: 'Ext.data.Store',
+        requires: ['Ext.data.proxy.Direct'],
+        config: {
+            idProperty: 'id',
+            remoteSort: true,
+            autoLoad: true
+        },
 
 <span id='Hatimeria-core-store-BaseStore-method-constructor'>        /**
 </span>         * Constructor
@@ -34,20 +45,58 @@
          */
         constructor: function(cfg)
         {
-            var config = {
-                root: 'records',
-                idProperty: 'id',
-                remoteSort: true,
-                autoLoad: true,
-                paramsAsHash: true
+            var config = {};
+            
+            if(typeof cfg != 'object') {
+                cfg = {};
+            }
+            this.initConfig(cfg);
+            
+            Ext.apply(config, this.config);
+            
+            var proxy = {
+                paramsAsHash: true,
+                type: 'direct',
+                reader: {
+                    root: 'records',
+                    type: 'json'
+                },
+                writer: {
+                    type: 'json',
+                    allowSingle: false
+                }
             };
-            Ext.apply(config, cfg || {});
+            Ext.copyTo(proxy, this, 'paramOrder,paramsAsHash,directFn,api,simpleSortMode');
+            Ext.copyTo(proxy.reader, this, 'totalProperty,root,idProperty');
+            Ext.copyTo(proxy, cfg, 'paramOrder,paramsAsHash,directFn,api,simpleSortMode');
+            Ext.copyTo(proxy.reader, cfg, 'totalProperty,root,idProperty');
+            config.proxy = proxy;
+            if(!config.model) {
+                config.model = this.model;
+            }
+            if(!config.proxy.directFn) {
+                config.proxy.directFn = this.directFn;
+            }
 
             this.callParent([config]);
-            
-            // always send records as an array
-            this.proxy.writer.allowSingle = false;
         },
+        
+        onClassExtended: function(cls, data) {
+            // method body from Ext.data.Store
+            var model = data.model;
+
+            if (typeof model == 'string') {
+                var onBeforeClassCreated = data.onBeforeClassCreated;
+
+                data.onBeforeClassCreated = function(cls, data) {
+                    var me = this;
+
+                    Ext.require(model, function() {
+                        onBeforeClassCreated.call(me, cls, data);
+                    });
+                };
+            }
+        },      
 
 <span id='Hatimeria-core-store-BaseStore-method-applyGlobalValues'>        /**
 </span>         * Applies global variables
@@ -92,7 +141,18 @@
             }
 
             Ext.apply(this.proxy.extraParams, data);
-        }
+        },
+        
+<span id='Hatimeria-core-store-BaseStore-method-setExtraParams'>        /**
+</span>         * Override extra params
+         * 
+         * @param {} data
+         */        
+        setExtraParams: function(data)
+        {
+            this.proxy.extraParams = data;
+        }        
+        
     });
 
 })();

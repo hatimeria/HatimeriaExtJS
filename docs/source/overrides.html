@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js">Ext.require('Ext.data.reader.Json', function() {
+    
+<span id='global-property-override'>    /**
+</span>     * Override JsonReader to deeply look at object property, according to &quot;mapping&quot;
+     */
+    Ext.data.reader.Json.override('createAccessor', function() {
+        var re = /[\[\.]/;
+        return function(expr) {
+            if (Ext.isEmpty(expr)) {
+                return Ext.emptyFn;
+            }
+            if (Ext.isFunction(expr)) {
+                return expr;
+            }
+            
+            if (this.useSimpleAccessors !== true) {
+                var sExpr = String(expr);
+                var i = sExpr.search(re);
+                if (i &gt;= 0) {
+                    var properties = sExpr.split(&quot;.&quot;);
+                    var property = '';
+                    var path = 'obj.';
+                    var functionBody = '';
+                    
+                    while(properties.length) {
+                        property = properties.shift();
+                        path += property;
+                        
+                        if(properties.length == 0) {
+                            functionBody += ' return ' + path + ';';
+                        } else {
+                            functionBody += &quot;if(&quot; + path + &quot; !== null) &quot;
+                        }
+                        path += '.';
+                    }
+                    
+                    functionBody += ' return null';
+                    
+                    return Ext.functionFactory('obj', functionBody);
+                }
+            }
+            
+            return function(obj) {
+                return obj[expr];
+            };
+        };
+    }());
+
+<span id='global-property-require'>    /**
+</span>     * Add groups from store allGroups property, fixes applying new group to record after grid is rendered
+     */
+    Ext.require('Ext.data.Store', function() {
+        Ext.data.Store.override('getGroups', function(requestGroupString) {
+            var records = this.data.items,
+                length = records.length,
+                groups = [],
+                pointers = {},
+                record,
+                groupStr,
+                group,
+                i;
+                
+                if(this.allGroups) {
+                    Ext.each(this.allGroups, function(name) {
+                        var group = {name: name, children: []};
+                        groups.push(group);
+                        pointers[name] = group;
+                    });
+                }
+                
+            for (i = 0; i &lt; length; i++) {
+                record = records[i];
+                groupStr = this.getGroupString(record);
+                group = pointers[groupStr];
+
+                if (group === undefined) {
+                    group = {
+                        name: groupStr,
+                        children: []
+                    };
+
+                    groups.push(group);
+                    pointers[groupStr] = group;
+                }
+
+                group.children.push(record);
+            }
+
+            return requestGroupString ? pointers[requestGroupString] : groups;
+        });
+    });
+});
+
+</pre>
+</body>
+</html>
