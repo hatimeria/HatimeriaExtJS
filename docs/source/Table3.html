@@ -29,1276 +29,969 @@ Licensees holding valid commercial licenses may use this file in accordance with
 If you are unsure which license is appropriate for your use, please contact the sales department at http://www.sencha.com/contact.
 
 */
-<span id='Ext-panel-Table'>/**
-</span> * @author Nicolas Ferrero
+<span id='Ext-view-Table'>/**
+</span> * This class encapsulates the user interface for a tabular data set.
+ * It acts as a centralized manager for controlling the various interface
+ * elements of the view. This includes handling events, such as row and cell
+ * level based DOM events. It also reacts to events from the underlying {@link Ext.selection.Model}
+ * to provide visual feedback to the user.
  *
- * TablePanel is the basis of both {@link Ext.tree.Panel TreePanel} and {@link Ext.grid.Panel GridPanel}.
+ * This class does not provide ways to manipulate the underlying data of the configured
+ * {@link Ext.data.Store}.
  *
- * TablePanel aggregates:
- *
- *  - a Selection Model
- *  - a View
- *  - a Store
- *  - Scrollers
- *  - Ext.grid.header.Container
+ * This is the base class for both {@link Ext.grid.View} and {@link Ext.tree.View} and is not
+ * to be used directly.
  */
-Ext.define('Ext.panel.Table', {
-    extend: 'Ext.panel.Panel',
-
-    alias: 'widget.tablepanel',
-
+Ext.define('Ext.view.Table', {
+    extend: 'Ext.view.View',
+    alias: 'widget.tableview',
     uses: [
-        'Ext.selection.RowModel',
-        'Ext.grid.Scroller',
-        'Ext.grid.header.Container',
-        'Ext.grid.Lockable'
+        'Ext.view.TableChunker',
+        'Ext.util.DelayedTask',
+        'Ext.util.MixedCollection'
     ],
 
-    extraBaseCls: Ext.baseCSSPrefix + 'grid',
-    extraBodyCls: Ext.baseCSSPrefix + 'grid-body',
+    baseCls: Ext.baseCSSPrefix + 'grid-view',
 
-    layout: 'fit',
-<span id='Ext-panel-Table-property-hasView'>    /**
-</span>     * @property {Boolean} hasView
-     * True to indicate that a view has been injected into the panel.
-     */
-    hasView: false,
+    // row
+    itemSelector: '.' + Ext.baseCSSPrefix + 'grid-row',
+    // cell
+    cellSelector: '.' + Ext.baseCSSPrefix + 'grid-cell',
 
-    // each panel should dictate what viewType and selType to use
-<span id='Ext-panel-Table-cfg-viewType'>    /**
-</span>     * @cfg {String} viewType
-     * An xtype of view to use. This is automatically set to 'gridview' by {@link Ext.grid.Panel Grid}
-     * and to 'treeview' by {@link Ext.tree.Panel Tree}.
-     */
-    viewType: null,
+    selectedItemCls: Ext.baseCSSPrefix + 'grid-row-selected',
+    selectedCellCls: Ext.baseCSSPrefix + 'grid-cell-selected',
+    focusedItemCls: Ext.baseCSSPrefix + 'grid-row-focused',
+    overItemCls: Ext.baseCSSPrefix + 'grid-row-over',
+    altRowCls:   Ext.baseCSSPrefix + 'grid-row-alt',
+    rowClsRe: /(?:^|\s*)grid-row-(first|last|alt)(?:\s+|$)/g,
+    cellRe: new RegExp('x-grid-cell-([^\\s]+) ', ''),
 
-<span id='Ext-panel-Table-cfg-viewConfig'>    /**
-</span>     * @cfg {Object} viewConfig
-     * A config object that will be applied to the grid's UI view. Any of the config options available for
-     * {@link Ext.view.Table} can be specified here. This option is ignored if {@link #view} is specified.
-     */
+    // cfg docs inherited
+    trackOver: true,
 
-<span id='Ext-panel-Table-cfg-view'>    /**
-</span>     * @cfg {Ext.view.Table} view
-     * The {@link Ext.view.Table} used by the grid. Use {@link #viewConfig} to just supply some config options to
-     * view (instead of creating an entire View instance).
-     */
-
-<span id='Ext-panel-Table-cfg-selType'>    /**
-</span>     * @cfg {String} selType
-     * An xtype of selection model to use. Defaults to 'rowmodel'. This is used to create selection model if just
-     * a config object or nothing at all given in {@link #selModel} config.
-     */
-    selType: 'rowmodel',
-
-<span id='Ext-panel-Table-cfg-selModel'>    /**
-</span>     * @cfg {Ext.selection.Model/Object} selModel
-     * A {@link Ext.selection.Model selection model} instance or config object.  In latter case the {@link #selType}
-     * config option determines to which type of selection model this config is applied.
-     */
-
-<span id='Ext-panel-Table-cfg-multiSelect'>    /**
-</span>     * @cfg {Boolean} multiSelect
-     * True to enable 'MULTI' selection mode on selection model. See {@link Ext.selection.Model#mode}.
-     */
-
-<span id='Ext-panel-Table-cfg-simpleSelect'>    /**
-</span>     * @cfg {Boolean} simpleSelect
-     * True to enable 'SIMPLE' selection mode on selection model. See {@link Ext.selection.Model#mode}.
-     */
-
-<span id='Ext-panel-Table-cfg-store'>    /**
-</span>     * @cfg {Ext.data.Store} store (required)
-     * The {@link Ext.data.Store Store} the grid should use as its data source.
-     */
-
-<span id='Ext-panel-Table-cfg-scrollDelta'>    /**
-</span>     * @cfg {Number} scrollDelta
-     * Number of pixels to scroll when scrolling with mousewheel.
-     */
-    scrollDelta: 40,
-
-<span id='Ext-panel-Table-cfg-scroll'>    /**
-</span>     * @cfg {String/Boolean} scroll
-     * Scrollers configuration. Valid values are 'both', 'horizontal' or 'vertical'.
-     * True implies 'both'. False implies 'none'.
-     */
-    scroll: true,
-
-<span id='Ext-panel-Table-cfg-columns'>    /**
-</span>     * @cfg {Ext.grid.column.Column[]} columns
-     * An array of {@link Ext.grid.column.Column column} definition objects which define all columns that appear in this
-     * grid. Each column definition provides the header text for the column, and a definition of where the data for that
-     * column comes from.
-     */
-
-<span id='Ext-panel-Table-cfg-forceFit'>    /**
-</span>     * @cfg {Boolean} forceFit
-     * Ttrue to force the columns to fit into the available width. Headers are first sized according to configuration,
-     * whether that be a specific width, or flex. Then they are all proportionally changed in width so that the entire
-     * content width is used.
-     */
-
-<span id='Ext-panel-Table-cfg-features'>    /**
-</span>     * @cfg {Ext.grid.feature.Feature[]} features
-     * An array of grid Features to be added to this grid. See {@link Ext.grid.feature.Feature} for usage.
-     */
-
-<span id='Ext-panel-Table-cfg-hideHeaders'>    /**
-</span>     * @cfg {Boolean} [hideHeaders=false]
-     * True to hide column headers.
-     */
-
-<span id='Ext-panel-Table-cfg-deferRowRender'>    /**
-</span>     * @cfg {Boolean} deferRowRender
-     * Defaults to true to enable deferred row rendering.
+<span id='Ext-view-Table-method-getRowClass'>    /**
+</span>     * Override this function to apply custom CSS classes to rows during rendering. This function should return the
+     * CSS class name (or empty string '' for none) that will be added to the row's wrapping div. To apply multiple
+     * class names, simply return them space-delimited within the string (e.g. 'my-class another-class').
+     * Example usage:
      *
-     * This allows the View to execute a refresh quickly, with the expensive update of the row structure deferred so
-     * that layouts with GridPanels appear, and lay out more quickly.
+     *     viewConfig: {
+     *         getRowClass: function(record, rowIndex, rowParams, store){
+     *             return record.get(&quot;valid&quot;) ? &quot;row-valid&quot; : &quot;row-error&quot;;
+     *         }
+     *     }
+     *
+     * @param {Ext.data.Model} record The record corresponding to the current row.
+     * @param {Number} index The row index.
+     * @param {Object} rowParams **DEPRECATED.** For row body use the
+     * {@link Ext.grid.feature.RowBody#getAdditionalData getAdditionalData} method of the rowbody feature.
+     * @param {Ext.data.Store} store The store this grid is bound to
+     * @return {String} a CSS class name to add to the row.
+     * @method
      */
-
-     deferRowRender: true,
-     
-<span id='Ext-panel-Table-cfg-sortableColumns'>    /**
-</span>     * @cfg {Boolean} sortableColumns
-     * False to disable column sorting via clicking the header and via the Sorting menu items.
-     */
-    sortableColumns: true,
-
-<span id='Ext-panel-Table-cfg-enableLocking'>    /**
-</span>     * @cfg {Boolean} [enableLocking=false]
-     * True to enable locking support for this grid. Alternatively, locking will also be automatically
-     * enabled if any of the columns in the column configuration contain the locked config option.
-     */
-    enableLocking: false,
-
-    verticalScrollDock: 'right',
-    verticalScrollerType: 'gridscroller',
-
-    horizontalScrollerPresentCls: Ext.baseCSSPrefix + 'horizontal-scroller-present',
-    verticalScrollerPresentCls: Ext.baseCSSPrefix + 'vertical-scroller-present',
-
-    // private property used to determine where to go down to find views
-    // this is here to support locking.
-    scrollerOwner: true,
-
-    invalidateScrollerOnRefresh: true,
-
-<span id='Ext-panel-Table-cfg-enableColumnMove'>    /**
-</span>     * @cfg {Boolean} enableColumnMove
-     * False to disable column dragging within this grid.
-     */
-    enableColumnMove: true,
-
-<span id='Ext-panel-Table-cfg-enableColumnResize'>    /**
-</span>     * @cfg {Boolean} enableColumnResize
-     * False to disable column resizing within this grid.
-     */
-    enableColumnResize: true,
-
-<span id='Ext-panel-Table-cfg-enableColumnHide'>    /**
-</span>     * @cfg {Boolean} enableColumnHide
-     * False to disable column hiding within this grid.
-     */
-    enableColumnHide: true,
+    getRowClass: null,
 
     initComponent: function() {
-        //&lt;debug&gt;
-        if (!this.viewType) {
-            Ext.Error.raise(&quot;You must specify a viewType config.&quot;);
-        }
-        if (this.headers) {
-            Ext.Error.raise(&quot;The headers config is not supported. Please specify columns instead.&quot;);
-        }
-        //&lt;/debug&gt;
+        var me = this;
 
-        var me          = this,
-            scroll      = me.scroll,
-            vertical    = false,
-            horizontal  = false,
-            headerCtCfg = me.columns || me.colModel,
-            i           = 0,
-            view,
-            border = me.border;
+        me.scrollState = {};
+        me.selModel.view = me;
+        me.headerCt.view = me;
+        me.initFeatures();
+        me.tpl = '&lt;div&gt;&lt;/div&gt;';
+        me.callParent();
+        me.mon(me.store, {
+            load: me.onStoreLoad,
+            scope: me
+        });
 
-        if (me.hideHeaders) {
-            border = false;
-        }
+        // this.addEvents(
+        //     /**
+        //      * @event rowfocus
+        //      * @param {Ext.data.Model} record
+        //      * @param {HTMLElement} row
+        //      * @param {Number} rowIdx
+        //      */
+        //     'rowfocus'
+        // );
+    },
 
-        // Look up the configured Store. If none configured, use the fieldless, empty Store defined in Ext.data.Store.
-        me.store = Ext.data.StoreManager.lookup(me.store || 'ext-empty-store');
+    // scroll to top of the grid when store loads
+    onStoreLoad: function(){
+        var me = this;
 
-        // The columns/colModel config may be either a fully instantiated HeaderContainer, or an array of Column definitions, or a config object of a HeaderContainer
-        // Either way, we extract a columns property referencing an array of Column definitions.
-        if (headerCtCfg instanceof Ext.grid.header.Container) {
-            me.headerCt = headerCtCfg;
-            me.headerCt.border = border;
-            me.columns = me.headerCt.items.items;
-        } else {
-            if (Ext.isArray(headerCtCfg)) {
-                headerCtCfg = {
-                    items: headerCtCfg,
-                    border: border
-                };
+        if (me.invalidateScrollerOnRefresh) {
+            if (Ext.isGecko) {
+                if (!me.scrollToTopTask) {
+                    me.scrollToTopTask = Ext.create('Ext.util.DelayedTask', me.scrollToTop, me);
+                }
+                me.scrollToTopTask.delay(1);
+            } else {
+                me    .scrollToTop();
             }
-            Ext.apply(headerCtCfg, {
-                forceFit: me.forceFit,
-                sortable: me.sortableColumns,
-                enableColumnMove: me.enableColumnMove,
-                enableColumnResize: me.enableColumnResize,
-                enableColumnHide: me.enableColumnHide,
-                border:  border
-            });
-            me.columns = headerCtCfg.items;
+        }
+    },
 
-             // If any of the Column objects contain a locked property, and are not processed, this is a lockable TablePanel, a
-             // special view will be injected by the Ext.grid.Lockable mixin, so no processing of .
-             if (me.enableLocking || Ext.ComponentQuery.query('{locked !== undefined}{processed != true}', me.columns).length) {
-                 me.self.mixin('lockable', Ext.grid.Lockable);
-                 me.injectLockable();
-             }
+    // scroll the view to the top
+    scrollToTop: Ext.emptyFn,
+
+<span id='Ext-view-Table-method-addElListener'>    /**
+</span>     * Add a listener to the main view element. It will be destroyed with the view.
+     * @private
+     */
+    addElListener: function(eventName, fn, scope){
+        this.mon(this, eventName, fn, scope, {
+            element: 'el'
+        });
+    },
+
+<span id='Ext-view-Table-method-getGridColumns'>    /**
+</span>     * Get the columns used for generating a template via TableChunker.
+     * See {@link Ext.grid.header.Container#getGridColumns}.
+     * @private
+     */
+    getGridColumns: function() {
+        return this.headerCt.getGridColumns();
+    },
+
+<span id='Ext-view-Table-method-getHeaderAtIndex'>    /**
+</span>     * Get a leaf level header by index regardless of what the nesting
+     * structure is.
+     * @private
+     * @param {Number} index The index
+     */
+    getHeaderAtIndex: function(index) {
+        return this.headerCt.getHeaderAtIndex(index);
+    },
+
+<span id='Ext-view-Table-method-getCell'>    /**
+</span>     * Get the cell (td) for a particular record and column.
+     * @param {Ext.data.Model} record
+     * @param {Ext.grid.column.Column} column
+     * @private
+     */
+    getCell: function(record, column) {
+        var row = this.getNode(record);
+        return Ext.fly(row).down(column.getCellSelector());
+    },
+
+<span id='Ext-view-Table-method-getFeature'>    /**
+</span>     * Get a reference to a feature
+     * @param {String} id The id of the feature
+     * @return {Ext.grid.feature.Feature} The feature. Undefined if not found
+     */
+    getFeature: function(id) {
+        var features = this.featuresMC;
+        if (features) {
+            return features.get(id);
+        }
+    },
+
+<span id='Ext-view-Table-method-initFeatures'>    /**
+</span>     * Initializes each feature and bind it to this view.
+     * @private
+     */
+    initFeatures: function() {
+        var me = this,
+            i = 0,
+            features,
+            len;
+
+        me.features = me.features || [];
+        features = me.features;
+        len = features.length;
+
+        me.featuresMC = Ext.create('Ext.util.MixedCollection');
+        for (; i &lt; len; i++) {
+            // ensure feature hasnt already been instantiated
+            if (!features[i].isFeature) {
+                features[i] = Ext.create('feature.' + features[i].ftype, features[i]);
+            }
+            // inject a reference to view
+            features[i].view = me;
+            me.featuresMC.add(features[i]);
+        }
+    },
+
+<span id='Ext-view-Table-method-attachEventsForFeatures'>    /**
+</span>     * Gives features an injection point to attach events to the markup that
+     * has been created for this view.
+     * @private
+     */
+    attachEventsForFeatures: function() {
+        var features = this.features,
+            ln       = features.length,
+            i        = 0;
+
+        for (; i &lt; ln; i++) {
+            if (features[i].isFeature) {
+                features[i].attachEvents();
+            }
+        }
+    },
+
+    afterRender: function() {
+        var me = this;
+
+        me.callParent();
+        me.mon(me.el, {
+            scroll: me.fireBodyScroll,
+            scope: me
+        });
+        me.el.unselectable();
+        me.attachEventsForFeatures();
+    },
+
+    fireBodyScroll: function(e, t) {
+        this.fireEvent('bodyscroll', e, t);
+    },
+
+    // TODO: Refactor headerCt dependency here to colModel
+<span id='Ext-view-Table-method-prepareData'>    /**
+</span>     * Uses the headerCt to transform data from dataIndex keys in a record to
+     * headerId keys in each header and then run them through each feature to
+     * get additional data for variables they have injected into the view template.
+     * @private
+     */
+    prepareData: function(data, idx, record) {
+        var me       = this,
+            orig     = me.headerCt.prepareData(data, idx, record, me, me.ownerCt),
+            features = me.features,
+            ln       = features.length,
+            i        = 0,
+            node, feature;
+
+        for (; i &lt; ln; i++) {
+            feature = features[i];
+            if (feature.isFeature) {
+                Ext.apply(orig, feature.getAdditionalData(data, idx, record, orig, me));
+            }
         }
 
-        me.addEvents(
-<span id='Ext-panel-Table-event-reconfigure'>            /**
-</span>             * @event reconfigure
-             * Fires after a reconfigure.
-             * @param {Ext.panel.Table} this
-             */
-            'reconfigure',
-<span id='Ext-panel-Table-event-viewready'>            /**
-</span>             * @event viewready
-             * Fires when the grid view is available (use this for selecting a default row).
-             * @param {Ext.panel.Table} this
-             */
-            'viewready',
-<span id='Ext-panel-Table-event-scrollerhide'>            /**
-</span>             * @event scrollerhide
-             * Fires when a scroller is hidden.
-             * @param {Ext.grid.Scroller} scroller
-             * @param {String} orientation Orientation, can be 'vertical' or 'horizontal'
-             */
-            'scrollerhide',
-<span id='Ext-panel-Table-event-scrollershow'>            /**
-</span>             * @event scrollershow
-             * Fires when a scroller is shown.
-             * @param {Ext.grid.Scroller} scroller
-             * @param {String} orientation Orientation, can be 'vertical' or 'horizontal'
-             */
-            'scrollershow'
-        );
+        return orig;
+    },
 
-        me.bodyCls = me.bodyCls || '';
-        me.bodyCls += (' ' + me.extraBodyCls);
-        
-        me.cls = me.cls || '';
-        me.cls += (' ' + me.extraBaseCls);
+    // TODO: Refactor headerCt dependency here to colModel
+    collectData: function(records, startIndex) {
+        var preppedRecords = this.callParent(arguments),
+            headerCt  = this.headerCt,
+            fullWidth = headerCt.getFullWidth(),
+            features  = this.features,
+            ln = features.length,
+            o = {
+                rows: preppedRecords,
+                fullWidth: fullWidth
+            },
+            i  = 0,
+            feature,
+            j = 0,
+            jln,
+            rowParams;
 
-        // autoScroll is not a valid configuration
-        delete me.autoScroll;
-
-        // If this TablePanel is lockable (Either configured lockable, or any of the defined columns has a 'locked' property)
-        // than a special lockable view containing 2 side-by-side grids will have been injected so we do not need to set up any UI.
-        if (!me.hasView) {
-
-            // If we were not configured with a ready-made headerCt (either by direct config with a headerCt property, or by passing
-            // a HeaderContainer instance as the 'columns' property, then go ahead and create one from the config object created above.
-            if (!me.headerCt) {
-                me.headerCt = Ext.create('Ext.grid.header.Container', headerCtCfg);
+        jln = preppedRecords.length;
+        // process row classes, rowParams has been deprecated and has been moved
+        // to the individual features that implement the behavior.
+        if (this.getRowClass) {
+            for (; j &lt; jln; j++) {
+                rowParams = {};
+                preppedRecords[j]['rowCls'] = this.getRowClass(records[j], j, rowParams, this.store);
+                //&lt;debug&gt;
+                if (rowParams.alt) {
+                    Ext.Error.raise(&quot;The getRowClass alt property is no longer supported.&quot;);
+                }
+                if (rowParams.tstyle) {
+                    Ext.Error.raise(&quot;The getRowClass tstyle property is no longer supported.&quot;);
+                }
+                if (rowParams.cells) {
+                    Ext.Error.raise(&quot;The getRowClass cells property is no longer supported.&quot;);
+                }
+                if (rowParams.body) {
+                    Ext.Error.raise(&quot;The getRowClass body property is no longer supported. Use the getAdditionalData method of the rowbody feature.&quot;);
+                }
+                if (rowParams.bodyStyle) {
+                    Ext.Error.raise(&quot;The getRowClass bodyStyle property is no longer supported.&quot;);
+                }
+                if (rowParams.cols) {
+                    Ext.Error.raise(&quot;The getRowClass cols property is no longer supported.&quot;);
+                }
+                //&lt;/debug&gt;
             }
+        }
+        // currently only one feature may implement collectData. This is to modify
+        // what's returned to the view before its rendered
+        for (; i &lt; ln; i++) {
+            feature = features[i];
+            if (feature.isFeature &amp;&amp; feature.collectData &amp;&amp; !feature.disabled) {
+                o = feature.collectData(records, preppedRecords, startIndex, fullWidth, o);
+                break;
+            }
+        }
+        return o;
+    },
 
-            // Extract the array of Column objects
-            me.columns = me.headerCt.items.items;
+    // TODO: Refactor header resizing to column resizing
+<span id='Ext-view-Table-method-onHeaderResize'>    /**
+</span>     * When a header is resized, setWidth on the individual columns resizer class,
+     * the top level table, save/restore scroll state, generate a new template and
+     * restore focus to the grid view's element so that keyboard navigation
+     * continues to work.
+     * @private
+     */
+    onHeaderResize: function(header, w, suppressFocus) {
+        var me = this,
+            el = me.el;
 
-            if (me.hideHeaders) {
-                me.headerCt.height = 0;
-                me.headerCt.border = false;
-                me.headerCt.addCls(Ext.baseCSSPrefix + 'grid-header-ct-hidden');
-                me.addCls(Ext.baseCSSPrefix + 'grid-header-hidden');
-                // IE Quirks Mode fix
-                // If hidden configuration option was used, several layout calculations will be bypassed.
-                if (Ext.isIEQuirks) {
-                    me.headerCt.style = {
-                        display: 'none'
-                    };
+        if (el) {
+            me.saveScrollState();
+            // Grab the col and set the width, css
+            // class is generated in TableChunker.
+            // Select composites because there may be several chunks.
+
+            // IE6 and IE7 bug.
+            // Setting the width of the first TD does not work - ends up with a 1 pixel discrepancy.
+            // We need to increment the passed with in this case.
+            if (Ext.isIE6 || Ext.isIE7) {
+                if (header.el.hasCls(Ext.baseCSSPrefix + 'column-header-first')) {
+                    w += 1;
                 }
             }
-
-            // turn both on.
-            if (scroll === true || scroll === 'both') {
-                vertical = horizontal = true;
-            } else if (scroll === 'horizontal') {
-                horizontal = true;
-            } else if (scroll === 'vertical') {
-                vertical = true;
-            // All other values become 'none' or false.
-            } else {
-                me.headerCt.availableSpaceOffset = 0;
+            el.select('.' + Ext.baseCSSPrefix + 'grid-col-resizer-'+header.id).setWidth(w);
+            el.select('.' + Ext.baseCSSPrefix + 'grid-table-resizer').setWidth(me.headerCt.getFullWidth());
+            me.restoreScrollState();
+            if (!me.ignoreTemplate) {
+                me.setNewTemplate();
             }
-
-            if (vertical) {
-                me.verticalScroller = Ext.ComponentManager.create(me.initVerticalScroller());
-                me.mon(me.verticalScroller, {
-                    bodyscroll: me.onVerticalScroll,
-                    scope: me
-                });
+            if (!suppressFocus) {
+                me.el.focus();
             }
-
-            if (horizontal) {
-                me.horizontalScroller = Ext.ComponentManager.create(me.initHorizontalScroller());
-                me.mon(me.horizontalScroller, {
-                    bodyscroll: me.onHorizontalScroll,
-                    scope: me
-                });
-            }
-
-            me.headerCt.on('resize', me.onHeaderResize, me);
-            me.relayHeaderCtEvents(me.headerCt);
-            me.features = me.features || [];
-            if (!Ext.isArray(me.features)) {
-                me.features = [me.features];
-            }
-            me.dockedItems = me.dockedItems || [];
-            me.dockedItems.unshift(me.headerCt);
-            me.viewConfig = me.viewConfig || {};
-            me.viewConfig.invalidateScrollerOnRefresh = me.invalidateScrollerOnRefresh;
-
-            // AbstractDataView will look up a Store configured as an object
-            // getView converts viewConfig into a View instance
-            view = me.getView();
-
-            view.on({
-                afterrender: function () {
-                    // hijack the view el's scroll method
-                    view.el.scroll = Ext.Function.bind(me.elScroll, me);
-                    // We use to listen to document.body wheel events, but that's a
-                    // little much. We scope just to the view now.
-                    me.mon(view.el, {
-                        mousewheel: me.onMouseWheel,
-                        scope: me
-                    });
-                },
-                single: true
-            });
-            me.items = [view];
-            me.hasView = true;
-
-            me.mon(view.store, {
-                load: me.onStoreLoad,
-                scope: me
-            });
-            me.mon(view, {
-                viewReady: me.onViewReady,
-                resize: me.onViewResize,
-                refresh: {
-                    fn: me.onViewRefresh,
-                    scope: me,
-                    buffer: 50
-                },
-                scope: me
-            });
-            this.relayEvents(view, [
-<span id='Ext-panel-Table-event-beforeitemmousedown'>                /**
-</span>                 * @event beforeitemmousedown
-                 * @alias Ext.view.View#beforeitemmousedown
-                 */
-                'beforeitemmousedown',
-<span id='Ext-panel-Table-event-beforeitemmouseup'>                /**
-</span>                 * @event beforeitemmouseup
-                 * @alias Ext.view.View#beforeitemmouseup
-                 */
-                'beforeitemmouseup',
-<span id='Ext-panel-Table-event-beforeitemmouseenter'>                /**
-</span>                 * @event beforeitemmouseenter
-                 * @alias Ext.view.View#beforeitemmouseenter
-                 */
-                'beforeitemmouseenter',
-<span id='Ext-panel-Table-event-beforeitemmouseleave'>                /**
-</span>                 * @event beforeitemmouseleave
-                 * @alias Ext.view.View#beforeitemmouseleave
-                 */
-                'beforeitemmouseleave',
-<span id='Ext-panel-Table-event-beforeitemclick'>                /**
-</span>                 * @event beforeitemclick
-                 * @alias Ext.view.View#beforeitemclick
-                 */
-                'beforeitemclick',
-<span id='Ext-panel-Table-event-beforeitemdblclick'>                /**
-</span>                 * @event beforeitemdblclick
-                 * @alias Ext.view.View#beforeitemdblclick
-                 */
-                'beforeitemdblclick',
-<span id='Ext-panel-Table-event-beforeitemcontextmenu'>                /**
-</span>                 * @event beforeitemcontextmenu
-                 * @alias Ext.view.View#beforeitemcontextmenu
-                 */
-                'beforeitemcontextmenu',
-<span id='Ext-panel-Table-event-itemmousedown'>                /**
-</span>                 * @event itemmousedown
-                 * @alias Ext.view.View#itemmousedown
-                 */
-                'itemmousedown',
-<span id='Ext-panel-Table-event-itemmouseup'>                /**
-</span>                 * @event itemmouseup
-                 * @alias Ext.view.View#itemmouseup
-                 */
-                'itemmouseup',
-<span id='Ext-panel-Table-event-itemmouseenter'>                /**
-</span>                 * @event itemmouseenter
-                 * @alias Ext.view.View#itemmouseenter
-                 */
-                'itemmouseenter',
-<span id='Ext-panel-Table-event-itemmouseleave'>                /**
-</span>                 * @event itemmouseleave
-                 * @alias Ext.view.View#itemmouseleave
-                 */
-                'itemmouseleave',
-<span id='Ext-panel-Table-event-itemclick'>                /**
-</span>                 * @event itemclick
-                 * @alias Ext.view.View#itemclick
-                 */
-                'itemclick',
-<span id='Ext-panel-Table-event-itemdblclick'>                /**
-</span>                 * @event itemdblclick
-                 * @alias Ext.view.View#itemdblclick
-                 */
-                'itemdblclick',
-<span id='Ext-panel-Table-event-itemcontextmenu'>                /**
-</span>                 * @event itemcontextmenu
-                 * @alias Ext.view.View#itemcontextmenu
-                 */
-                'itemcontextmenu',
-<span id='Ext-panel-Table-event-beforecontainermousedown'>                /**
-</span>                 * @event beforecontainermousedown
-                 * @alias Ext.view.View#beforecontainermousedown
-                 */
-                'beforecontainermousedown',
-<span id='Ext-panel-Table-event-beforecontainermouseup'>                /**
-</span>                 * @event beforecontainermouseup
-                 * @alias Ext.view.View#beforecontainermouseup
-                 */
-                'beforecontainermouseup',
-<span id='Ext-panel-Table-event-beforecontainermouseover'>                /**
-</span>                 * @event beforecontainermouseover
-                 * @alias Ext.view.View#beforecontainermouseover
-                 */
-                'beforecontainermouseover',
-<span id='Ext-panel-Table-event-beforecontainermouseout'>                /**
-</span>                 * @event beforecontainermouseout
-                 * @alias Ext.view.View#beforecontainermouseout
-                 */
-                'beforecontainermouseout',
-<span id='Ext-panel-Table-event-beforecontainerclick'>                /**
-</span>                 * @event beforecontainerclick
-                 * @alias Ext.view.View#beforecontainerclick
-                 */
-                'beforecontainerclick',
-<span id='Ext-panel-Table-event-beforecontainerdblclick'>                /**
-</span>                 * @event beforecontainerdblclick
-                 * @alias Ext.view.View#beforecontainerdblclick
-                 */
-                'beforecontainerdblclick',
-<span id='Ext-panel-Table-event-beforecontainercontextmenu'>                /**
-</span>                 * @event beforecontainercontextmenu
-                 * @alias Ext.view.View#beforecontainercontextmenu
-                 */
-                'beforecontainercontextmenu',
-<span id='Ext-panel-Table-event-containermouseup'>                /**
-</span>                 * @event containermouseup
-                 * @alias Ext.view.View#containermouseup
-                 */
-                'containermouseup',
-<span id='Ext-panel-Table-event-containermouseover'>                /**
-</span>                 * @event containermouseover
-                 * @alias Ext.view.View#containermouseover
-                 */
-                'containermouseover',
-<span id='Ext-panel-Table-event-containermouseout'>                /**
-</span>                 * @event containermouseout
-                 * @alias Ext.view.View#containermouseout
-                 */
-                'containermouseout',
-<span id='Ext-panel-Table-event-containerclick'>                /**
-</span>                 * @event containerclick
-                 * @alias Ext.view.View#containerclick
-                 */
-                'containerclick',
-<span id='Ext-panel-Table-event-containerdblclick'>                /**
-</span>                 * @event containerdblclick
-                 * @alias Ext.view.View#containerdblclick
-                 */
-                'containerdblclick',
-<span id='Ext-panel-Table-event-containercontextmenu'>                /**
-</span>                 * @event containercontextmenu
-                 * @alias Ext.view.View#containercontextmenu
-                 */
-                'containercontextmenu',
-<span id='Ext-panel-Table-event-selectionchange'>                /**
-</span>                 * @event selectionchange
-                 * @alias Ext.selection.Model#selectionchange
-                 */
-                'selectionchange',
-<span id='Ext-panel-Table-event-beforeselect'>                /**
-</span>                 * @event beforeselect
-                 * @alias Ext.selection.RowModel#beforeselect
-                 */
-                'beforeselect',
-<span id='Ext-panel-Table-event-select'>                /**
-</span>                 * @event select
-                 * @alias Ext.selection.RowModel#select
-                 */
-                'select',
-<span id='Ext-panel-Table-event-beforedeselect'>                /**
-</span>                 * @event beforedeselect
-                 * @alias Ext.selection.RowModel#beforedeselect
-                 */
-                'beforedeselect',
-<span id='Ext-panel-Table-event-deselect'>                /**
-</span>                 * @event deselect
-                 * @alias Ext.selection.RowModel#deselect
-                 */
-                'deselect'
-            ]);
         }
-
-        me.callParent(arguments);
-    },
-    
-    onRender: function(){
-        var vScroll = this.verticalScroller,
-            hScroll = this.horizontalScroller;
-
-        if (vScroll) {
-            vScroll.ensureDimension();
-        }
-        if (hScroll) {
-            hScroll.ensureDimension();
-        }
-        this.callParent(arguments);    
     },
 
-    // state management
-    initStateEvents: function(){
-        var events = this.stateEvents;
-        // push on stateEvents if they don't exist
-        Ext.each(['columnresize', 'columnmove', 'columnhide', 'columnshow', 'sortchange'], function(event){
-            if (Ext.Array.indexOf(events, event)) {
-                events.push(event);
-            }
+<span id='Ext-view-Table-method-onHeaderShow'>    /**
+</span>     * When a header is shown restore its oldWidth if it was previously hidden.
+     * @private
+     */
+    onHeaderShow: function(headerCt, header, suppressFocus) {
+        var me = this;
+        me.ignoreTemplate = true;
+        // restore headers that were dynamically hidden
+        if (header.oldWidth) {
+            me.onHeaderResize(header, header.oldWidth, suppressFocus);
+            delete header.oldWidth;
+        // flexed headers will have a calculated size set
+        // this additional check has to do with the fact that
+        // defaults: {width: 100} will fight with a flex value
+        } else if (header.width &amp;&amp; !header.flex) {
+            me.onHeaderResize(header, header.width, suppressFocus);
+        }
+        delete me.ignoreTemplate;
+        me.setNewTemplate();
+    },
+
+<span id='Ext-view-Table-method-onHeaderHide'>    /**
+</span>     * When the header hides treat it as a resize to 0.
+     * @private
+     */
+    onHeaderHide: function(headerCt, header, suppressFocus) {
+        this.onHeaderResize(header, 0, suppressFocus);
+    },
+
+<span id='Ext-view-Table-method-setNewTemplate'>    /**
+</span>     * Set a new template based on the current columns displayed in the
+     * grid.
+     * @private
+     */
+    setNewTemplate: function() {
+        var me = this,
+            columns = me.headerCt.getColumnsForTpl(true);
+
+        me.tpl = me.getTableChunker().getTableTpl({
+            columns: columns,
+            features: me.features
         });
-        this.callParent();
     },
 
-<span id='Ext-panel-Table-method-initHorizontalScroller'>    /**
-</span>     * Returns the horizontal scroller config.
+<span id='Ext-view-Table-method-getTableChunker'>    /**
+</span>     * Returns the configured chunker or default of Ext.view.TableChunker
      */
-    initHorizontalScroller: function () {
-        var me = this,
-            ret = {
-                xtype: 'gridscroller',
-                dock: 'bottom',
-                section: me,
-                store: me.store
-            };
-
-        return ret;
+    getTableChunker: function() {
+        return this.chunker || Ext.view.TableChunker;
     },
 
-<span id='Ext-panel-Table-method-initVerticalScroller'>    /**
-</span>     * Returns the vertical scroller config.
+<span id='Ext-view-Table-method-addRowCls'>    /**
+</span>     * Adds a CSS Class to a specific row.
+     * @param {HTMLElement/String/Number/Ext.data.Model} rowInfo An HTMLElement, index or instance of a model
+     * representing this row
+     * @param {String} cls
      */
-    initVerticalScroller: function () {
-        var me = this,
-            ret = me.verticalScroller || {};
-
-        Ext.applyIf(ret, {
-            xtype: me.verticalScrollerType,
-            dock: me.verticalScrollDock,
-            store: me.store
-        });
-
-        return ret;
+    addRowCls: function(rowInfo, cls) {
+        var row = this.getNode(rowInfo);
+        if (row) {
+            Ext.fly(row).addCls(cls);
+        }
     },
 
-    relayHeaderCtEvents: function (headerCt) {
-        this.relayEvents(headerCt, [
-<span id='Ext-panel-Table-event-columnresize'>            /**
-</span>             * @event columnresize
-             * @alias Ext.grid.header.Container#columnresize
-             */
-            'columnresize',
-<span id='Ext-panel-Table-event-columnmove'>            /**
-</span>             * @event columnmove
-             * @alias Ext.grid.header.Container#columnmove
-             */
-            'columnmove',
-<span id='Ext-panel-Table-event-columnhide'>            /**
-</span>             * @event columnhide
-             * @alias Ext.grid.header.Container#columnhide
-             */
-            'columnhide',
-<span id='Ext-panel-Table-event-columnshow'>            /**
-</span>             * @event columnshow
-             * @alias Ext.grid.header.Container#columnshow
-             */
-            'columnshow',
-<span id='Ext-panel-Table-event-sortchange'>            /**
-</span>             * @event sortchange
-             * @alias Ext.grid.header.Container#sortchange
-             */
-            'sortchange'
-        ]);
+<span id='Ext-view-Table-method-removeRowCls'>    /**
+</span>     * Removes a CSS Class from a specific row.
+     * @param {HTMLElement/String/Number/Ext.data.Model} rowInfo An HTMLElement, index or instance of a model
+     * representing this row
+     * @param {String} cls
+     */
+    removeRowCls: function(rowInfo, cls) {
+        var row = this.getNode(rowInfo);
+        if (row) {
+            Ext.fly(row).removeCls(cls);
+        }
     },
 
-    getState: function(){
-        var me = this,
-            state = me.callParent(),
-            sorter = me.store.sorters.first();
+    // GridSelectionModel invokes onRowSelect as selection changes
+    onRowSelect : function(rowIdx) {
+        this.addRowCls(rowIdx, this.selectedItemCls);
+    },
 
-        state.columns = (me.headerCt || me).getColumnsState();
+    // GridSelectionModel invokes onRowDeselect as selection changes
+    onRowDeselect : function(rowIdx) {
+        var me = this;
 
-        if (sorter) {
-            state.sort = {
-                property: sorter.property,
-                direction: sorter.direction
-            };
+        me.removeRowCls(rowIdx, me.selectedItemCls);
+        me.removeRowCls(rowIdx, me.focusedItemCls);
+    },
+
+    onCellSelect: function(position) {
+        var cell = this.getCellByPosition(position);
+        if (cell) {
+            cell.addCls(this.selectedCellCls);
+        }
+    },
+
+    onCellDeselect: function(position) {
+        var cell = this.getCellByPosition(position);
+        if (cell) {
+            cell.removeCls(this.selectedCellCls);
         }
 
-        return state;
     },
 
-    applyState: function(state) {
-        var me = this,
-            sorter = state.sort,
-            store = me.store,
-            columns = state.columns;
+    onCellFocus: function(position) {
+        //var cell = this.getCellByPosition(position);
+        this.focusCell(position);
+    },
 
-        delete state.columns;
+    getCellByPosition: function(position) {
+        var row    = position.row,
+            column = position.column,
+            store  = this.store,
+            node   = this.getNode(row),
+            header = this.headerCt.getHeaderAtIndex(column),
+            cellSelector,
+            cell = false;
 
-        // Ensure superclass has applied *its* state.
-        // AbstractComponent saves dimensions (and anchor/flex) plus collapsed state.
-        me.callParent(arguments);
-
-        if (columns) {
-            (me.headerCt || me).applyColumnsState(columns);
+        if (header &amp;&amp; node) {
+            cellSelector = header.getCellSelector();
+            cell = Ext.fly(node).down(cellSelector);
         }
+        return cell;
+    },
 
-        if (sorter) {
-            if (store.remoteSort) {
-                store.sorters.add(Ext.create('Ext.util.Sorter', {
-                    property: sorter.property,
-                    direction: sorter.direction
-                }));
+    // GridSelectionModel invokes onRowFocus to 'highlight'
+    // the last row focused
+    onRowFocus: function(rowIdx, highlight, supressFocus) {
+        var me = this,
+            row = me.getNode(rowIdx);
+
+        if (highlight) {
+            me.addRowCls(rowIdx, me.focusedItemCls);
+            if (!supressFocus) {
+                me.focusRow(rowIdx);
             }
-            else {
-                store.sort(sorter.property, sorter.direction);
-            }
-        }
-    },
-
-<span id='Ext-panel-Table-method-getStore'>    /**
-</span>     * Returns the store associated with this Panel.
-     * @return {Ext.data.Store} The store
-     */
-    getStore: function(){
-        return this.store;
-    },
-
-<span id='Ext-panel-Table-method-getView'>    /**
-</span>     * Gets the view for this panel.
-     * @return {Ext.view.Table}
-     */
-    getView: function() {
-        var me = this,
-            sm;
-
-        if (!me.view) {
-            sm = me.getSelectionModel();
-            me.view = me.createComponent(Ext.apply({}, me.viewConfig, {
-                deferInitialRefresh: me.deferRowRender,
-                xtype: me.viewType,
-                store: me.store,
-                headerCt: me.headerCt,
-                selModel: sm,
-                features: me.features,
-                panel: me
-            }));
-            me.mon(me.view, {
-                uievent: me.processEvent,
-                scope: me
-            });
-            sm.view = me.view;
-            me.headerCt.view = me.view;
-            me.relayEvents(me.view, ['cellclick', 'celldblclick']);
-        }
-        return me.view;
-    },
-
-<span id='Ext-panel-Table-method-setAutoScroll'>    /**
-</span>     * @private
-     * @override
-     * autoScroll is never valid for all classes which extend TablePanel.
-     */
-    setAutoScroll: Ext.emptyFn,
-
-    // This method hijacks Ext.view.Table's el scroll method.
-    // This enables us to keep the virtualized scrollbars in sync
-    // with the view. It currently does NOT support animation.
-    elScroll: function(direction, distance, animate) {
-        var me = this,
-            scroller;
-
-        if (direction === &quot;up&quot; || direction === &quot;left&quot;) {
-            distance = -distance;
-        }
-        
-        if (direction === &quot;down&quot; || direction === &quot;up&quot;) {
-            scroller = me.getVerticalScroller();
-            
-            //if the grid does not currently need a vertical scroller don't try to update it (EXTJSIV-3891)
-            if (scroller) {
-                scroller.scrollByDeltaY(distance);
-            }
+            //this.el.dom.setAttribute('aria-activedescendant', row.id);
         } else {
-            scroller = me.getHorizontalScroller();
+            me.removeRowCls(rowIdx, me.focusedItemCls);
+        }
+    },
+
+<span id='Ext-view-Table-method-focusRow'>    /**
+</span>     * Focuses a particular row and brings it into view. Will fire the rowfocus event.
+     * @param {HTMLElement/String/Number/Ext.data.Model} rowIdx
+     * An HTMLElement template node, index of a template node, the id of a template node or the
+     * record associated with the node.
+     */
+    focusRow: function(rowIdx) {
+        var me         = this,
+            row        = me.getNode(rowIdx),
+            el         = me.el,
+            adjustment = 0,
+            panel      = me.ownerCt,
+            rowRegion,
+            elRegion,
+            record;
+
+        if (row &amp;&amp; el) {
+            elRegion  = el.getRegion();
+            rowRegion = Ext.fly(row).getRegion();
+            // row is above
+            if (rowRegion.top &lt; elRegion.top) {
+                adjustment = rowRegion.top - elRegion.top;
+            // row is below
+            } else if (rowRegion.bottom &gt; elRegion.bottom) {
+                adjustment = rowRegion.bottom - elRegion.bottom;
+            }
+            record = me.getRecord(row);
+            rowIdx = me.store.indexOf(record);
+
+            if (adjustment) {
+                // scroll the grid itself, so that all gridview's update.
+                panel.scrollByDeltaY(adjustment);
+            }
+            me.fireEvent('rowfocus', record, row, rowIdx);
+        }
+    },
+
+    focusCell: function(position) {
+        var me          = this,
+            cell        = me.getCellByPosition(position),
+            el          = me.el,
+            adjustmentY = 0,
+            adjustmentX = 0,
+            elRegion    = el.getRegion(),
+            panel       = me.ownerCt,
+            cellRegion,
+            record;
+
+        if (cell) {
+            cellRegion = cell.getRegion();
+            // cell is above
+            if (cellRegion.top &lt; elRegion.top) {
+                adjustmentY = cellRegion.top - elRegion.top;
+            // cell is below
+            } else if (cellRegion.bottom &gt; elRegion.bottom) {
+                adjustmentY = cellRegion.bottom - elRegion.bottom;
+            }
+
+            // cell is left
+            if (cellRegion.left &lt; elRegion.left) {
+                adjustmentX = cellRegion.left - elRegion.left;
+            // cell is right
+            } else if (cellRegion.right &gt; elRegion.right) {
+                adjustmentX = cellRegion.right - elRegion.right;
+            }
+
+            if (adjustmentY) {
+                // scroll the grid itself, so that all gridview's update.
+                panel.scrollByDeltaY(adjustmentY);
+            }
+            if (adjustmentX) {
+                panel.scrollByDeltaX(adjustmentX);
+            }
+            el.focus();
+            me.fireEvent('cellfocus', record, cell, position);
+        }
+    },
+
+<span id='Ext-view-Table-method-scrollByDelta'>    /**
+</span>     * Scrolls by delta. This affects this individual view ONLY and does not
+     * synchronize across views or scrollers.
+     * @param {Number} delta
+     * @param {String} dir (optional) Valid values are scrollTop and scrollLeft. Defaults to scrollTop.
+     * @private
+     */
+    scrollByDelta: function(delta, dir) {
+        dir = dir || 'scrollTop';
+        var elDom = this.el.dom;
+        elDom[dir] = (elDom[dir] += delta);
+    },
+
+    onUpdate: function(ds, index) {
+        this.callParent(arguments);
+    },
+
+<span id='Ext-view-Table-method-saveScrollState'>    /**
+</span>     * Saves the scrollState in a private variable. Must be used in conjunction with restoreScrollState
+     */
+    saveScrollState: function() {
+        if (this.rendered) {
+            var dom = this.el.dom, 
+                state = this.scrollState;
             
-            //if the grid does not currently need a horizontal scroller don't try to update it (EXTJSIV-3891)
-            if (scroller) {
-                scroller.scrollByDeltaX(distance);
+            state.left = dom.scrollLeft;
+            state.top = dom.scrollTop;
+        }
+    },
+
+<span id='Ext-view-Table-method-restoreScrollState'>    /**
+</span>     * Restores the scrollState.
+     * Must be used in conjunction with saveScrollState
+     * @private
+     */
+    restoreScrollState: function() {
+        if (this.rendered) {
+            var dom = this.el.dom, 
+                state = this.scrollState, 
+                headerEl = this.headerCt.el.dom;
+            
+            headerEl.scrollLeft = dom.scrollLeft = state.left;
+            dom.scrollTop = state.top;
+        }
+    },
+
+<span id='Ext-view-Table-method-refresh'>    /**
+</span>     * Refreshes the grid view. Saves and restores the scroll state, generates a new template, stripes rows and
+     * invalidates the scrollers.
+     */
+    refresh: function() {
+        this.setNewTemplate();
+        this.callParent(arguments);
+    },
+
+    processItemEvent: function(record, row, rowIndex, e) {
+        var me = this,
+            cell = e.getTarget(me.cellSelector, row),
+            cellIndex = cell ? cell.cellIndex : -1,
+            map = me.statics().EventMap,
+            selModel = me.getSelectionModel(),
+            type = e.type,
+            result;
+
+        if (type == 'keydown' &amp;&amp; !cell &amp;&amp; selModel.getCurrentPosition) {
+            // CellModel, otherwise we can't tell which cell to invoke
+            cell = me.getCellByPosition(selModel.getCurrentPosition());
+            if (cell) {
+                cell = cell.dom;
+                cellIndex = cell.cellIndex;
             }
         }
-    },
 
-<span id='Ext-panel-Table-method-processEvent'>    /**
-</span>     * @private
-     * Processes UI events from the view. Propagates them to whatever internal Components need to process them.
-     * @param {String} type Event type, eg 'click'
-     * @param {Ext.view.Table} view TableView Component
-     * @param {HTMLElement} cell Cell HtmlElement the event took place within
-     * @param {Number} recordIndex Index of the associated Store Model (-1 if none)
-     * @param {Number} cellIndex Cell index within the row
-     * @param {Ext.EventObject} e Original event
-     */
-    processEvent: function(type, view, cell, recordIndex, cellIndex, e) {
-        var me = this,
-            header;
+        result = me.fireEvent('uievent', type, me, cell, rowIndex, cellIndex, e);
 
-        if (cellIndex !== -1) {
-            header = me.headerCt.getGridColumns()[cellIndex];
-            return header.processEvent.apply(header, arguments);
+        if (result === false || me.callParent(arguments) === false) {
+            return false;
         }
+
+        // Don't handle cellmouseenter and cellmouseleave events for now
+        if (type == 'mouseover' || type == 'mouseout') {
+            return true;
+        }
+
+        return !(
+            // We are adding cell and feature events
+            (me['onBeforeCell' + map[type]](cell, cellIndex, record, row, rowIndex, e) === false) ||
+            (me.fireEvent('beforecell' + type, me, cell, cellIndex, record, row, rowIndex, e) === false) ||
+            (me['onCell' + map[type]](cell, cellIndex, record, row, rowIndex, e) === false) ||
+            (me.fireEvent('cell' + type, me, cell, cellIndex, record, row, rowIndex, e) === false)
+        );
     },
 
-<span id='Ext-panel-Table-method-determineScrollbars'>    /**
-</span>     * Requests a recalculation of scrollbars and puts them in if they are needed.
-     */
-    determineScrollbars: function() {
-        // Set a flag so that afterComponentLayout does not recurse back into here.
-        if (this.determineScrollbarsRunning) {
+    processSpecialEvent: function(e) {
+        var me = this,
+            map = me.statics().EventMap,
+            features = me.features,
+            ln = features.length,
+            type = e.type,
+            i, feature, prefix, featureTarget,
+            beforeArgs, args,
+            panel = me.ownerCt;
+
+        me.callParent(arguments);
+
+        if (type == 'mouseover' || type == 'mouseout') {
             return;
         }
-        this.determineScrollbarsRunning = true;
-        var me = this,
-            view = me.view,
-            box,
-            tableEl,
-            scrollWidth,
-            clientWidth,
-            scrollHeight,
-            clientHeight,
-            verticalScroller = me.verticalScroller,
-            horizontalScroller = me.horizontalScroller,
-            curScrollbars = (verticalScroller   &amp;&amp; verticalScroller.ownerCt === me ? 1 : 0) |
-                            (horizontalScroller &amp;&amp; horizontalScroller.ownerCt === me ? 2 : 0),
-            reqScrollbars = 0; // 1 = vertical, 2 = horizontal, 3 = both
 
-        // If we are not collapsed, and the view has been rendered AND filled, then we can determine scrollbars
-        if (!me.collapsed &amp;&amp; view &amp;&amp; view.viewReady) {
+        for (i = 0; i &lt; ln; i++) {
+            feature = features[i];
+            if (feature.hasFeatureEvent) {
+                featureTarget = e.getTarget(feature.eventSelector, me.getTargetEl());
+                if (featureTarget) {
+                    prefix = feature.eventPrefix;
+                    // allows features to implement getFireEventArgs to change the
+                    // fireEvent signature
+                    beforeArgs = feature.getFireEventArgs('before' + prefix + type, me, featureTarget, e);
+                    args = feature.getFireEventArgs(prefix + type, me, featureTarget, e);
 
-            // Calculate maximum, *scrollbarless* space which the view has available.
-            // It will be the Fit Layout's calculated size, plus the widths of any currently shown scrollbars
-            box = view.el.getSize();
-
-            clientWidth  = box.width  + ((curScrollbars &amp; 1) ? verticalScroller.width : 0);
-            clientHeight = box.height + ((curScrollbars &amp; 2) ? horizontalScroller.height : 0);
-
-            // Calculate the width of the scrolling block
-            // There will never be a horizontal scrollbar if all columns are flexed.
-
-            scrollWidth = (me.headerCt.query('[flex]').length &amp;&amp; !me.headerCt.layout.tooNarrow) ? 0 : me.headerCt.getFullWidth();
-
-            // Calculate the height of the scrolling block
-            if (verticalScroller &amp;&amp; verticalScroller.el) {
-                scrollHeight = verticalScroller.getSizeCalculation().height;
-            } else {
-                tableEl = view.el.child('table', true);
-                scrollHeight = tableEl ? tableEl.offsetHeight : 0;
-            }
-
-            // View is too high.
-            // Definitely need a vertical scrollbar
-            if (scrollHeight &gt; clientHeight) {
-                reqScrollbars = 1;
-
-                // But if scrollable block width goes into the zone required by the vertical scrollbar, we'll also need a horizontal
-                if (horizontalScroller &amp;&amp; ((clientWidth - scrollWidth) &lt; verticalScroller.width)) {
-                    reqScrollbars = 3;
-                }
-            }
-
-            // View height fits. But we stil may need a horizontal scrollbar, and this might necessitate a vertical one.
-            else {
-                // View is too wide.
-                // Definitely need a horizontal scrollbar
-                if (scrollWidth &gt; clientWidth) {
-                    reqScrollbars = 2;
-
-                    // But if scrollable block height goes into the zone required by the horizontal scrollbar, we'll also need a vertical
-                    if (verticalScroller &amp;&amp; ((clientHeight - scrollHeight) &lt; horizontalScroller.height)) {
-                        reqScrollbars = 3;
+                    if (
+                        // before view event
+                        (me.fireEvent.apply(me, beforeArgs) === false) ||
+                        // panel grid event
+                        (panel.fireEvent.apply(panel, beforeArgs) === false) ||
+                        // view event
+                        (me.fireEvent.apply(me, args) === false) ||
+                        // panel event
+                        (panel.fireEvent.apply(panel, args) === false)
+                    ) {
+                        return false;
                     }
                 }
             }
-
-            // If scrollbar requirements have changed, change 'em...
-            if (reqScrollbars !== curScrollbars) {
-
-                // Suspend component layout while we add/remove the docked scrollers
-                me.suspendLayout = true;
-                if (reqScrollbars &amp; 1) {
-                    me.showVerticalScroller();
-                } else {
-                    me.hideVerticalScroller();
-                }
-                if (reqScrollbars &amp; 2) {
-                    me.showHorizontalScroller();
-                } else {
-                    me.hideHorizontalScroller();
-                }
-                me.suspendLayout = false;
-
-                // Lay out the Component.
-                me.doComponentLayout();
-                // Lay out me.items
-                me.getLayout().layout();
-            }
         }
-        delete me.determineScrollbarsRunning;
+        return true;
     },
 
-    onViewResize: function() {
-        this.determineScrollbars();
-    },
+    onCellMouseDown: Ext.emptyFn,
+    onCellMouseUp: Ext.emptyFn,
+    onCellClick: Ext.emptyFn,
+    onCellDblClick: Ext.emptyFn,
+    onCellContextMenu: Ext.emptyFn,
+    onCellKeyDown: Ext.emptyFn,
+    onBeforeCellMouseDown: Ext.emptyFn,
+    onBeforeCellMouseUp: Ext.emptyFn,
+    onBeforeCellClick: Ext.emptyFn,
+    onBeforeCellDblClick: Ext.emptyFn,
+    onBeforeCellContextMenu: Ext.emptyFn,
+    onBeforeCellKeyDown: Ext.emptyFn,
 
-    afterComponentLayout: function() {
-        this.callParent(arguments);
-        this.determineScrollbars();
-        this.invalidateScroller();
-    },
-
-    onHeaderResize: function() {
-        if (!this.componentLayout.layoutBusy &amp;&amp; this.view &amp;&amp; this.view.rendered) {
-            this.determineScrollbars();
-            this.invalidateScroller();
-        }
-    },
-
-    afterCollapse: function() {
-        var me = this;
-        if (me.verticalScroller) {
-            me.verticalScroller.saveScrollPos();
-        }
-        if (me.horizontalScroller) {
-            me.horizontalScroller.saveScrollPos();
-        }
-        me.callParent(arguments);
-    },
-
-    afterExpand: function() {
-        var me = this;
-        me.callParent(arguments);
-        if (me.verticalScroller) {
-            me.verticalScroller.restoreScrollPos();
-        }
-        if (me.horizontalScroller) {
-            me.horizontalScroller.restoreScrollPos();
-        }
-    },
-
-<span id='Ext-panel-Table-method-hideHorizontalScroller'>    /**
-</span>     * Hides the verticalScroller and removes the horizontalScrollerPresentCls.
-     */
-    hideHorizontalScroller: function() {
-        var me = this;
-
-        if (me.horizontalScroller &amp;&amp; me.horizontalScroller.ownerCt === me) {
-            me.verticalScroller.setReservedSpace(0);
-            me.removeDocked(me.horizontalScroller, false);
-            me.removeCls(me.horizontalScrollerPresentCls);
-            me.fireEvent('scrollerhide', me.horizontalScroller, 'horizontal');
-        }
-
-    },
-
-<span id='Ext-panel-Table-method-showHorizontalScroller'>    /**
-</span>     * Shows the horizontalScroller and add the horizontalScrollerPresentCls.
-     */
-    showHorizontalScroller: function() {
-        var me = this;
-
-        if (me.verticalScroller) {
-            me.verticalScroller.setReservedSpace(Ext.getScrollbarSize().height - 1);
-        }
-        if (me.horizontalScroller &amp;&amp; me.horizontalScroller.ownerCt !== me) {
-            me.addDocked(me.horizontalScroller);
-            me.addCls(me.horizontalScrollerPresentCls);
-            me.fireEvent('scrollershow', me.horizontalScroller, 'horizontal');
-        }
-    },
-
-<span id='Ext-panel-Table-method-hideVerticalScroller'>    /**
-</span>     * Hides the verticalScroller and removes the verticalScrollerPresentCls.
-     */
-    hideVerticalScroller: function() {
-        var me = this;
-
-        me.setHeaderReserveOffset(false);
-        if (me.verticalScroller &amp;&amp; me.verticalScroller.ownerCt === me) {
-            me.removeDocked(me.verticalScroller, false);
-            me.removeCls(me.verticalScrollerPresentCls);
-            me.fireEvent('scrollerhide', me.verticalScroller, 'vertical');
-        }
-    },
-
-<span id='Ext-panel-Table-method-showVerticalScroller'>    /**
-</span>     * Shows the verticalScroller and adds the verticalScrollerPresentCls.
-     */
-    showVerticalScroller: function() {
-        var me = this;
-
-        me.setHeaderReserveOffset(true);
-        if (me.verticalScroller &amp;&amp; me.verticalScroller.ownerCt !== me) {
-            me.addDocked(me.verticalScroller);
-            me.addCls(me.verticalScrollerPresentCls);
-            me.fireEvent('scrollershow', me.verticalScroller, 'vertical');
-        }
-    },
-
-    setHeaderReserveOffset: function (reserveOffset) {
-        var headerCt = this.headerCt,
-            layout = headerCt.layout;
-
-        // only trigger a layout when reserveOffset is changing
-        if (layout &amp;&amp; layout.reserveOffset !== reserveOffset) {
-            layout.reserveOffset = reserveOffset;
-            if (!this.suspendLayout) {
-                headerCt.doLayout();
-            }
-        }
-    },
-
-<span id='Ext-panel-Table-method-invalidateScroller'>    /**
-</span>     * Invalides scrollers that are present and forces a recalculation. (Not related to showing/hiding the scrollers)
-     */
-    invalidateScroller: function() {
-        var me = this,
-            vScroll = me.verticalScroller,
-            hScroll = me.horizontalScroller;
-
-        if (vScroll) {
-            vScroll.invalidate();
-        }
-        if (hScroll) {
-            hScroll.invalidate();
-        }
-    },
-
-    // refresh the view when a header moves
-    onHeaderMove: function(headerCt, header, fromIdx, toIdx) {
-        this.view.refresh();
-    },
-
-    // Section onHeaderHide is invoked after view.
-    onHeaderHide: function(headerCt, header) {
-        this.invalidateScroller();
-    },
-
-    onHeaderShow: function(headerCt, header) {
-        this.invalidateScroller();
-    },
-
-    getVerticalScroller: function() {
-        return this.getScrollerOwner().down('gridscroller[dock=' + this.verticalScrollDock + ']');
-    },
-
-    getHorizontalScroller: function() {
-        return this.getScrollerOwner().down('gridscroller[dock=bottom]');
-    },
-
-    onMouseWheel: function(e) {
-        var me = this,
-            vertScroller = me.getVerticalScroller(),
-            horizScroller = me.getHorizontalScroller(),
-            scrollDelta = -me.scrollDelta,
-            deltas = e.getWheelDeltas(),
-            deltaX = scrollDelta * deltas.x,
-            deltaY = scrollDelta * deltas.y,
-            vertScrollerEl, horizScrollerEl,
-            vertScrollerElDom, horizScrollerElDom,
-            horizontalCanScrollLeft, horizontalCanScrollRight,
-            verticalCanScrollDown, verticalCanScrollUp;
-
-        // calculate whether or not both scrollbars can scroll right/left and up/down
-        if (horizScroller) {
-            horizScrollerEl = horizScroller.scrollEl;
-            if (horizScrollerEl) {
-                horizScrollerElDom = horizScrollerEl.dom;
-                horizontalCanScrollRight = horizScrollerElDom.scrollLeft !== horizScrollerElDom.scrollWidth - horizScrollerElDom.clientWidth;
-                horizontalCanScrollLeft  = horizScrollerElDom.scrollLeft !== 0;
-            }
-        }
-        if (vertScroller) {
-            vertScrollerEl = vertScroller.scrollEl;
-            if (vertScrollerEl) {
-                vertScrollerElDom = vertScrollerEl.dom;
-                verticalCanScrollDown = vertScrollerElDom.scrollTop !== vertScrollerElDom.scrollHeight - vertScrollerElDom.clientHeight;
-                verticalCanScrollUp   = vertScrollerElDom.scrollTop !== 0;
-            }
-        }
-
-        if (horizScroller) {
-            if ((deltaX &lt; 0 &amp;&amp; horizontalCanScrollLeft) || (deltaX &gt; 0 &amp;&amp; horizontalCanScrollRight)) {
-                e.stopEvent();
-                horizScroller.scrollByDeltaX(deltaX);
-            }
-        }
-        if (vertScroller) {
-            if ((deltaY &lt; 0 &amp;&amp; verticalCanScrollUp) || (deltaY &gt; 0 &amp;&amp; verticalCanScrollDown)) {
-                e.stopEvent();
-                vertScroller.scrollByDeltaY(deltaY);
-            }
-        }
-    },
-
-<span id='Ext-panel-Table-method-onViewReady'>    /**
-</span>     * @private
-     * Fires the TablePanel's viewready event when the view declares that its internal DOM is ready
-     */
-    onViewReady: function() {
-        var me = this;
-        me.fireEvent('viewready', me);
-        if (me.deferRowRender) {
-            me.determineScrollbars();
-            me.invalidateScroller();
-        }
-    },
-
-<span id='Ext-panel-Table-method-onViewRefresh'>    /**
-</span>     * @private
-     * Determines and invalidates scrollers on view refresh
-     */
-    onViewRefresh: function() {
-        var me = this;
-
-        // Refresh *during* render must be ignored.
-        if (!me.rendering) {
-            this.determineScrollbars();
-            if (this.invalidateScrollerOnRefresh) {
-                this.invalidateScroller();
-            }
-        }
-    },
-
-<span id='Ext-panel-Table-method-setScrollTop'>    /**
-</span>     * Sets the scrollTop of the TablePanel.
-     * @param {Number} top
-     */
-    setScrollTop: function(top) {
-        var me               = this,
-            rootCmp          = me.getScrollerOwner(),
-            verticalScroller = me.getVerticalScroller();
-
-        rootCmp.virtualScrollTop = top;
-        if (verticalScroller) {
-            verticalScroller.setScrollTop(top);
-        }
-    },
-
-    getScrollerOwner: function() {
-        var rootCmp = this;
-        if (!this.scrollerOwner) {
-            rootCmp = this.up('[scrollerOwner]');
-        }
-        return rootCmp;
-    },
-
-<span id='Ext-panel-Table-method-scrollByDeltaY'>    /**
-</span>     * Scrolls the TablePanel by deltaY
-     * @param {Number} deltaY
-     */
-    scrollByDeltaY: function(deltaY) {
-        var verticalScroller = this.getVerticalScroller();
-
-        if (verticalScroller) {
-            verticalScroller.scrollByDeltaY(deltaY);
-        }
-    },
-
-<span id='Ext-panel-Table-method-scrollByDeltaX'>    /**
-</span>     * Scrolls the TablePanel by deltaX
-     * @param {Number} deltaX
-     */
-    scrollByDeltaX: function(deltaX) {
-        var horizontalScroller = this.getHorizontalScroller();
-
-        if (horizontalScroller) {
-            horizontalScroller.scrollByDeltaX(deltaX);
-        }
-    },
-
-<span id='Ext-panel-Table-method-getLhsMarker'>    /**
-</span>     * Gets left hand side marker for header resizing.
+<span id='Ext-view-Table-method-expandToFit'>    /**
+</span>     * Expands a particular header to fit the max content width.
+     * This will ONLY expand, not contract.
      * @private
      */
-    getLhsMarker: function() {
-        var me = this;
-
-        if (!me.lhsMarker) {
-            me.lhsMarker = Ext.DomHelper.append(me.el, {
-                cls: Ext.baseCSSPrefix + 'grid-resize-marker'
-            }, true);
+    expandToFit: function(header) {
+        if (header) {
+            var maxWidth = this.getMaxContentWidth(header);
+            delete header.flex;
+            header.setWidth(maxWidth);
         }
-        return me.lhsMarker;
     },
 
-<span id='Ext-panel-Table-method-getRhsMarker'>    /**
-</span>     * Gets right hand side marker for header resizing.
+<span id='Ext-view-Table-method-getMaxContentWidth'>    /**
+</span>     * Returns the max contentWidth of the header's text and all cells
+     * in the grid under this header.
      * @private
      */
-    getRhsMarker: function() {
-        var me = this;
-
-        if (!me.rhsMarker) {
-            me.rhsMarker = Ext.DomHelper.append(me.el, {
-                cls: Ext.baseCSSPrefix + 'grid-resize-marker'
-            }, true);
-        }
-        return me.rhsMarker;
-    },
-
-<span id='Ext-panel-Table-method-getSelectionModel'>    /**
-</span>     * Returns the selection model being used and creates it via the configuration if it has not been created already.
-     * @return {Ext.selection.Model} selModel
-     */
-    getSelectionModel: function(){
-        if (!this.selModel) {
-            this.selModel = {};
-        }
-
-        var mode = 'SINGLE',
-            type;
-        if (this.simpleSelect) {
-            mode = 'SIMPLE';
-        } else if (this.multiSelect) {
-            mode = 'MULTI';
-        }
-
-        Ext.applyIf(this.selModel, {
-            allowDeselect: this.allowDeselect,
-            mode: mode
-        });
-
-        if (!this.selModel.events) {
-            type = this.selModel.selType || this.selType;
-            this.selModel = Ext.create('selection.' + type, this.selModel);
-        }
-
-        if (!this.selModel.hasRelaySetup) {
-            this.relayEvents(this.selModel, [
-                'selectionchange', 'beforeselect', 'beforedeselect', 'select', 'deselect'
-            ]);
-            this.selModel.hasRelaySetup = true;
-        }
-
-        // lock the selection model if user
-        // has disabled selection
-        if (this.disableSelection) {
-            this.selModel.locked = true;
-        }
-        return this.selModel;
-    },
-
-    onVerticalScroll: function(event, target) {
-        var owner = this.getScrollerOwner(),
-            items = owner.query('tableview'),
+    getMaxContentWidth: function(header) {
+        var cellSelector = header.getCellInnerSelector(),
+            cells        = this.el.query(cellSelector),
             i = 0,
-            len = items.length;
+            ln = cells.length,
+            maxWidth = header.el.dom.scrollWidth,
+            scrollWidth;
 
-        for (; i &lt; len; i++) {
-            items[i].el.dom.scrollTop = target.scrollTop;
+        for (; i &lt; ln; i++) {
+            scrollWidth = cells[i].scrollWidth;
+            if (scrollWidth &gt; maxWidth) {
+                maxWidth = scrollWidth;
+            }
         }
+        return maxWidth;
     },
 
-    onHorizontalScroll: function(event, target) {
-        var owner = this.getScrollerOwner(),
-            items = owner.query('tableview'),
-            center = items[1] || items[0];
+    getPositionByEvent: function(e) {
+        var me       = this,
+            cellNode = e.getTarget(me.cellSelector),
+            rowNode  = e.getTarget(me.itemSelector),
+            record   = me.getRecord(rowNode),
+            header   = me.getHeaderByCell(cellNode);
 
-        center.el.dom.scrollLeft = target.scrollLeft;
-        this.headerCt.el.dom.scrollLeft = target.scrollLeft;
+        return me.getPosition(record, header);
     },
 
-    // template method meant to be overriden
-    onStoreLoad: Ext.emptyFn,
-
-    getEditorParent: function() {
-        return this.body;
+    getHeaderByCell: function(cell) {
+        if (cell) {
+            var m = cell.className.match(this.cellRe);
+            if (m &amp;&amp; m[1]) {
+                return Ext.getCmp(m[1]);
+            }
+        }
+        return false;
     },
 
-    bindStore: function(store) {
-        var me = this;
-        me.store = store;
-        me.getView().bindStore(store);
-    },
-    
-    beforeDestroy: function(){
-        // may be some duplication here since the horizontal and vertical
-        // scroller may be part of the docked items, but we need to clean
-        // them up in case they aren't visible.
-        Ext.destroy(this.horizontalScroller, this.verticalScroller);
-        this.callParent();
-    },
-
-<span id='Ext-panel-Table-method-reconfigure'>    /**
-</span>     * Reconfigures the table with a new store/columns. Either the store or the columns can be ommitted if you don't wish
-     * to change them.
-     * @param {Ext.data.Store} store (Optional) The new store.
-     * @param {Object[]} columns (Optional) An array of column configs
+<span id='Ext-view-Table-method-walkCells'>    /**
+</span>     * @param {Object} position The current row and column: an object containing the following properties:
+     *
+     * - row - The row index
+     * - column - The column index
+     *
+     * @param {String} direction 'up', 'down', 'right' and 'left'
+     * @param {Ext.EventObject} e event
+     * @param {Boolean} preventWrap Set to true to prevent wrap around to the next or previous row.
+     * @param {Function} verifierFn A function to verify the validity of the calculated position.
+     * When using this function, you must return true to allow the newPosition to be returned.
+     * @param {Object} scope Scope to run the verifierFn in
+     * @returns {Object} newPosition An object containing the following properties:
+     *
+     * - row - The row index
+     * - column - The column index
+     *
+     * @private
      */
-    reconfigure: function(store, columns) {
-        var me = this,
-            headerCt = me.headerCt;
+    walkCells: function(pos, direction, e, preventWrap, verifierFn, scope) {
+        var me       = this,
+            row      = pos.row,
+            column   = pos.column,
+            rowCount = me.store.getCount(),
+            firstCol = me.getFirstVisibleColumnIndex(),
+            lastCol  = me.getLastVisibleColumnIndex(),
+            newPos   = {row: row, column: column},
+            activeHeader = me.headerCt.getHeaderAtIndex(column);
 
-        if (me.lockable) {
-            me.reconfigureLockable(store, columns);
+        // no active header or its currently hidden
+        if (!activeHeader || activeHeader.hidden) {
+            return false;
+        }
+
+        e = e || {};
+        direction = direction.toLowerCase();
+        switch (direction) {
+            case 'right':
+                // has the potential to wrap if its last
+                if (column === lastCol) {
+                    // if bottom row and last column, deny right
+                    if (preventWrap || row === rowCount - 1) {
+                        return false;
+                    }
+                    if (!e.ctrlKey) {
+                        // otherwise wrap to nextRow and firstCol
+                        newPos.row = row + 1;
+                        newPos.column = firstCol;
+                    }
+                // go right
+                } else {
+                    if (!e.ctrlKey) {
+                        newPos.column = column + me.getRightGap(activeHeader);
+                    } else {
+                        newPos.column = lastCol;
+                    }
+                }
+                break;
+
+            case 'left':
+                // has the potential to wrap
+                if (column === firstCol) {
+                    // if top row and first column, deny left
+                    if (preventWrap || row === 0) {
+                        return false;
+                    }
+                    if (!e.ctrlKey) {
+                        // otherwise wrap to prevRow and lastCol
+                        newPos.row = row - 1;
+                        newPos.column = lastCol;
+                    }
+                // go left
+                } else {
+                    if (!e.ctrlKey) {
+                        newPos.column = column + me.getLeftGap(activeHeader);
+                    } else {
+                        newPos.column = firstCol;
+                    }
+                }
+                break;
+
+            case 'up':
+                // if top row, deny up
+                if (row === 0) {
+                    return false;
+                // go up
+                } else {
+                    if (!e.ctrlKey) {
+                        newPos.row = row - 1;
+                    } else {
+                        newPos.row = 0;
+                    }
+                }
+                break;
+
+            case 'down':
+                // if bottom row, deny down
+                if (row === rowCount - 1) {
+                    return false;
+                // go down
+                } else {
+                    if (!e.ctrlKey) {
+                        newPos.row = row + 1;
+                    } else {
+                        newPos.row = rowCount - 1;
+                    }
+                }
+                break;
+        }
+
+        if (verifierFn &amp;&amp; verifierFn.call(scope || window, newPos) !== true) {
+            return false;
         } else {
-            if (columns) {
-                headerCt.suspendLayout = true;
-                headerCt.removeAll();
-                headerCt.add(columns);
-            }
-            if (store) {
-                store = Ext.StoreManager.lookup(store);
-                me.bindStore(store);
-            } else {
-                me.getView().refresh();
-            }
-            if (columns) {
-                headerCt.suspendLayout = false;
-                me.forceComponentLayout();
+            return newPos;
+        }
+    },
+    getFirstVisibleColumnIndex: function() {
+        var headerCt   = this.getHeaderCt(),
+            allColumns = headerCt.getGridColumns(),
+            visHeaders = Ext.ComponentQuery.query(':not([hidden])', allColumns),
+            firstHeader = visHeaders[0];
+
+        return headerCt.getHeaderIndex(firstHeader);
+    },
+
+    getLastVisibleColumnIndex: function() {
+        var headerCt   = this.getHeaderCt(),
+            allColumns = headerCt.getGridColumns(),
+            visHeaders = Ext.ComponentQuery.query(':not([hidden])', allColumns),
+            lastHeader = visHeaders[visHeaders.length - 1];
+
+        return headerCt.getHeaderIndex(lastHeader);
+    },
+
+    getHeaderCt: function() {
+        return this.headerCt;
+    },
+
+    getPosition: function(record, header) {
+        var me = this,
+            store = me.store,
+            gridCols = me.headerCt.getGridColumns();
+
+        return {
+            row: store.indexOf(record),
+            column: Ext.Array.indexOf(gridCols, header)
+        };
+    },
+
+<span id='Ext-view-Table-method-getRightGap'>    /**
+</span>     * Determines the 'gap' between the closest adjacent header to the right
+     * that is not hidden.
+     * @private
+     */
+    getRightGap: function(activeHeader) {
+        var headerCt        = this.getHeaderCt(),
+            headers         = headerCt.getGridColumns(),
+            activeHeaderIdx = Ext.Array.indexOf(headers, activeHeader),
+            i               = activeHeaderIdx + 1,
+            nextIdx;
+
+        for (; i &lt;= headers.length; i++) {
+            if (!headers[i].hidden) {
+                nextIdx = i;
+                break;
             }
         }
-        me.fireEvent('reconfigure', me);
+
+        return nextIdx - activeHeaderIdx;
+    },
+
+    beforeDestroy: function() {
+        if (this.rendered) {
+            this.el.removeAllListeners();
+        }
+        this.callParent(arguments);
+    },
+
+<span id='Ext-view-Table-method-getLeftGap'>    /**
+</span>     * Determines the 'gap' between the closest adjacent header to the left
+     * that is not hidden.
+     * @private
+     */
+    getLeftGap: function(activeHeader) {
+        var headerCt        = this.getHeaderCt(),
+            headers         = headerCt.getGridColumns(),
+            activeHeaderIdx = Ext.Array.indexOf(headers, activeHeader),
+            i               = activeHeaderIdx - 1,
+            prevIdx;
+
+        for (; i &gt;= 0; i--) {
+            if (!headers[i].hidden) {
+                prevIdx = i;
+                break;
+            }
+        }
+
+        return prevIdx - activeHeaderIdx;
     }
 });
 </pre>

@@ -90,14 +90,14 @@
             if(!config.model) {
                 config.model = this.model;
             }
-            if(!proxy.directFn) {
+            if(!proxy.directFn &amp;&amp; !(proxy.api &amp;&amp; proxy.api.read)) {
                 proxy.directFn = this.directFn;
-            }
             
-            if(!proxy.directFn) {
-                var actions = Ext.ClassManager.get(config.model).prototype.actionsConfiguration;
+                if(!proxy.directFn) {
+                    var actions = Ext.ClassManager.get(config.model).prototype.actionsConfiguration;
 
-                proxy.directFn = actions[this.directSuffix];
+                    proxy.directFn = actions[this.directSuffix];
+                }
             }
             
             this.callParent([config]);
