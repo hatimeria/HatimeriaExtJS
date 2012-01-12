@@ -1,16 +1,25 @@
 /**
- * Base store
- * @example
+ * Base direct store
+ * 
+ *     @example
+ *     Ext.define("Foo.BarModel", {
+ *          extend: 'Hatimeria.core.model.DirectModel',
+ *          api: 'FooBundle_BarController',
+ *          // first field as id property for model and store
+ *          fields: ['id','name']
+ *     })
+ * 
  *     Ext.define("Foo.BarStore", {
- *      extend: 'Hatimeria.core.store.BaseStore'
- *      model: 'Foo.BarModel"
+ *          extend: 'Hatimeria.core.store.BaseStore',
+ *          model: 'Foo.BarModel",
+ *          directSuffix: 'top' // it will be Actions.FooBundle_BarController.top
  *     });
  * 
  * @class Hatimeria.core.store.BaseStore
  * @extends Ext.data.DirectStore
  */
 (function() {
-    
+
     Ext.define('Hatimeria.core.store.BaseStore', {
         extend: 'Ext.data.Store',
         requires: ['Ext.data.proxy.Direct'],
@@ -19,6 +28,12 @@
             remoteSort: true,
             autoLoad: true
         },
+        /**
+         * Direct function suffix to be added to model api prefix
+         * 
+         * @cfg {String}
+         */        
+        directSuffix: 'list',
 
         /**
          * Constructor
@@ -53,14 +68,21 @@
             Ext.copyTo(proxy.reader, this, 'totalProperty,root,idProperty');
             Ext.copyTo(proxy, cfg, 'paramOrder,paramsAsHash,directFn,api,simpleSortMode');
             Ext.copyTo(proxy.reader, cfg, 'totalProperty,root,idProperty');
+            Ext.copyTo(this, cfg, 'directSuffix');
             config.proxy = proxy;
             if(!config.model) {
                 config.model = this.model;
             }
-            if(!config.proxy.directFn) {
-                config.proxy.directFn = this.directFn;
-            }
+            if(!proxy.directFn && !(proxy.api && proxy.api.read)) {
+                proxy.directFn = this.directFn;
+            
+                if(!proxy.directFn) {
+                    var actions = Ext.ClassManager.get(config.model).prototype.actionsConfiguration;
 
+                    proxy.directFn = actions[this.directSuffix];
+                }
+            }
+            
             this.callParent([config]);
         },
         

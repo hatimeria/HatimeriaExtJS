@@ -30,6 +30,18 @@
 Ext.define(&quot;Hatimeria.core.model.DirectModel&quot;, {
     extend: 'Ext.data.Model',
     requires: ['Hatimeria.core.mixins.ConfigurableExternal'],
+<span id='Hatimeria-core-model-DirectModel-cfg-api'>    /**
+</span>     * Api config or api prefix (&quot;FooBundle_BarController&quot;)
+     *
+     * @cfg {String}\{Object}
+     */
+    api: null,
+<span id='Hatimeria-core-model-DirectModel-property-actionsConfiguration'>    /**
+</span>     * Part of Actions belongs to this model
+     *
+     * @property {Object}
+     */
+    actionsConfiguration: null,
     
     onClassExtended: function(cls, data) {
         
@@ -43,8 +55,11 @@ Ext.define(&quot;Hatimeria.core.model.DirectModel&quot;, {
                 update: Actions[controller].update,
                 destroy: Actions[controller].destroy,
                 create: Actions[controller].create,
-                read: Actions[controller].read
+                read: Actions[controller].read,
+                list: Actions[controller].list
             }
+            
+            data.actionsConfiguration = Actions[controller];
         }
         
         data.proxy = {
