@@ -151,15 +151,19 @@
             
             for (var name in actions)
             {
-                items.push({
-                    text: actions[name],
-                    cls: 'ux-' + name,
-                    scope: this,
-                    handler: function() {
-                        this['on' + Ext.capitalize(name) + 'Click'](record, index);
-                    }
-                });
+                (function(name, scope) {
+                    items.push({
+                        text: actions[name],
+                        cls: 'ux-' + name,
+                        scope: scope,
+                        handler: function() {
+                            scope['on' + Ext.String.capitalize(name) + 'Click'](record, index);
+                        }
+                    });
+                })(name, this);
             }
+            
+            return items;
         },
         
         /**
