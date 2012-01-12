@@ -1,5 +1,8 @@
-/* 
- * BaseGrid
+/**
+ * Base Grid
+ * 
+ * @class Hatimeria.core.grid.BaseGrid
+ * @extends Ext.grid.Panel
  */
 (function() {
     
