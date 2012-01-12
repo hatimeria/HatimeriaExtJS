@@ -33,6 +33,11 @@
         /**
          * Row operations
          * 
+         * predefined:
+         *   - edit
+         *   - clone
+         *   - remove
+         * 
          * @cfg {Array}/{String}/{Object} rowActions
          * @example
          *     rowActions: ['edit', 'remove', 'clone']
@@ -44,6 +49,10 @@
          *     }
          *  or   
          *     rowActions: "edit, remove, clone" 
+         *     
+         * adding custom hadlers:
+         * 1. set: rowActions: {'enable': 'Enable it!'}
+         * 2. add method: onEnableClick: function(record, index) { ... }
          */
         rowActions: {},
         
@@ -169,7 +178,7 @@
                     for (var i=0; i<this.rowActions.length; i++)
                     {
                         var item = this.rowActions[i];
-                        actions[item] = this.defaultRowActions[item];
+                        actions[item] = this.defaultRowActions[item] ? this.defaultRowActions[item] : Ext.String.capitalize(item) ;
                     }
                     this.rowActions = actions;
                 }
