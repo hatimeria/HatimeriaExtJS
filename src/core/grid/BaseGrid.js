@@ -13,7 +13,8 @@
  *          ...
  *          windowEditClass: 'Foo.BarWindow',
  *          rowActions: ['edit', 'clone', 'remove'],
- *          dockedElements: ['paging', 'add]
+ *          dockedElements: ['paging', 'add],
+ *          actionColumn: true
  *          ...
  *        });
  *      }
@@ -64,6 +65,18 @@
         dockedElements: ['paging'],
         
         /**
+         * Action column added as last column in grid
+         *
+         *    @example: 
+         *    actionColumn: true
+         * or:
+         *    actionColumn: '/images/menu.gif'
+         *    
+         * @cfg {String}/{Boolean} actionColumn
+         */
+        actionColumn: false,
+        
+        /**
          * Class name of edit window
          * 
          * @private
@@ -87,7 +100,11 @@
         initComponent: function()
         {
             var grid = this;
+            
+            // Docked items: 
             this.dockedItems = this.getDockedElements();
+            
+            // Traslations of columns
             if(this.transDomain) {
                 Ext.each(this.columns, function(column) {
                     if(!column.header) {
@@ -95,9 +112,18 @@
                     }
                 });
             }
-            this.callParent();
-            var actions = this.getRowActions();
             
+            // Action column with row-operations:
+            var actions = this.getRowActions();
+            if (this.actionColumn)
+            {
+                this.columns.push(this.getRowActionsColumn());
+            }
+            
+            this.callParent();
+            
+            
+            // Mouse row-operations:
             this.on({
                 itemcontextmenu: {
                     scope: this,
@@ -185,6 +211,29 @@
             }
             
             return this.rowActions;
+        },
+        
+        /**
+         * Action column with row-operations
+         * 
+         * @private
+         * @return {Object}
+         */
+        getRowActionsColumn: function()
+        {
+            var _this = this;
+            return {
+                xtype: 'actioncolumn',
+                width: 50,
+                items: [{
+                    icon: (Ext.isString(this.actionColumn) ? this.actionColumn : '/bundles/hatimeriaadmin/images/row-menu.png'),
+                    handler: function(grid, rowIndex, colIndex, icon, event) {
+                        Ext.create('Ext.menu.Menu', {
+                            items: _this.getContextMenuItems(grid.getStore().getAt(rowIndex), rowIndex)
+                        }).showAt(event.getXY());
+                    }
+                }]
+            };
         },
         
         /**
