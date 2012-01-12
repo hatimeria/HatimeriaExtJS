@@ -116,7 +116,6 @@
             } 
             
             if(this.value) {
-                console.log(this.value, this.store.getAt(0));
                 this.validate();
             }
             
