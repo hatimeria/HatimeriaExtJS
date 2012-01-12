@@ -3,11 +3,22 @@
  * Component should be mixex to each other components
  * 
  * @class Hatimeria.core.mixins.Translationable
+ * @extend Ext.Base
  */
 (function() {
     
     Ext.define('Hatimeria.core.mixins.Translationable', {
         extend: 'Ext.Base',
+        /**
+         * @cfg {String} domain name
+         * 
+         */
+        transDomain: null,
+        /**
+         * @cfg {String} key namespace/prefix
+         * 
+         */        
+        transNS: null,
         
         /**
          * Translate by key

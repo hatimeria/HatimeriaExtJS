@@ -26,7 +26,8 @@
         extend: 'Ext.grid.Panel',
         alternateClassName: 'HatimeriaAdmin.core.grid.BaseGrid',
         mixins: {
-            configurable: 'Hatimeria.core.mixins.ConfigurableExternal'
+            configurable: 'Hatimeria.core.mixins.ConfigurableExternal',
+            translationable: 'Hatimeria.core.mixins.Translationable'
         },
         
         /**
@@ -76,7 +77,15 @@
          */
         initComponent: function()
         {
+            var grid = this;
             this.dockedItems = this.getDockedElements();
+            if(this.transDomain) {
+                Ext.each(this.columns, function(column) {
+                    if(!column.header) {
+                        column.header = grid.__(column.dataIndex);
+                    }
+                });
+            }
             this.callParent();
             var actions = this.getRowActions();
             
