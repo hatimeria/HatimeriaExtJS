@@ -171,7 +171,7 @@
                     docked: 'top',
                     items: [{
                         xtype: 'button',
-                        iconCls: 'icon-user-add',
+                        iconCls: 'icon-add',
                         text: 'Dodaj',
                         scope: this,
                         handler: function() {
