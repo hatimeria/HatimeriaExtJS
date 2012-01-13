@@ -18,6 +18,18 @@
   <pre class="prettyprint lang-js"><span id='Hatimeria-google-Map'>/** 
 </span> * Google map
  * 
+ *      @example
+ *      Add to page headers this javascript: http://maps.googleapis.com/maps/api/js?sensor=false
+ *         Ext.create('Hatimeria.google.Map', {
+ *              renderTo: 'maps-container',
+ *              zoom: 6,
+ *              center: 'Polska',
+ *              addresses: [
+ *                  'Bydgoszcz, ul. Mińska 7',
+ *                  'Kraków, ul. Portowa 3'
+ *              ]
+ *          });
+ *      
  * @class Hatimeria.google.Map
  */
 Ext.define(&quot;Hatimeria.google.Map&quot;, {
@@ -27,12 +39,42 @@ Ext.define(&quot;Hatimeria.google.Map&quot;, {
      * @cfg {String} address
      */    
     address: null,
+<span id='Hatimeria-google-Map-cfg-addresses'>    /**
+</span>     * Addresses for geocoder
+     * 
+     * @cfg {Array} addresses
+     */    
+    addresses: null,
 <span id='Hatimeria-google-Map-cfg-renderTo'>    /**
 </span>     * Dom element id in which map will be placed
      * 
      * @cfg {String} renderTo
      */    
     renderTo: null,
+<span id='Hatimeria-google-Map-property-map'>    /**
+</span>     * Google map instance
+     * 
+     * @property {Object} map
+     */
+    map: null,
+<span id='Hatimeria-google-Map-property-geocoder'>    /**
+</span>     * Google geocoder instance
+     * 
+     * @property {Object} geocoder
+     */
+    geocoder: null,
+<span id='Hatimeria-google-Map-cfg-zoom'>    /**
+</span>     * Zoom value
+     * 
+     * @cfg {Number} zoom
+     */
+    zoom: 9,
+<span id='Hatimeria-google-Map-cfg-center'>    /**
+</span>     * Center address
+     * 
+     * @cfg {String} center
+     */
+    center: null,
     
 <span id='Hatimeria-google-Map-method-constructor'>    /**
 </span>     * Constructor
@@ -42,18 +84,69 @@ Ext.define(&quot;Hatimeria.google.Map&quot;, {
     constructor: function(config)
     {
         this.geocoder = new google.maps.Geocoder();
-
-        return this;
+        
+        Ext.apply(this, config);
+        
+        return this
     },
-    
+       
 <span id='Hatimeria-google-Map-method-render'>    /**
 </span>     * Renders map
      */    
     render: function()
     {
-        this.geocoder.geocode( {
-            'address': this.config.address
-        }, Ext.bind(this.handleGoogleResponse, this));
+        var me = this;
+        me.createMap();
+        Ext.each(me.getAddresses(), function(address, index) {
+            me.getLocalization(address, Ext.bind(me.addMarker, me, [index], true));
+        });
+        
+        this.centerMap();
+    },
+    
+<span id='Hatimeria-google-Map-method-addMarker'>    /**
+</span>     * Add makers
+     *
+     * @param {String} localization
+     * @private
+     */
+    addMarker: function(localization, index)
+    {
+        var marker = new google.maps.Marker({
+                    map: this.map,
+                    title: '',
+                    position: localization
+        });
+        
+        google.maps.event.addListener(marker, 'click', Ext.bind(this.showMarkerInfo, this, [marker, index]));
+    },
+    
+<span id='Hatimeria-google-Map-method-showMarkerInfo'>    /**
+</span>     * Shows popup window when marker is clicked
+     *
+     * @private
+     */    
+    showMarkerInfo: function(marker, index)
+    {
+        var content = this.getInfoContent(index);
+        if(content) {
+            var info = new google.maps.InfoWindow({
+                content: content
+            });
+
+            info.open(this.map, marker);
+        }
+    },    
+    
+<span id='Hatimeria-google-Map-method-getInfoContent'>    /**
+</span>     * Get info content for marker
+     *
+     * @private
+     * @return {Boolean}\{String}
+     */
+    getInfoContent: function(index)
+    {
+        return false;
     },
     
 <span id='Hatimeria-google-Map-method-getContainer'>    /**
@@ -63,32 +156,76 @@ Ext.define(&quot;Hatimeria.google.Map&quot;, {
      */
     getContainer: function()
     {
-        return document.getElementById(this.config.renderTo);
+        return document.getElementById(this.renderTo);
     },
     
-<span id='Hatimeria-google-Map-method-handleGoogleResponse'>    /**
+<span id='Hatimeria-google-Map-method-getAddresses'>    /**
+</span>     * Get addresses
+     *
+     * @private
+     */
+    getAddresses: function()
+    {
+        if(this.address) {
+            return [this.address];
+        } else {
+            return this.addresses;
+        }
+    },
+    
+<span id='Hatimeria-google-Map-method-createMap'>    /**
+</span>     * Creates map
+     *
+     * @private
+     */
+    createMap: function() {
+        var myOptions = {
+            zoom: this.zoom,
+            mapTypeId: google.maps.MapTypeId.TERRAIN
+        };
+        
+        this.map = new google.maps.Map(this.getContainer(), myOptions);
+    },
+    
+<span id='Hatimeria-google-Map-method-getLocalization'>    /**
 </span>     * Get localization from google service
      *
      * @private
      */
-    handleGoogleResponse: function(results, status)
+    getLocalization: function(address, success, failure)
     {
-        if (status == google.maps.GeocoderStatus.OK) {
-            var latlng = new google.maps.LatLng(-34.397, 150.644);
-            var myOptions = {
-                zoom: 9,
-                center: latlng,
-                mapTypeId: google.maps.MapTypeId.ROADMAP
-            }                  
-            var map = new google.maps.Map(this.getContainer(), myOptions);
-            map.setCenter(results[0].geometry.location);
-            var marker = new google.maps.Marker({
-                map: map,
-                position: results[0].geometry.location
-            });
-        } else {
-            alert(&quot;Geocode was not successful for the following reason: &quot; + status);
+        this.geocoder.geocode( {
+            'address': address
+        }, function(results, status) {
+            if (status == google.maps.GeocoderStatus.OK) {
+                    success(results[0].geometry.location);
+            } else {
+                if(failure) {
+                    failure();
+                }
+            }
+        });
+        
+    },
+    
+<span id='Hatimeria-google-Map-method-centerMap'>    /**
+</span>     * Center map;
+     *
+     * @private
+     * @return {Boolean}
+     */
+    centerMap: function() 
+    {
+        var me = this;
+        var address = this.center;
+        
+        if(!address) {
+            address = this.getAddresses()[0];
         }
+        
+        var localization = this.getLocalization(address, function(localization) {
+            me.map.setCenter(localization);
+        });
     }
 })</pre>
 </body>
