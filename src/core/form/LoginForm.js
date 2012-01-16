@@ -10,6 +10,8 @@
         extend: "Hatimeria.core.form.BaseForm",
         transNS: "form.login",
         transDomain: 'HatimeriaExtJSBundle',
+        // name of route for redirect after succesfull login
+        afterLogin: 'hatimeria_admin',
 
         /**
          * Constructor
@@ -38,11 +40,12 @@
          */
         initComponent: function()
         {
+            var form = this;
             this.submitConfig = {
                 text: this.__('submit'),
                 failureWindowTitle: this.__("failureTitle"),
                 success: function() { 
-                    window.location = Routing.generate('homepage'); 
+                    window.location = Routing.generate(form.afterLogin); 
                 }
             };
 
