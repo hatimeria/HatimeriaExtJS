@@ -65,7 +65,6 @@
                         fieldLabel: this.__('login'),
                         name: '_username',
                         allowBlank: false,
-                        height: 25,
                         listeners: {
                             specialkey: {scope: this, fn: this.onFieldEnter}
                         }
@@ -76,7 +75,6 @@
                         inputType: 'password',
                         name: '_password',
                         allowBlank: false,
-                        height: 25,
                         listeners: {
                             specialkey: {scope: this, fn: this.onFieldEnter}
                         }
