@@ -6,6 +6,7 @@
  */
 Ext.define("Hatimeria.core.form.BaseForm", {
     extend: "Ext.form.Panel",
+    alias: 'widget.h-form',
     requires: [
         'Ext.form.action.DirectLoad',
         'Hatimeria.core.response.FormHandler'
@@ -52,6 +53,15 @@ Ext.define("Hatimeria.core.form.BaseForm", {
                 submit: this.submitConfig.submit
             }});
         }
+        
+        config.defaults = config.defaults || {};
+        
+        Ext.apply(config.defaults, {
+            labelAlign: 'right',
+            labelSeparator: '',
+            labelStyle: 'color: #666',
+            msgTarget: 'under'
+        });
         
         if (typeof cfg == 'object' && typeof cfg.submitConfig == 'object' && typeof cfg.submitConfig.submit == 'function')
         {
