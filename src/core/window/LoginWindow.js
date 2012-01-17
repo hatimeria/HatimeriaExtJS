@@ -7,7 +7,9 @@
         },    
         transDomain: 'HatimeriaExtJSBundle',
         width: 510,
-        height: 270,
+        height: 350,
+        closable: false,
+        resizable: false,
         layout: {
             type: 'fit',
             align: 'center'
@@ -15,7 +17,11 @@
         initComponent: function() {
             this.callParent();
             this.title = this.__("window.login.title");
-            this.add(Ext.create("Hatimeria.core.form.LoginForm"));
+            this.add(Ext.create("Hatimeria.core.form.LoginForm", {
+                defaults: {
+                    width: 400
+                }
+            }));
         }
     });
     
