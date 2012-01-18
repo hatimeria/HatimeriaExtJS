@@ -76,12 +76,10 @@
          *
          *    @example: 
          *    actionColumn: true
-         * or:
-         *    actionColumn: '/images/menu.gif'
          *    
          * @cfg {String}/{Boolean} actionColumn
          */
-        actionColumn: false,
+        actionColumn: true,
         
         /**
          * Class name of edit window
@@ -100,6 +98,13 @@
             remove: 'Usuń',
             clone: 'Klonuj'
         },
+        
+        /**
+         * Add or remove action based on current record
+         *
+         * @cfg {Function} addConditionalRowActions
+         */
+        addConditionalRowActions: function(actions, record) {return actions},
         
         transNS: 'grid',
         
@@ -151,6 +156,10 @@
                     scope: this,
                     fn: this.onContextMenu
                 },
+                itemclick: {
+                    scope: this,
+                    fn: this.onItemClick
+                },
                 itemdblclick: {
                     scope: this, 
                     fn: function(grid, record, el, index) {
@@ -161,6 +170,17 @@
                     }
                 }
             });
+        },
+        
+        /**
+         * On item click
+         *
+         * @private
+         */
+        onItemClick: function(grid, record, el, index, e) {
+            if(e.getTarget().parentNode.className.match(/actions-show-column/)) {
+                this.onContextMenu(grid, record, el, index, e);
+            }
         },
         
         /**
@@ -212,7 +232,7 @@
          * @private
          * @return {Object}
          */
-        getRowActions: function()
+        getRowActions: function(record)
         {
             if (Ext.isArray(this.rowActions) || Ext.isString(this.rowActions))
             {
@@ -243,18 +263,13 @@
          */
         getRowActionsColumn: function()
         {
-            var _this = this;
             return {
-                xtype: 'actioncolumn',
-                width: 50,
-                items: [{
-                    icon: (Ext.isString(this.actionColumn) ? this.actionColumn : '/bundles/hatimeriaadmin/images/row-menu.png'),
-                    handler: function(grid, rowIndex, colIndex, icon, event) {
-                        Ext.create('Ext.menu.Menu', {
-                            items: _this.getContextMenuItems(grid.getStore().getAt(rowIndex), rowIndex)
-                        }).showAt(event.getXY());
-                    }
-                }]
+                tdCls: 'actions-show-column',
+                width: 100,
+                header: '&nbsp;',
+                renderer: function() {
+                    return 'Opcje'
+                }
             };
         },
         
@@ -307,13 +322,15 @@
         getContextMenuItems: function(record, index)
         {
             var items = [];
-            var actions = this.getRowActions();
+            var actions = this.getRowActions(record);
+            this.addConditionalRecordActions(actions, record);
             
             for (var name in actions)
             {
+                var label = actions[name];
                 (function(name, scope) {
                     items.push({
-                        text: actions[name],
+                        text: typeof label == 'function' ? label(record) : label,
                         cls: 'ux-' + name,
                         scope: scope,
                         handler: function() {
