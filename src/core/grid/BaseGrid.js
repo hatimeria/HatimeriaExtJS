@@ -142,13 +142,12 @@
             
             // Action column with row-operations:
             var actions = this.getRowActions();
-            if (this.actionColumn)
+            if (!Ext.isEmpty(actions) && this.actionColumn)
             {
                 this.columns.push(this.getRowActionsColumn());
             }
             
             this.callParent();
-            
             
             // Mouse row-operations:
             this.on({
