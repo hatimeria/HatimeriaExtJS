@@ -54,13 +54,12 @@ var ExposeTranslation = ExposeTranslation || {};
      */
     function guess_domain(key) {
       var _k,
-          _key = key,
           _defaultDomains = Translation.defaultDomains;
 
       if (!Ext.isArray(Translation.defaultDomains)) {
         _defaultDomains = [Translation.defaultDomains];
       }
-
+      
       for (_k in _defaultDomains) {
         if (Translation.has(_defaultDomains[_k] + ':' + key)) {
           return Translation.get(_defaultDomains[_k] + ':' + key);
