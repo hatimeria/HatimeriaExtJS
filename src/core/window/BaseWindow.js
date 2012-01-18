@@ -4,8 +4,7 @@
         extend: "Ext.window.Window",
         mixins: {
             translationable: 'Hatimeria.core.mixins.Translationable'
-        },
-        transDomain: 'HatimeriaExtJSBundle'
+        }
     });
     
 })();

@@ -14,7 +14,7 @@ Ext.define("Hatimeria.core.form.BaseForm", {
     mixins: {
         translationable: 'Hatimeria.core.mixins.Translationable'
     },
-    transDomain: 'HatimeriaExtJSBundle',
+    transNS: 'form',
     
     /**
      * @cfg {Object} submitConfig
@@ -38,6 +38,16 @@ Ext.define("Hatimeria.core.form.BaseForm", {
     submitHandler: undefined,
     
     /**
+        * Used for translation for current class not extended one
+        * 
+        * @private
+        */
+    translate: function(key, placeholders)
+    {
+        return this.statics().prototype.__(key, placeholders);
+    },    
+    
+    /**
      * Constructor
      * 
      * @param {Object} cfg
@@ -47,11 +57,17 @@ Ext.define("Hatimeria.core.form.BaseForm", {
     {
         var config = cfg || {};
         
-        if (typeof this.submitConfig == 'object' && typeof this.submitConfig.submit == 'function')
+        if (typeof this.submitConfig == 'object')
         {
-            Ext.merge(config, {api: {
-                submit: this.submitConfig.submit
-            }});
+            if(typeof this.submitConfig.submit == 'function') {
+                Ext.merge(config, {api: {
+                    submit: this.submitConfig.submit
+                }});
+            }
+            
+            if(!this.submitConfig.text) {
+                this.submitConfig.text = this.translate('save');
+            }
         }
         
         config.defaults = config.defaults || {};
@@ -223,7 +239,7 @@ Ext.define("Hatimeria.core.form.BaseForm", {
         {
             var config = this.submitConfig || {};
             this.submitHandler = Ext.create("Hatimeria.core.response.FormHandler", {
-                failureWindowTitle: config.failureWindowTitle || this.__('form.alert_title'),
+                failureWindowTitle: config.failureWindowTitle || this.translate('alert_title'),
                 success: config.success || function() {},
                 formPanel: this
             });

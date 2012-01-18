@@ -65,6 +65,13 @@
         dockedElements: ['paging'],
         
         /**
+         * Translate title, headers etc ?
+         * 
+         * @cfg {Boolean} translateAll
+         */
+        translateAll: false,
+        
+        /**
          * Action column added as last column in grid
          *
          *    @example: 
@@ -94,23 +101,38 @@
             clone: 'Klonuj'
         },
         
+        transNS: 'grid',
+        
+        /**
+         * Used for translation for current class not extended one
+         * 
+         * @private
+         */
+        translate: function(key, placeholders)
+        {
+            return this.statics().prototype.__(key, placeholders);
+        },
+        
         /**
          * Initializes component
          */
         initComponent: function()
         {
             var grid = this;
-            
             // Docked items: 
             this.dockedItems = this.getDockedElements();
             
-            // Traslations of columns
-            if(this.transDomain) {
+            if(this.translateAll) {
+                Ext.Object.each(this.defaultRowActions, function(key, value, property) {
+                    property[key] = grid.translate('actions.' + key);
+                });
                 Ext.each(this.columns, function(column) {
                     if(!column.header) {
-                        column.header = grid.__(column.dataIndex);
+                        column.header = grid.__('headers.'+column.dataIndex);
                     }
                 });
+                
+                this.title = grid.__('title');
             }
             
             // Action column with row-operations:
@@ -158,8 +180,8 @@
                     dock: 'bottom',
                     store: this.store,
                     displayInfo: true,
-                    displayMsg: 'Rekordy {0} - {1} z {2}',
-                    emptyMsg: "Brak rekordów"       
+                    displayMsg: this.translate('pager.records'),
+                    emptyMsg: this.translate('pager.empty')
                 })
             }
             
@@ -172,7 +194,7 @@
                     items: [{
                         xtype: 'button',
                         iconCls: 'icon-add',
-                        text: 'Dodaj',
+                        text: this.translate('actions.add'),
                         scope: this,
                         handler: function() {
                             Ext.create(this.getWindowEditClass()).show();
@@ -274,7 +296,7 @@
          */
         rendererYesNo: function(value)
         { 
-            return value ? 'Tak': 'Nie' 
+            return value ? this.translate('yes'): this.translate('no');
         },
         
         /**
