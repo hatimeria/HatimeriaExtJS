@@ -65,7 +65,6 @@
                         fieldLabel: this.__('login'),
                         name: '_username',
                         allowBlank: false,
-                        height: 25,
                         listeners: {
                             specialkey: {scope: this, fn: this.onFieldEnter}
                         }
@@ -76,7 +75,6 @@
                         inputType: 'password',
                         name: '_password',
                         allowBlank: false,
-                        height: 25,
                         listeners: {
                             specialkey: {scope: this, fn: this.onFieldEnter}
                         }
@@ -125,6 +123,7 @@
             fields.push({
                 border: 0,
                 width: 270,
+                height: 27,
                 id: 'hatimeria-powered-by',
                 style: {margin: '10px 125px'},
                 html: '<img src="/bundles/hatimeriaadmin/images/hatimeria.ico"/><p>Powered by Hatimeria</p> <a href="http://www.hatimeria.pl">www.hatimeria.pl</a>'
