@@ -104,7 +104,7 @@
          *
          * @cfg {Function} addConditionalRowActions
          */
-        addConditionalRowActions: function(actions, record) {return actions},
+        addConditionalRecordActions: function(actions, record) {return actions},
         
         transNS: 'grid',
         
@@ -404,7 +404,7 @@
         onRemoveClick: function(record)
         {
             var store = this.store;
-            Ext.Msg.confirm('Uwaga', 'Nastąpi usunięcie rekordu z bazy danych.<br/>Czy kontynuować?', function(response) {
+            Ext.Msg.confirm(this.translate('remove.confirm.title'), this.translate('remove.confirm.text'), function(response) {
                 if (response == 'yes')
                 {
                     record.destroy({

@@ -323,4 +323,9 @@ Ext.onReady(function() {
     		collapsibleSplitTip	: "Przeciągnij aby zmienić rozmiar. Kliknij dwukrotnie aby ukryć."
     	});
     }
+    
+    Ext.MessageBox.msgButtons['ok'].text = Ext.MessageBox.buttonText.ok;
+    Ext.MessageBox.msgButtons['cancel'].text = Ext.MessageBox.buttonText.cancel;
+    Ext.MessageBox.msgButtons['yes'].text = Ext.MessageBox.buttonText.yes;
+    Ext.MessageBox.msgButtons['no'].text = Ext.MessageBox.buttonText.no;    
 });
