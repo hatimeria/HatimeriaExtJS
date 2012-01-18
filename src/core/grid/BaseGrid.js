@@ -263,12 +263,14 @@
          */
         getRowActionsColumn: function()
         {
+            var grid = this;
+            
             return {
                 tdCls: 'actions-show-column',
                 width: 100,
                 header: '&nbsp;',
                 renderer: function() {
-                    return 'Opcje'
+                    return grid.translate('options')
                 }
             };
         },
