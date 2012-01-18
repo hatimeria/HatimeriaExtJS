@@ -13,50 +13,59 @@
         },
         transDomain: 'HatimeriaExtJSBundle',
         
-        config: {
-            
-            /**
-             * Image width
-             * 
-             * @var int
-             */
-            imgWidth: 100,
-            
-            /**
-             * Image height
-             * 
-             * @var 100
-             */
-            imgHeight: 100,
-            
-            /**
-             * Variable name
-             * 
-             * @var string
-             */
-            imgName: 'image',
-            
-            /**
-             * Default image
-             * 
-             * @var {}
-             */
-            defaultImage: '',
-            
-            /**
-             * Api for request procedures
-             * { submit: function() {}, remove: function() {} }
-             */
-            api: {},
-            
-            /**
-             * Addition params from outside
-             * 
-             * @var {}
-             */
-            params: {}
-        },
+        /**
+         * Image width
+         * 
+         * @cfg {Number} imgWidth
+         */
+        imgWidth: 100,
+
+        /**
+         * Image height
+         * 
+         * @cfg {Number} imgHeight
+         */
+        imgHeight: 100,
+
+        /**
+         * Json submit property name
+         * 
+         * @cfg {String} imgName
+         */
+        imgName: 'image',
         
+        /**
+         * POST submit property name
+         * 
+         * @cfg {String} name
+         */
+        name: 'photo',
+
+        /**
+         * Default image
+         * 
+         * @cfg {String} defaultImage
+         */
+        defaultImage: '',
+
+        /**
+         * Api for request procedures
+         * @cfg {Object} api
+         *     @example
+         *     api: {
+         *       submit: function() {}, 
+         *       remove: function() {}
+         *     }
+         */
+        api: {},
+
+        /**
+         * Addition params from outside
+         * 
+         * @cfg {Object} params
+         */
+        params: {},
+            
         /**
          * Constructor
          * 
@@ -80,16 +89,16 @@
             
             // Image
             var img = Ext.create('Ext.Img', {
-                id: 'image-form-img',
-                width: this.getImgWidth(),
-                height: this.getImgHeight()
+                itemId: 'image-form-img',
+                width: this.imgWidth,
+                height: this.imgHeight
             });
             
             // Upload button
             var uploadBtn = Ext.create('Ext.form.field.File', {
-                id: 'image-form-upload',
+                itemId: 'image-form-upload',
                 allowBlank: true,
-                name: this.getImgName(),
+                name: this.name,
                 msgTarget: 'none',
                 fieldLabel: false,
                 buttonText: this.__("form.image.browse"),
@@ -115,28 +124,28 @@
             });
             
             var config = {
-                id: 'image-form',
+                itemId: 'image-form',
                 layout: 'border',
                 border: false,
-                height: this.getImgHeight() + 5,
+                height: this.imgHeight + 5,
                 items: [
                     {
-                        id: 'image-form-imgcontainer',
+                        itemId: 'image-form-imgcontainer',
                         xtype: 'panel',
                         region: 'west',
-                        width: this.getImgWidth() + 5,
-                        height: this.getImgHeight() + 5,
+                        width: this.imgWidth + 5,
+                        height: this.imgHeight + 5,
                         items: [ img ]
                     },
                     {
-                        id: 'image-form-form',
+                        xtype: 'form',
+                        itemId: 'image-form-form',
                         region: 'center',
                         padding: '0 0 0 10',
                         border: false,
-                        xtype: 'form',
                         method: 'POST',
                         api: {
-                            submit: this.getApi().submit
+                            submit: this.api.submit
                         },
                         fileUpload: true,
                         layout: 'auto',
@@ -145,8 +154,13 @@
                             deleteBtn,
                             {
                                 xtype: 'hiddenfield',
-                                id: 'current-image-path',
-                                name: this.getImgName()
+                                itemId: 'current-image-path',
+                                name: this.imgName,
+                                listeners: {
+                                    change: function(field, value) {
+                                        _this.setSrc(value);
+                                    }
+                                }
                             }
                         ]
                     }
@@ -188,7 +202,17 @@
                 .getComponent('image-form-form')
                 .getComponent('current-image-path')
                 .setValue(path);
-                
+            
+            this.setSrc(path);
+        },
+        
+        /**
+         * Sets path to img
+         * 
+         * @param {String} path
+         */
+        setSrc: function(path)
+        {
             this
                 .getComponent('image-form-imgcontainer')
                 .getComponent('image-form-img')
@@ -218,7 +242,7 @@
             var _this = this;
             this.fireEvent('beforeload', this);
             this.getComponent('image-form-form').submit({
-                params: this.getParams(),
+                params: this.params,
                 success: function(form, response) {
                     _this.setCurrent(response.result.record);
                     _this.fireEvent('imageloaded', response.result);
@@ -232,17 +256,17 @@
         removeImage: function()
         {
             var _this = this;
-            if (typeof this.getApi().remove == 'function')
+            if (typeof this.api.remove == 'function')
             {
-                this.getApi().remove({}, function(form, response) {
+                this.api.remove({}, function(form, response) {
                     _this.fireEvent('imageremove', response);
-                    _this.setCurrent(_this.getDefaultImage());
+                    _this.setCurrent(_this.defaultImage);
                 });
             }
             else
             {
                 _this.fireEvent('imageremove');
-                _this.setCurrent(_this.getDefaultImage());
+                _this.setCurrent(_this.defaultImage);
             }
         },
         
@@ -254,7 +278,7 @@
         getSubmitData: function()
         {
             var data = {};
-            data[this.getImgName()] = this.getCurrent();
+            data[this.imgName] = this.getCurrent();
             
             return data;
         }
