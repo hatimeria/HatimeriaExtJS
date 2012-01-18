@@ -169,10 +169,11 @@ Ext.define('Foo.Bar', {
                 },
                 itemdblclick: {
                     scope: this, 
-                    fn: function(grid, record, el, index) {
+                    fn: function(grid, record, el, index, e) {
                         if (actions['edit'])
                         {
                             this.onEditClick(record, index);
+                            e.stopEvent();
                         }
                     }
                 }
@@ -331,7 +332,7 @@ Ext.define('Foo.Bar', {
         getContextMenuItems: function(record, index)
         {
             var items = [];
-            var actions = this.getRowActions(record);
+            var actions = Ext.clone(this.getRowActions(record));
             this.addConditionalRecordActions(actions, record);
             
             for (var name in actions)
