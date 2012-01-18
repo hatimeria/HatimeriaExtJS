@@ -62,7 +62,7 @@
                         id: 'field-netto',
                         fieldLabel: 'netto',
                         name: this.getNettoFieldName(),
-                        labelStyle: 'font-weight: bold',
+                        labelStyle: 'margin-right: 5px',
                         margin: '0 10 0 0',
                         listeners: {
                             change: {
@@ -75,7 +75,7 @@
                         id: 'field-brutto',
                         fieldLabel: 'brutto',
                         name: this.getBruttoFieldName(),
-                        labelStyle: 'font-weight: bold',
+                        labelStyle: 'margin-right: 5px',
                         listeners: {
                             change: {
                                 scope: this,
