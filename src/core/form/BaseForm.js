@@ -62,7 +62,7 @@ Ext.define("Hatimeria.core.form.BaseForm", {
     {
         var config = cfg || {};
         
-        if (typeof this.submitConfig == 'object')
+        if (this.submitConfig != null)
         {
             if(typeof this.submitConfig.submit == 'function') {
                 Ext.merge(config, {api: {
@@ -83,13 +83,6 @@ Ext.define("Hatimeria.core.form.BaseForm", {
             labelStyle: 'color: #666',
             msgTarget: 'under'
         });
-        
-        if (typeof cfg == 'object' && typeof cfg.submitConfig == 'object' && typeof cfg.submitConfig.submit == 'function')
-        {
-            Ext.merge(config, {api: {
-                submit: cfg.submitConfig.submit
-            }});
-        }
         
         this.addEvents('recordsaved');
         
@@ -181,7 +174,7 @@ Ext.define("Hatimeria.core.form.BaseForm", {
         
         if (Ext.isObject(el))
         {
-            this.mask = new Ext.LoadMask(el, {msg: 'Czekaj...'});
+            this.mask = new Ext.LoadMask(el, {msg: this.translate('wait')});
             this.mask.show();
         }        
     },
