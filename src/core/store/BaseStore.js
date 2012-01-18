@@ -1,19 +1,20 @@
 /**
  * Base direct store
  * 
- *     @example
+ *     <pre><code>
  *     Ext.define("Foo.BarModel", {
  *          extend: 'Hatimeria.core.model.DirectModel',
  *          api: 'FooBundle_BarController',
  *          // first field as id property for model and store
  *          fields: ['id','name']
- *     })
+ *     });
  * 
  *     Ext.define("Foo.BarStore", {
  *          extend: 'Hatimeria.core.store.BaseStore',
- *          model: 'Foo.BarModel",
- *          directSuffix: 'top' // it will be Actions.FooBundle_BarController.top
+ *          model: 'Foo.BarModel',
+ *          directSuffix: 'top' // it will be then added to store as directFn: Actions.FooBundle_BarController.top
  *     });
+ *     </code></pre>
  * 
  * @class Hatimeria.core.store.BaseStore
  * @extends Ext.data.DirectStore

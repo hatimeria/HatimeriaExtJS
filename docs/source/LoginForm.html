@@ -27,6 +27,8 @@
         extend: &quot;Hatimeria.core.form.BaseForm&quot;,
         transNS: &quot;form.login&quot;,
         transDomain: 'HatimeriaExtJSBundle',
+        // name of route for redirect after succesfull login
+        afterLogin: 'hatimeria_admin',
 
 <span id='Hatimeria-core-form-LoginForm-method-constructor'>        /**
 </span>         * Constructor
@@ -55,11 +57,12 @@
          */
         initComponent: function()
         {
+            var form = this;
             this.submitConfig = {
                 text: this.__('submit'),
                 failureWindowTitle: this.__(&quot;failureTitle&quot;),
                 success: function() { 
-                    window.location = Routing.generate('homepage'); 
+                    window.location = Routing.generate(form.afterLogin); 
                 }
             };
 
@@ -79,7 +82,6 @@
                         fieldLabel: this.__('login'),
                         name: '_username',
                         allowBlank: false,
-                        height: 25,
                         listeners: {
                             specialkey: {scope: this, fn: this.onFieldEnter}
                         }
@@ -90,7 +92,6 @@
                         inputType: 'password',
                         name: '_password',
                         allowBlank: false,
-                        height: 25,
                         listeners: {
                             specialkey: {scope: this, fn: this.onFieldEnter}
                         }
@@ -139,6 +140,7 @@
             fields.push({
                 border: 0,
                 width: 270,
+                height: 27,
                 id: 'hatimeria-powered-by',
                 style: {margin: '10px 125px'},
                 html: '&lt;img src=&quot;/bundles/hatimeriaadmin/images/hatimeria.ico&quot;/&gt;&lt;p&gt;Powered by Hatimeria&lt;/p&gt; &lt;a href=&quot;http://www.hatimeria.pl&quot;&gt;www.hatimeria.pl&lt;/a&gt;'

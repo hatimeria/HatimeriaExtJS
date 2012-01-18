@@ -21,21 +21,19 @@
  * @class Hatimeria.core.grid.BaseGrid
  * @extends Ext.grid.Panel
  * 
- *    @example
- *    Ext.define('Foo.Bar', {
- *      extend: 'Hatimeria.core.grid.BaseGrid',
- *      
- *      initComponent: function() {
- *        Ext.apply(this, {
- *          ...
- *          windowEditClass: 'Foo.BarWindow',
- *          rowActions: ['edit', 'clone', 'remove'],
- *          dockedElements: ['paging', 'add],
- *          actionColumn: true
- *          ...
- *        });
- *      }
- *    });
+&lt;pre&gt;&lt;code&gt;
+Ext.define('Foo.Bar', {
+    extend: 'Hatimeria.core.grid.BaseGrid',
+    initComponent: function() {
+    Ext.apply(this, {
+            windowEditClass: 'Foo.BarWindow',
+            rowActions: ['edit', 'clone', 'remove'],
+            dockedElements: ['paging', 'add'],
+            actionColumn: true
+            });
+        }
+    });
+&lt;/code&gt;&lt;/pre&gt;
  *    
  */
 (function() {
@@ -56,19 +54,24 @@
          *   - clone
          *   - remove
          * 
-         * @cfg {Array}/{String}/{Object} rowActions
-         * @example
-         *     rowActions: ['edit', 'remove', 'clone']
-         *  or
-         *     rowActions: {
-         *       edit: 'Edycja',
-         *       remove: 'Usuń',
-         *       clone: 'Klonuj',
-         *     }
-         *  or   
-         *     rowActions: &quot;edit, remove, clone&quot; 
-         *     
-         * adding custom hadlers:
+         * @cfg {Array/String/{Object} rowActions
+         * 
+         &lt;pre&gt;&lt;code&gt;
+                // Simple array
+                rowActions: ['edit', 'remove', 'clone']
+                // Record based label name
+                rowActions: ['publish': function(record) {return record.isPublished() ? 'publish':'unpublish'} ]
+                // Codename: label object
+                rowActions: {
+                    edit: 'Edycja',
+                    remove: 'Usuń',
+                     clone: 'Klonuj',
+                }
+                 // String
+                rowActions: &quot;edit, remove, clone&quot; 
+         &lt;/code&gt;&lt;/pre&gt;     
+        
+         * adding custom handlers:
          * 1. set: rowActions: {'enable': 'Enable it!'}
          * 2. add method: onEnableClick: function(record, index) { ... }
          */
@@ -81,17 +84,19 @@
          */
         dockedElements: ['paging'],
         
+<span id='Hatimeria-core-grid-BaseGrid-cfg-translateAll'>        /**
+</span>         * Translate title, headers etc ?
+         * 
+         * @cfg {Boolean} translateAll
+         */
+        translateAll: false,
+        
 <span id='Hatimeria-core-grid-BaseGrid-cfg-actionColumn'>        /**
 </span>         * Action column added as last column in grid
          *
-         *    @example: 
-         *    actionColumn: true
-         * or:
-         *    actionColumn: '/images/menu.gif'
-         *    
-         * @cfg {String}/{Boolean} actionColumn
+         * @cfg {String/Boolean} actionColumn
          */
-        actionColumn: false,
+        actionColumn: true,
         
 <span id='Hatimeria-core-grid-BaseGrid-property-windowEditClass'>        /**
 </span>         * Class name of edit window
@@ -111,23 +116,53 @@
             clone: 'Klonuj'
         },
         
+<span id='Hatimeria-core-grid-BaseGrid-cfg-addConditionalRowActions'>        /**
+</span>         * Add or remove action based on current record
+         *
+         * @cfg {Function} addConditionalRowActions
+         * 
+         * @return {Object}
+         */
+        addConditionalRecordActions: function(actions, record) {return actions},
+        
+<span id='Hatimeria-core-grid-BaseGrid-property-transNS'>        /**
+</span>         *
+         * Translation namespace
+         * 
+         * @property
+         */
+        transNS: 'grid',
+        
+<span id='Hatimeria-core-grid-BaseGrid-method-translate'>        /**
+</span>         * Used for translation for current class not extended one
+         * 
+         * @private
+         */
+        translate: function(key, placeholders)
+        {
+            return this.statics().prototype.__(key, placeholders);
+        },
+        
 <span id='Hatimeria-core-grid-BaseGrid-method-initComponent'>        /**
 </span>         * Initializes component
          */
         initComponent: function()
         {
             var grid = this;
-            
             // Docked items: 
             this.dockedItems = this.getDockedElements();
             
-            // Traslations of columns
-            if(this.transDomain) {
+            if(this.translateAll) {
+                Ext.Object.each(this.defaultRowActions, function(key, value, property) {
+                    property[key] = grid.translate('actions.' + key);
+                });
                 Ext.each(this.columns, function(column) {
                     if(!column.header) {
-                        column.header = grid.__(column.dataIndex);
+                        column.header = grid.__('headers.'+column.dataIndex);
                     }
                 });
+                
+                this.title = grid.__('title');
             }
             
             // Action column with row-operations:
@@ -146,6 +181,10 @@
                     scope: this,
                     fn: this.onContextMenu
                 },
+                itemclick: {
+                    scope: this,
+                    fn: this.onItemClick
+                },
                 itemdblclick: {
                     scope: this, 
                     fn: function(grid, record, el, index) {
@@ -156,6 +195,17 @@
                     }
                 }
             });
+        },
+        
+<span id='Hatimeria-core-grid-BaseGrid-method-onItemClick'>        /**
+</span>         * On item click
+         *
+         * @private
+         */
+        onItemClick: function(grid, record, el, index, e) {
+            if(e.getTarget().parentNode.className.match(/actions-show-column/)) {
+                this.onContextMenu(grid, record, el, index, e);
+            }
         },
         
 <span id='Hatimeria-core-grid-BaseGrid-method-getDockedElements'>        /**
@@ -175,8 +225,8 @@
                     dock: 'bottom',
                     store: this.store,
                     displayInfo: true,
-                    displayMsg: 'Rekordy {0} - {1} z {2}',
-                    emptyMsg: &quot;Brak rekordów&quot;       
+                    displayMsg: this.translate('pager.records'),
+                    emptyMsg: this.translate('pager.empty')
                 })
             }
             
@@ -189,7 +239,7 @@
                     items: [{
                         xtype: 'button',
                         iconCls: 'icon-add',
-                        text: 'Dodaj',
+                        text: this.translate('actions.add'),
                         scope: this,
                         handler: function() {
                             Ext.create(this.getWindowEditClass()).show();
@@ -207,7 +257,7 @@
          * @private
          * @return {Object}
          */
-        getRowActions: function()
+        getRowActions: function(record)
         {
             if (Ext.isArray(this.rowActions) || Ext.isString(this.rowActions))
             {
@@ -238,18 +288,15 @@
          */
         getRowActionsColumn: function()
         {
-            var _this = this;
+            var grid = this;
+            
             return {
-                xtype: 'actioncolumn',
-                width: 50,
-                items: [{
-                    icon: (Ext.isString(this.actionColumn) ? this.actionColumn : '/bundles/hatimeriaadmin/images/row-menu.png'),
-                    handler: function(grid, rowIndex, colIndex, icon, event) {
-                        Ext.create('Ext.menu.Menu', {
-                            items: _this.getContextMenuItems(grid.getStore().getAt(rowIndex), rowIndex)
-                        }).showAt(event.getXY());
-                    }
-                }]
+                tdCls: 'actions-show-column',
+                width: 100,
+                header: '&amp;nbsp;',
+                renderer: function() {
+                    return grid.translate('options')
+                }
             };
         },
         
@@ -291,7 +338,7 @@
          */
         rendererYesNo: function(value)
         { 
-            return value ? 'Tak': 'Nie' 
+            return value ? this.translate('yes'): this.translate('no');
         },
         
 <span id='Hatimeria-core-grid-BaseGrid-method-getContextMenuItems'>        /**
@@ -302,13 +349,15 @@
         getContextMenuItems: function(record, index)
         {
             var items = [];
-            var actions = this.getRowActions();
+            var actions = this.getRowActions(record);
+            this.addConditionalRecordActions(actions, record);
             
             for (var name in actions)
             {
+                var label = actions[name];
                 (function(name, scope) {
                     items.push({
-                        text: actions[name],
+                        text: typeof label == 'function' ? label(record) : label,
                         cls: 'ux-' + name,
                         scope: scope,
                         handler: function() {
@@ -382,7 +431,7 @@
         onRemoveClick: function(record)
         {
             var store = this.store;
-            Ext.Msg.confirm('Uwaga', 'Nastąpi usunięcie rekordu z bazy danych.&lt;br/&gt;Czy kontynuować?', function(response) {
+            Ext.Msg.confirm(this.translate('remove.confirm.title'), this.translate('remove.confirm.text'), function(response) {
                 if (response == 'yes')
                 {
                     record.destroy({

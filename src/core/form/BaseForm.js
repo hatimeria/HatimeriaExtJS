@@ -1,6 +1,18 @@
 /**
  * Base form class
  * 
+ *     <pre><code>
+ *     Ext.define("Foo.bar.Form", {
+ *         submitConfig: {
+ *          text: 'Save button text', // default: translated
+ *          submit: DirectFN, // default: run record.save 
+ *          iconCls: 'button-icon-class',
+ *          success: function() {
+ *             // After success backend operation
+ *          }
+ *     });
+ *     </code></pre>
+ * 
  * @class Hatimeria.core.form.BaseForm
  * @extends Ext.form.Panel
  */
@@ -18,16 +30,9 @@ Ext.define("Hatimeria.core.form.BaseForm", {
     
     /**
      * @cfg {Object} submitConfig
-     * 
-     *     submitConfig: {
-     *         text: 'button text',
-     *         submit: DirectFN,
-     *         iconCls: 'buttnon-icon-class',
-     *         success: function() {
-     *             // After success
-     *         }
-     *     }
+     *
      */
+    submitConfig: null,
     
     /**
      * Submit button
@@ -38,10 +43,10 @@ Ext.define("Hatimeria.core.form.BaseForm", {
     submitHandler: undefined,
     
     /**
-        * Used for translation for current class not extended one
-        * 
-        * @private
-        */
+     * Used for translation for current class not extended one
+     * 
+     * @private
+     */
     translate: function(key, placeholders)
     {
         return this.statics().prototype.__(key, placeholders);

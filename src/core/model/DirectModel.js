@@ -1,11 +1,29 @@
 /**
  * Direct model
- * @example
+ *     <pre><code>
  *     Ext.define("Foo.BarModel", {
- *      extend: 'Hatimeria.core.model.DirectModel'
- *      fields: ['id','name'],
- *      api: 'FooBundle_BarController'
+ *       extend: 'Hatimeria.core.model.DirectModel',
+ *       fields: ['id','name'],
+ *       api: 'FooBundle_BarController'
  *     });
+ *     </code></pre>
+ *     
+ * direct model changes api to :
+ *     
+ *     <pre><code>
+ *     {
+ *          read: Actions.FooBundle_BarController.read
+ *          update: Actions.FooBundle_BarController.update
+ *          destroy: Actions.FooBundle_BarController.destroy
+ *          create: Actions.FooBundle_BarController.create
+ *     }
+ *     </code></pre>
+ *     
+ * If store is created with this model and he is missing api configuration then he is completed with:
+ *     
+ *     <pre><code>
+ *          directFn: Actions.FooBundle_BarController.list
+ *     </code></pre>
  * 
  * @class Hatimeria.core.model.DirectModel
  * @extends Ext.data.Model
@@ -13,12 +31,14 @@
 Ext.define("Hatimeria.core.model.DirectModel", {
     extend: 'Ext.data.Model',
     requires: ['Hatimeria.core.mixins.ConfigurableExternal'],
+    
     /**
      * Api config or api prefix ("FooBundle_BarController")
      *
-     * @cfg {String}\{Object}
+     * @cfg {String/Object}
      */
     api: null,
+    
     /**
      * Part of Actions belongs to this model
      *
@@ -26,6 +46,11 @@ Ext.define("Hatimeria.core.model.DirectModel", {
      */
     actionsConfiguration: null,
     
+    /**
+     * Reconfigure before Ext.data.Model gets configuration
+     *
+     * @private
+     */
     onClassExtended: function(cls, data) {
         
         if(!data.idProperty) {

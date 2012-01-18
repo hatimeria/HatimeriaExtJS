@@ -18,19 +18,20 @@
   <pre class="prettyprint lang-js"><span id='Hatimeria-core-store-BaseStore'>/**
 </span> * Base direct store
  * 
- *     @example
+ *     &lt;pre&gt;&lt;code&gt;
  *     Ext.define(&quot;Foo.BarModel&quot;, {
  *          extend: 'Hatimeria.core.model.DirectModel',
  *          api: 'FooBundle_BarController',
  *          // first field as id property for model and store
  *          fields: ['id','name']
- *     })
+ *     });
  * 
  *     Ext.define(&quot;Foo.BarStore&quot;, {
  *          extend: 'Hatimeria.core.store.BaseStore',
- *          model: 'Foo.BarModel&quot;,
- *          directSuffix: 'top' // it will be Actions.FooBundle_BarController.top
+ *          model: 'Foo.BarModel',
+ *          directSuffix: 'top' // it will be then added to store as directFn: Actions.FooBundle_BarController.top
  *     });
+ *     &lt;/code&gt;&lt;/pre&gt;
  * 
  * @class Hatimeria.core.store.BaseStore
  * @extends Ext.data.DirectStore

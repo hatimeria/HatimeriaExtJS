@@ -8,7 +8,7 @@
         transDomain: 'HatimeriaExtJSBundle',
         transNS: 'switch',
 
-        constructor: function()
+        constructor: function(cfg)
         {
             var config = {
                 fieldLabel: this.__("action"),
@@ -22,6 +22,8 @@
                     }
                 }        
             };
+            
+            Ext.apply(config, cfg || {});
 
             this.callParent([config]);
         }

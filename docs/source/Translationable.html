@@ -36,28 +36,40 @@
          * 
          */        
         transNS: null,
-        
+
 <span id='Hatimeria-core-mixins-Translationable-method-__'>        /**
 </span>         * Translate by key
          * 
          * @param {String} key
          * @param {Object} placeholders
+         * @param {Booolean} static context
          * @return {String}
          */
         __: function(key, placeholders)
         {
+             var context = this;
+            
             var _placeholders = placeholders || {};
             var translated = '';
             var domain = '';
             
-            if (typeof this.transDomain != 'undefined')
+            if (context.transDomain)
             {
-                domain = this.transDomain + ':';
+                domain = context.transDomain;
+            } else {
+                domain = Ext.getClassName(context).split('.').shift();
+                if(domain == 'Hatimeria') {
+                    domain += 'ExtJS'
+                }
+                
+                domain += 'Bundle';                
             }
             
-            if (this.transNS)
+            domain += ':';
+            
+            if (context.transNS)
             {
-                var fullKey = domain + this.transNS + '.' + key;
+                var fullKey = domain + context.transNS + '.' + key;
                 translated = __(fullKey, _placeholders);
                 
                 // if key not exists: return raw key (without domain and transNS)
