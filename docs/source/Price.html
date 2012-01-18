@@ -17,13 +17,14 @@
 <body onload="prettyPrint(); highlight();">
   <pre class="prettyprint lang-js"><span id='Hatimeria-core-text-Price'>/**
 </span> * Price widget
- * @example
- *   {
- *      xtype: 'price',
- *      data: {
+ *     @example
+ *     Ext.create(&quot;Hatimeria.core.text.Price&quot;,
+ *     {
+ *       xtype: 'price',
+ *       data: {
  *          price: 123
- *      }
- *   }
+ *     }
+ *     });
  * 
  * @class Hatimeria.core.text.Price
  * @extends Ext.container.Container
@@ -33,11 +34,21 @@ Ext.define('Hatimeria.core.text.Price', {
     alias: 'widget.price',
     data: {price: 0},
     style: 'text-align:right',
+    
+<span id='Hatimeria-core-text-Price-method-constructor'>    /**
+</span>     * Constructor
+     */
     constructor: function(config)
     {
         config.tpl = config.text + ' &lt;b&gt;{price}&lt;/b&gt;';
         this.callParent([config]);
     },
+    
+<span id='Hatimeria-core-text-Price-method-setPrice'>    /**
+</span>     * Change displayed price
+     *
+     * @param {Float} value
+     */
     setPrice: function(value)
     {
         this.update({price: Ext.util.Format.currency(value)});

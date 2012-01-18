@@ -17,12 +17,30 @@
 <body onload="prettyPrint(); highlight();">
   <pre class="prettyprint lang-js"><span id='Hatimeria-core-model-DirectModel'>/**
 </span> * Direct model
- * @example
+ *     &lt;pre&gt;&lt;code&gt;
  *     Ext.define(&quot;Foo.BarModel&quot;, {
- *      extend: 'Hatimeria.core.model.DirectModel'
- *      fields: ['id','name'],
- *      api: 'FooBundle_BarController'
+ *       extend: 'Hatimeria.core.model.DirectModel',
+ *       fields: ['id','name'],
+ *       api: 'FooBundle_BarController'
  *     });
+ *     &lt;/code&gt;&lt;/pre&gt;
+ *     
+ * direct model changes api to :
+ *     
+ *     &lt;pre&gt;&lt;code&gt;
+ *     {
+ *          read: Actions.FooBundle_BarController.read
+ *          update: Actions.FooBundle_BarController.update
+ *          destroy: Actions.FooBundle_BarController.destroy
+ *          create: Actions.FooBundle_BarController.create
+ *     }
+ *     &lt;/code&gt;&lt;/pre&gt;
+ *     
+ * If store is created with this model and he is missing api configuration then he is completed with:
+ *     
+ *     &lt;pre&gt;&lt;code&gt;
+ *          directFn: Actions.FooBundle_BarController.list
+ *     &lt;/code&gt;&lt;/pre&gt;
  * 
  * @class Hatimeria.core.model.DirectModel
  * @extends Ext.data.Model
@@ -30,12 +48,14 @@
 Ext.define(&quot;Hatimeria.core.model.DirectModel&quot;, {
     extend: 'Ext.data.Model',
     requires: ['Hatimeria.core.mixins.ConfigurableExternal'],
+    
 <span id='Hatimeria-core-model-DirectModel-cfg-api'>    /**
 </span>     * Api config or api prefix (&quot;FooBundle_BarController&quot;)
      *
-     * @cfg {String}\{Object}
+     * @cfg {String/Object}
      */
     api: null,
+    
 <span id='Hatimeria-core-model-DirectModel-property-actionsConfiguration'>    /**
 </span>     * Part of Actions belongs to this model
      *
@@ -43,6 +63,11 @@ Ext.define(&quot;Hatimeria.core.model.DirectModel&quot;, {
      */
     actionsConfiguration: null,
     
+<span id='Hatimeria-core-model-DirectModel-method-onClassExtended'>    /**
+</span>     * Reconfigure before Ext.data.Model gets configuration
+     *
+     * @private
+     */
     onClassExtended: function(cls, data) {
         
         if(!data.idProperty) {

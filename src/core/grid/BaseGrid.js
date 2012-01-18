@@ -4,21 +4,19 @@
  * @class Hatimeria.core.grid.BaseGrid
  * @extends Ext.grid.Panel
  * 
- *    @example
- *    Ext.define('Foo.Bar', {
- *      extend: 'Hatimeria.core.grid.BaseGrid',
- *      
- *      initComponent: function() {
- *        Ext.apply(this, {
- *          ...
- *          windowEditClass: 'Foo.BarWindow',
- *          rowActions: ['edit', 'clone', 'remove'],
- *          dockedElements: ['paging', 'add],
- *          actionColumn: true
- *          ...
- *        });
- *      }
- *    });
+<pre><code>
+Ext.define('Foo.Bar', {
+    extend: 'Hatimeria.core.grid.BaseGrid',
+    initComponent: function() {
+    Ext.apply(this, {
+            windowEditClass: 'Foo.BarWindow',
+            rowActions: ['edit', 'clone', 'remove'],
+            dockedElements: ['paging', 'add'],
+            actionColumn: true
+            });
+        }
+    });
+</code></pre>
  *    
  */
 (function() {
@@ -39,19 +37,24 @@
          *   - clone
          *   - remove
          * 
-         * @cfg {Array}/{String}/{Object} rowActions
-         * @example
-         *     rowActions: ['edit', 'remove', 'clone']
-         *  or
-         *     rowActions: {
-         *       edit: 'Edycja',
-         *       remove: 'Usuń',
-         *       clone: 'Klonuj',
-         *     }
-         *  or   
-         *     rowActions: "edit, remove, clone" 
-         *     
-         * adding custom hadlers:
+         * @cfg {Array/String/{Object} rowActions
+         * 
+         <pre><code>
+                // Simple array
+                rowActions: ['edit', 'remove', 'clone']
+                // Record based label name
+                rowActions: ['publish': function(record) {return record.isPublished() ? 'publish':'unpublish'} ]
+                // Codename: label object
+                rowActions: {
+                    edit: 'Edycja',
+                    remove: 'Usuń',
+                     clone: 'Klonuj',
+                }
+                 // String
+                rowActions: "edit, remove, clone" 
+         </code></pre>     
+        
+         * adding custom handlers:
          * 1. set: rowActions: {'enable': 'Enable it!'}
          * 2. add method: onEnableClick: function(record, index) { ... }
          */
@@ -74,10 +77,7 @@
         /**
          * Action column added as last column in grid
          *
-         *    @example: 
-         *    actionColumn: true
-         *    
-         * @cfg {String}/{Boolean} actionColumn
+         * @cfg {String/Boolean} actionColumn
          */
         actionColumn: true,
         
@@ -103,9 +103,17 @@
          * Add or remove action based on current record
          *
          * @cfg {Function} addConditionalRowActions
+         * 
+         * @return {Object}
          */
         addConditionalRecordActions: function(actions, record) {return actions},
         
+        /**
+         *
+         * Translation namespace
+         * 
+         * @property
+         */
         transNS: 'grid',
         
         /**
@@ -161,10 +169,11 @@
                 },
                 itemdblclick: {
                     scope: this, 
-                    fn: function(grid, record, el, index) {
+                    fn: function(grid, record, el, index, e) {
                         if (actions['edit'])
                         {
                             this.onEditClick(record, index);
+                            e.stopEvent();
                         }
                     }
                 }
@@ -323,7 +332,7 @@
         getContextMenuItems: function(record, index)
         {
             var items = [];
-            var actions = this.getRowActions(record);
+            var actions = Ext.clone(this.getRowActions(record));
             this.addConditionalRecordActions(actions, record);
             
             for (var name in actions)

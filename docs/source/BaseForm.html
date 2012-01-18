@@ -18,11 +18,24 @@
   <pre class="prettyprint lang-js"><span id='Hatimeria-core-form-BaseForm'>/**
 </span> * Base form class
  * 
+ *     &lt;pre&gt;&lt;code&gt;
+ *     Ext.define(&quot;Foo.bar.Form&quot;, {
+ *         submitConfig: {
+ *          text: 'Save button text', // default: translated
+ *          submit: DirectFN, // default: run record.save 
+ *          iconCls: 'button-icon-class',
+ *          success: function() {
+ *             // After success backend operation
+ *          }
+ *     });
+ *     &lt;/code&gt;&lt;/pre&gt;
+ * 
  * @class Hatimeria.core.form.BaseForm
  * @extends Ext.form.Panel
  */
 Ext.define(&quot;Hatimeria.core.form.BaseForm&quot;, {
     extend: &quot;Ext.form.Panel&quot;,
+    alias: 'widget.h-form',
     requires: [
         'Ext.form.action.DirectLoad',
         'Hatimeria.core.response.FormHandler'
@@ -30,20 +43,13 @@ Ext.define(&quot;Hatimeria.core.form.BaseForm&quot;, {
     mixins: {
         translationable: 'Hatimeria.core.mixins.Translationable'
     },
-    transDomain: 'HatimeriaExtJSBundle',
+    transNS: 'form',
     
 <span id='Hatimeria-core-form-BaseForm-cfg-submitConfig'>    /**
 </span>     * @cfg {Object} submitConfig
-     * 
-     *     submitConfig: {
-     *         text: 'button text',
-     *         submit: DirectFN,
-     *         iconCls: 'buttnon-icon-class',
-     *         success: function() {
-     *             // After success
-     *         }
-     *     }
+     *
      */
+    submitConfig: null,
     
 <span id='Hatimeria-core-form-BaseForm-property-Ext.button.Button'>    /**
 </span>     * Submit button
@@ -52,6 +58,16 @@ Ext.define(&quot;Hatimeria.core.form.BaseForm&quot;, {
      * @property Ext.button.Button
      */
     submitHandler: undefined,
+    
+<span id='Hatimeria-core-form-BaseForm-method-translate'>    /**
+</span>     * Used for translation for current class not extended one
+     * 
+     * @private
+     */
+    translate: function(key, placeholders)
+    {
+        return this.statics().prototype.__(key, placeholders);
+    },    
     
 <span id='Hatimeria-core-form-BaseForm-method-constructor'>    /**
 </span>     * Constructor
@@ -63,12 +79,27 @@ Ext.define(&quot;Hatimeria.core.form.BaseForm&quot;, {
     {
         var config = cfg || {};
         
-        if (typeof this.submitConfig == 'object' &amp;&amp; typeof this.submitConfig.submit == 'function')
+        if (typeof this.submitConfig == 'object')
         {
-            Ext.merge(config, {api: {
-                submit: this.submitConfig.submit
-            }});
+            if(typeof this.submitConfig.submit == 'function') {
+                Ext.merge(config, {api: {
+                    submit: this.submitConfig.submit
+                }});
+            }
+            
+            if(!this.submitConfig.text) {
+                this.submitConfig.text = this.translate('save');
+            }
         }
+        
+        config.defaults = config.defaults || {};
+        
+        Ext.apply(config.defaults, {
+            labelAlign: 'right',
+            labelSeparator: '',
+            labelStyle: 'color: #666',
+            msgTarget: 'under'
+        });
         
         if (typeof cfg == 'object' &amp;&amp; typeof cfg.submitConfig == 'object' &amp;&amp; typeof cfg.submitConfig.submit == 'function')
         {
@@ -230,7 +261,7 @@ Ext.define(&quot;Hatimeria.core.form.BaseForm&quot;, {
         {
             var config = this.submitConfig || {};
             this.submitHandler = Ext.create(&quot;Hatimeria.core.response.FormHandler&quot;, {
-                failureWindowTitle: config.failureWindowTitle || this.__('form.alert_title'),
+                failureWindowTitle: config.failureWindowTitle || this.translate('alert_title'),
                 success: config.success || function() {},
                 formPanel: this
             });
