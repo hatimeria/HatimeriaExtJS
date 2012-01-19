@@ -33,7 +33,7 @@ Ext.define("Hatimeria.core.model.DirectModel", {
     requires: ['Hatimeria.core.mixins.ConfigurableExternal'],
     
     /**
-     * Api config or api prefix ("FooBundle_BarController")
+     * Api config or api prefix ("AcmeFoo_BarController")
      *
      * @cfg {String/Object}
      */
@@ -59,15 +59,21 @@ Ext.define("Hatimeria.core.model.DirectModel", {
         
         if (typeof data.api == 'string') {
             var controller = data.api;
-            data.api = {
-                update: Actions[controller].update,
-                destroy: Actions[controller].destroy,
-                create: Actions[controller].create,
-                read: Actions[controller].read,
-                list: Actions[controller].list
+            var actions = Actions[controller];
+            
+            if(typeof actions != 'object') {
+                throw new Error(controller + ' is not present in Actions, search for type or missing @remote annotation in action');
             }
             
-            data.actionsConfiguration = Actions[controller];
+            data.api = {
+                update: actions.update,
+                destroy: actions.destroy,
+                create: actions.create,
+                read: actions.read,
+                list: actions.list
+            }
+            
+            data.actionsConfiguration = actions;
         }
         
         data.proxy = {
