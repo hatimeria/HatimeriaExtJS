@@ -33,7 +33,10 @@ Ext.define("Hatimeria.core.model.DirectModel", {
     requires: ['Hatimeria.core.mixins.ConfigurableExternal'],
     
     /**
-     * Api config or api prefix ("AcmeFoo_Bar") where AcmeFoo is name of bundle and Bar is name of controller
+     * Api config or api prefix ("AcmeFoo_Bar") 
+     * AcmeFoo is name of bundle and Bar is name of controller
+     * 
+     * AcmeFoo_Bar for javascript is AcmeFooBundle/Controller/BarController for backend
      *
      * @cfg {String/Object}
      */
