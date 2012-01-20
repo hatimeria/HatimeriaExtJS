@@ -59,7 +59,7 @@
                 },
                 items: [
                     {
-                        id: 'field-netto',
+                        itemId: 'field-netto',
                         fieldLabel: 'netto',
                         name: this.getNettoFieldName(),
                         labelStyle: 'margin-right: 5px',
@@ -72,7 +72,7 @@
                         }
                     },
                     {
-                        id: 'field-brutto',
+                        itemId: 'field-brutto',
                         fieldLabel: 'brutto',
                         name: this.getBruttoFieldName(),
                         labelStyle: 'margin-right: 5px',

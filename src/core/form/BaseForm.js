@@ -84,7 +84,13 @@ Ext.define("Hatimeria.core.form.BaseForm", {
             msgTarget: 'under'
         });
         
-        this.addEvents('recordsaved');
+        this.addEvents(
+        
+            /**
+             * @event recordsaved
+             */
+            'recordsaved'
+        );
         
         this.callParent([config]);
     },

@@ -84,10 +84,16 @@ Ext.define('Foo.Bar', {
         /**
          * Class name of edit window
          * 
-         * @private
-         * @property {String}
+         * @property {String} windowEditClass
          */
         windowEditClass: false,
+        
+        /**
+         * Class name of entity record
+         * 
+         * @property {String} recordClass
+         */
+        recordClass: false,
         
         /**
          * @property {Array} rowActions
@@ -225,7 +231,12 @@ Ext.define('Foo.Bar', {
                         text: this.translate('actions.add'),
                         scope: this,
                         handler: function() {
-                            Ext.create(this.getWindowEditClass()).show();
+                            var window = Ext.create(this.getWindowEditClass());
+                            window.show();
+                            if (this.recordClass)
+                            {
+                                window.populate(Ext.create(this.getRecordClass()))
+                            }
                         }
                     }]
                 });
@@ -284,13 +295,23 @@ Ext.define('Foo.Bar', {
         },
         
         /**
-         * Edit window class
+         * Edit window class name
          * 
          * @return {String}
          */
         getWindowEditClass: function()
         {
             return this.windowEditClass;
+        },
+        
+        /**
+         * Record class name
+         * 
+         * @return {String}
+         */
+        getRecordClass: function()
+        {
+            return this.recordClass;
         },
         
         /**
