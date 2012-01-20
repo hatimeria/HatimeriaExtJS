@@ -36,6 +36,14 @@
          * Auto select each new added record to store
          */
         newAutoSelect: false,
+
+        labelAlign: 'right',
+
+        labelSeparator: '',
+
+        labelStyle: 'color: #666',
+
+        msgTarget: 'under',
         
         /**
          * Constructor

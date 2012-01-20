@@ -81,7 +81,8 @@ Ext.define("Hatimeria.core.form.BaseForm", {
             labelAlign: 'right',
             labelSeparator: '',
             labelStyle: 'color: #666',
-            msgTarget: 'under'
+            msgTarget: 'under',
+            width: 450
         });
         
         this.addEvents(
