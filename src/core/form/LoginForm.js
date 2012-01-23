@@ -24,6 +24,8 @@
             var config = cfg || {};
             config.url = Routing.generate('fos_user_security_check');
             
+            config.waitMessage = this.__('wait');
+            
             if (config.logoUri) {
                this.logoUri = config.logoUri;
             } else {
