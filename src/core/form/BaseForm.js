@@ -35,6 +35,13 @@ Ext.define("Hatimeria.core.form.BaseForm", {
     submitConfig: null,
     
     /**
+     * Message on wait mask, defaults to translated form.wait
+     *
+     * @cfg {String} waitMessage
+     */
+    waitMessage: null,
+    
+    /**
      * Submit button
      * 
      * @private
@@ -174,7 +181,7 @@ Ext.define("Hatimeria.core.form.BaseForm", {
         
         if (Ext.isObject(el))
         {
-            this.mask = new Ext.LoadMask(el, {msg: this.translate('wait')});
+            this.mask = new Ext.LoadMask(el, {msg: this.waitMessage || this.translate('wait')});
             this.mask.show();
         }        
     },
