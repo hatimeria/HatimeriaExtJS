@@ -12,6 +12,8 @@
  *                  'Kraków, ul. Portowa 3'
  *              ]
  *          });
+ *          
+ *          <div id="maps-container" style="width:500px; height:500px;"></div>
  *      
  * @class Hatimeria.google.Map
  */
@@ -52,6 +54,14 @@ Ext.define("Hatimeria.google.Map", {
      * @cfg {Number} zoom
      */
     zoom: 9,
+    
+    /**
+     * Map Type
+     * 
+     * @cfg {String} mapType [ TERRAIN / HYBRID / ROADMAP ]
+     */
+    mapType: 'TERRAIN',
+    
     /**
      * Center address
      * 
@@ -164,7 +174,7 @@ Ext.define("Hatimeria.google.Map", {
     createMap: function() {
         var myOptions = {
             zoom: this.zoom,
-            mapTypeId: google.maps.MapTypeId.TERRAIN
+            mapTypeId: google.maps.MapTypeId[this.mapType]
         };
         
         this.map = new google.maps.Map(this.getContainer(), myOptions);
@@ -185,6 +195,8 @@ Ext.define("Hatimeria.google.Map", {
             } else {
                 if(failure) {
                     failure();
+                } else {
+                    console.debug('Google map: '+ address + ' not found, with status ' + status);
                 }
             }
         });
