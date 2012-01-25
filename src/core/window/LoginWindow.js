@@ -6,22 +6,39 @@
             translationable: 'Hatimeria.core.mixins.Translationable'
         },    
         transDomain: 'HatimeriaExtJSBundle',
-        width: 510,
-        height: 350,
-        closable: false,
-        resizable: false,
-        layout: {
-            type: 'fit',
-            align: 'center'
-        },  
-        initComponent: function() {
-            this.callParent();
-            this.title = this.__("window.login.title");
-            this.add(Ext.create("Hatimeria.core.form.LoginForm", {
-                defaults: {
-                    width: 400
-                }
-            }));
+        
+        /**
+         * Class name of login form
+         *
+         * @cfg {String} loginFormClassName
+         */
+        loginFormClassName: 'Hatimeria.core.form.LoginForm',
+        
+        constructor: function(cfg)
+        {
+            cfg = cfg || {};
+            
+            var clsName = cfg.loginFormClassName || this.loginFormClassName ; 
+            var config = {
+                title: this.__("window.login.title"),
+                width: 510,
+                height: 350,
+                closable: false,
+                resizable: false,
+                layout: {
+                    type: 'fit',
+                    align: 'center'
+                },  
+                items: [
+                    Ext.create(clsName, {
+                        defaults: {
+                            width: 400
+                        }
+                    })
+                ]
+            };
+            Ext.apply(config, cfg || {});
+            this.callParent([config]);
         }
     });
     

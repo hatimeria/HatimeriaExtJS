@@ -10,9 +10,28 @@
         extend: "Hatimeria.core.form.BaseForm",
         transNS: "form.login",
         transDomain: 'HatimeriaExtJSBundle',
-        // name of route for redirect after succesfull login
+        
+        /**
+         * name of route for redirect after succesfull login
+         *
+         * @cfg {String} afterLogin
+         */
         afterLogin: 'hatimeria_admin',
-
+        
+        /**
+         * Absolute path to logo
+         *
+         * @cfg {String} logoUri 
+         */
+        logoUri: "/bundles/hatimeriaadmin/images/hatimeria_v_220.png",
+        
+        /**
+         * Text which appears under form (like copyrights)
+         *
+         * @cfg {String} footer 
+         */
+        footer: '<img src="/bundles/hatimeriaadmin/images/hatimeria.ico"/><p>Powered by Hatimeria</p> <a href="http://www.hatimeria.pl">www.hatimeria.pl</a>',
+        
         /**
          * Constructor
          * 
@@ -23,15 +42,7 @@
         {
             var config = cfg || {};
             config.url = Routing.generate('fos_user_security_check');
-            
             config.waitMessage = this.__('wait');
-            
-            if (config.logoUri) {
-               this.logoUri = config.logoUri;
-            } else {
-               this.logoUri = "/bundles/hatimeriaadmin/images/hatimeria_v_220.png"
-            }
-
             this.callParent([config]);
         },
 
@@ -128,7 +139,7 @@
                 height: 27,
                 id: 'hatimeria-powered-by',
                 style: {margin: '10px 125px'},
-                html: '<img src="/bundles/hatimeriaadmin/images/hatimeria.ico"/><p>Powered by Hatimeria</p> <a href="http://www.hatimeria.pl">www.hatimeria.pl</a>'
+                html: this.footer
             });
             
             return fields;
