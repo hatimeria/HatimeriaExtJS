@@ -29,7 +29,15 @@ Ext.define("Hatimeria.google.Map", {
      * 
      * @cfg {Array} addresses
      */    
-    addresses: null,
+    addresses: [],
+    
+    /**
+     * Coordinates [[latitude, longitude]]
+     *
+     * @cfg {Array} coordinates
+     */
+    coordinates: [],
+    
     /**
      * Dom element id in which map will be placed
      * 
@@ -90,8 +98,14 @@ Ext.define("Hatimeria.google.Map", {
     {
         var me = this;
         me.createMap();
+        var i = 0;
         Ext.each(me.getAddresses(), function(address, index) {
             me.getLocalization(address, Ext.bind(me.addMarker, me, [index], true));
+            i++;
+        });
+        Ext.each(me.coordinates, function(coordinate, index) {
+            var localization = new google.maps.LatLng(coordinate[0], coordinate[1]);
+            me.addMarker(localization, index)
         });
         
         this.centerMap();
@@ -218,8 +232,14 @@ Ext.define("Hatimeria.google.Map", {
             address = this.getAddresses()[0];
         }
         
-        var localization = this.getLocalization(address, function(localization) {
-            me.map.setCenter(localization);
-        });
+        if(!address && this.coordinates.length != 0) {
+            var coordinate = this.coordinates[0];
+            me.map.setCenter(new google.maps.LatLng(coordinate[0], coordinate[1]));
+        } else {
+            this.getLocalization(address, function(localization) {
+                me.map.setCenter(localization);
+            });
+        }
+        
     }
 })
