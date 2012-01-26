@@ -150,6 +150,21 @@
         },
         
         /**
+         * Applying extraparams passed during creating store
+         * 
+         * @param {Object} data
+         */
+        mergeExtraParams: function(data)
+        {
+            if (typeof this.proxy.extraParams != 'object')
+            {
+                this.proxy.extraParams = {};
+            }
+
+            Ext.merge(this.proxy.extraParams, data);
+        },
+        
+        /**
          * Override extra params
          * 
          * @param {} data

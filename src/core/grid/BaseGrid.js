@@ -68,6 +68,24 @@ Ext.define('Foo.Bar', {
         dockedElements: ['paging'],
         
         /**
+         * Grid filters
+         * 
+         * @cfg {Array} filters
+         */
+        filters: {
+            items: []
+        },
+        
+        /**
+         * Grid summary
+         * 
+         * @cfg {Array} filters
+         */
+        summary: {
+            items: []
+        },
+        
+        /**
          * Translate title, headers etc ?
          * 
          * @cfg {Boolean} translateAll
@@ -137,21 +155,11 @@ Ext.define('Foo.Bar', {
          */
         initComponent: function()
         {
-            var grid = this;
             // Docked items: 
             this.dockedItems = this.getDockedElements();
             
             if(this.translateAll) {
-                Ext.Object.each(this.defaultRowActions, function(key, value, property) {
-                    property[key] = grid.translate('actions.' + key);
-                });
-                Ext.each(this.columns, function(column) {
-                    if(!column.header) {
-                        column.header = grid.__('headers.'+column.dataIndex);
-                    }
-                });
-                
-                this.title = grid.__('title');
+                this.translateInterface();
             }
             
             // Action column with row-operations:
@@ -187,6 +195,142 @@ Ext.define('Foo.Bar', {
         },
         
         /**
+         */
+        getColumnAtDataIndex : function(index) {
+            var column = null;
+            
+            this.headerCt.items.each(function(c) {
+                if(c.dataIndex == index) {
+                    column = c;
+                    return;
+                }
+            })
+            
+            return column;
+        },
+
+        /**
+         * Get summary configuration
+         *
+         * @private
+         */
+        getSummary: function()
+        {
+            var items = this.summary.items;
+            var store = this.store;
+            var grid  = this;
+            
+            Ext.Array.each(items, function(config, index) {
+                var id = 'grid-summary-' + config.value;
+                var item = {
+                    xtype: 'container',
+                    data: {value: 0},
+                    itemId: id,
+                    style: 'margin-left: 15px',
+                    tpl: config.label + ': <b>{value}</b>'
+                }
+                
+                store.on('load', function() {
+                    grid.down('#' + id).update({
+                        value: Ext.util.Format.number(store.sum(config.value), '0.00')
+                    })
+                })
+                
+                items[index] = item;
+            });
+            
+            items.unshift({
+                xtype: 'container',
+                cls: 'grid-docked-title',
+                html: this.translate('summary.title')
+            });
+            
+            var summary = {
+                dock: 'top',
+                xtype: 'toolbar',
+                cls: 'grid-docked-toolbar',
+                padding: 0,
+                items: items
+            }
+            
+            return summary;
+        },
+        
+        /**
+         * Get filters configuration
+         *
+         * @private
+         */
+        getFilters: function() {
+            var items = this.filters.items;
+            
+            items.unshift({
+                xtype: 'container',
+                cls: 'grid-docked-title',
+                style: 'margin-left: 0px',
+                html: this.translate('filters.title')
+            });
+            
+            var store = this.store;
+            
+            var filters = {
+                dock: 'top',
+                xtype: 'toolbar',
+                padding: 0,
+                cls: 'grid-docked-toolbar',
+                items: {
+                    layout: {
+                        type: 'hbox',
+                        align: 'stretch'
+                    },
+                    defaults: {
+                        height: 50,
+                        style: 'margin-left: 15px; padding-top: 10px'
+                    },
+                    height: 50,
+                    bodyStyle: 'background: transparent',
+                    width: '100%',
+                    border: 0,
+                    xtype: 'form',
+                    items: items,
+                    listeners: {
+                        afterrender: function() {
+                            var form = this.getForm();
+                            form.getFields().each(function(field) {
+                                field.on('change', function() {
+                                    store.mergeExtraParams(form.getValues());
+                                    store.load();
+                                });
+                            })
+                        }
+                    }
+                }
+            }
+            
+            return filters;
+        },
+        
+        /**
+         * Translates interface
+         * 
+         * @private
+         */
+        translateInterface: function() {
+            var grid = this;
+            
+            Ext.Object.each(this.defaultRowActions, function(key, value, property) {
+                property[key] = grid.translate('actions.' + key);
+            });
+            Ext.each(this.columns, function(column) {
+                if(!column.header) {
+                    column.header = grid.__('headers.'+column.dataIndex);
+                }
+            });
+
+            this.title = grid.__('title');            
+        },
+        
+        /**
          * On item click
          *
          * @private
@@ -206,7 +350,7 @@ Ext.define('Foo.Bar', {
         {
             var items = [];
             
-            // With paging?
+            // With paging ?
             if (Ext.Array.contains(this.dockedElements, 'paging'))
             {
                 items.push({
@@ -219,12 +363,23 @@ Ext.define('Foo.Bar', {
                 })
             }
             
+            // With filters ?
+            if(this.filters.items.length > 0) {
+                items.push(this.getFilters());
+            }
+            
+            // With summary ?
+            if(this.summary.items.length > 0) {
+                items.push(this.getSummary());
+            }
+            
             // With add-button ?
             if (Ext.Array.contains(this.dockedElements, 'add'))
             {
                 items.push({
                     xtype: 'toolbar',
-                    docked: 'top',
+                    dock: 'top',
+                    padding: 0,
                     items: [{
                         xtype: 'button',
                         iconCls: 'icon-add',

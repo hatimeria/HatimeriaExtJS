@@ -57,6 +57,9 @@ Ext.define("Hatimeria.core.model.DirectModel", {
     onClassExtended: function(cls, data) {
         
         if(!data.idProperty) {
+            if(!data.fields) {
+                console.error("Missing fields for model");
+            }
             data.idProperty = typeof data.fields[0] == 'string' ? data.fields[0] : data.fields[0].name;
         }
         
