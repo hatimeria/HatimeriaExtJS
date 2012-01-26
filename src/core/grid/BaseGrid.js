@@ -228,6 +228,7 @@ Ext.define('Foo.Bar', {
                     items: [{
                         xtype: 'button',
                         iconCls: 'icon-add',
+                        cls: 'ux-icon-add-btn',
                         text: this.translate('actions.add'),
                         scope: this,
                         handler: function() {
