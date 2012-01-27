@@ -18,6 +18,13 @@
         },
         
         /**
+         * Type of data which will be returned ("object"/"string"/"d/m/Y")
+         *
+         * @cfg {String} returnFormat
+         */
+        returnFormat: 'string',
+        
+        /**
          * Default width
          * 
          * @cfg {Number} width
@@ -161,14 +168,26 @@
          * 
          * @param {Boolean} force optional to force event
          */
-        checkChange: function(force) {
-            if (!this.suspendCheckChange) {
+        checkChange: function(force)
+        {
+            if (!this.suspendCheckChange)
+            {
                 var me = this,
                     newVal = me.getValue(),
                     oldVal = me.lastValue;
-                if ((!me.isEqualRangeDate(newVal, oldVal) || force) && !me.isDestroyed) {
+                    
+                if (!this.isDateRangeValid(newVal))
+                {
+                    me.onChange(newVal, oldVal);
+                    return false;
+                }
+                    
+                if ((!me.isEqualRangeDate(newVal, oldVal) || force) && !me.isDestroyed)
+                {
                     me.lastValue = newVal;
-                    me.fireEvent('change', me, newVal, oldVal);
+                    var newValFormatted = me.getUnifiedReturnValue(newVal);
+                    var oldValFormatted = me.getUnifiedReturnValue(oldVal);
+                    me.fireEvent('change', me, newValFormatted, oldValFormatted);
                     me.onChange(newVal, oldVal);
                 }
             }
@@ -283,6 +302,17 @@
         },
         
         /**
+         * Check if date range object is valid
+         * 
+         * @param {Object} value
+         * @return {Boolean}
+         */
+        isDateRangeValid: function(value)
+        {
+            return value.from && value.to && typeof value.from.getDate == 'function' && typeof value.to.getDate == 'function' ;
+        },
+        
+        /**
          * Validate raw value
          * 
          * @return {Boolean}/{String}
@@ -295,6 +325,37 @@
             }
             
             return true;
+        },
+        
+        /**
+         * Convert declared output format
+         * 
+         * @param {Object} value Must be {from:Date, to:Date}
+         * @return {Object}
+         */
+        getUnifiedReturnValue: function(value)
+        {
+            if (this.returnFormat == 'object')
+            {
+                return value;
+            }
+            
+            var format = (this.returnFormat == 'string') ? this.format : this.returnFormat;
+            
+            return {
+                from: Ext.Date.format(value.from, format),
+                  to: Ext.Date.format(value.to, format)
+            };
+        },
+        
+        /**
+         * Submit output
+         * 
+         * @return {Object}
+         */
+        getSubmitValue: function()
+        {
+            return this.getUnifiedReturnValue(this.value);
         }
         
     });
