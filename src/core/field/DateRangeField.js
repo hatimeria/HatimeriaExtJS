@@ -57,6 +57,12 @@
         matchFieldWidth: false,
         
         /**
+         * @private
+         * @property
+         */
+        triggerCls : Ext.baseCSSPrefix + 'form-date-trigger',
+        
+        /**
          * Converts string to value Object
          * 
          * @param {String} value
@@ -105,19 +111,29 @@
          */
         setValue: function(value)
         {
-            var defaultValue = {
-                from: new Date, 
-                to: new Date
-            };
+            var bp = this.createBoilerplates();
             
-            if (!Ext.isObject(value))
+            if (typeof value == 'string' && typeof bp[value] == 'object') 
             {
-                value = this.defaultValue;
+                value = bp[value];
+            }
+            else
+            {
+                var defaultValue = {
+                    from: new Date, 
+                    to: new Date
+                };
+
+                if (!Ext.isObject(value))
+                {
+                    value = this.defaultValue;
+                }
+
+                value = Ext.apply(defaultValue, value);
+                value.from = this.convertToDate(value.from);
+                value.to = this.convertToDate(value.to);
             }
             
-            value = Ext.apply(defaultValue, value);
-            value.from = this.convertToDate(value.from);
-            value.to = this.convertToDate(value.to);
             this.lastValue = value;
             
             return this.callParent([value]);
