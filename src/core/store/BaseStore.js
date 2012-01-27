@@ -78,7 +78,13 @@
                 proxy.directFn = this.directFn;
             
                 if(!proxy.directFn) {
-                    var actions = Ext.ClassManager.get(config.model).prototype.actionsConfiguration;
+                    var model = Ext.ClassManager.get(config.model);
+                    
+                    if(!model) {
+                        console.error("Invalid model class " + config.model);
+                    }
+                    
+                    var actions = model.prototype.actionsConfiguration;
 
                     proxy.directFn = actions[this.directSuffix];
                 }
