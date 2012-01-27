@@ -18,7 +18,9 @@
         },
         
         /**
+         * Default width
          * 
+         * @cfg {Number} width
          */
         width: 170,
         
@@ -46,12 +48,6 @@
          */
         matchFieldWidth: false,
         
-        /**
-         * @private
-         * @property {Object}
-         */
-        storedValue: {},
-        
         constructor: function(cfg)
         {
             var config = {
@@ -61,27 +57,45 @@
         },
         
         /**
-         * Initialize of component
+         * Converts string to value Object
+         * 
+         * @param {String} value
+         * @private
          */
-        initComponent: function()
+        dateRangeToObject: function(value)
         {
-            this.addEvents(
-                /**
-                 * @event datechange
-                 */
-                'datechange'
-            );
+            var dates = value.split(/\s+\-\s+/);
+            var date = {
+                from: this.convertToDate(dates[0]),
+                to: this.convertToDate(dates[1])
+            }
             
-            this.callParent();
+            return date;
         },
         
         /**
-         * @param {Object}
-         * @private
+         * String to object {Date}
+         * 
+         * @param {String}
+         * @return {Date}
          */
-        dateStringToObject: function(value)
+        convertToDate: function(value)
         {
-            return value;
+            if (typeof value == 'object')
+            {
+                if (value instanceof Date)
+                {
+                    return value;
+                }
+                else
+                {
+                    throw new Error('Object must be instance of Date');
+                }
+            }
+            else
+            {
+                return Ext.Date.parse(value, this.format);
+            }
         },
         
         /**
@@ -91,15 +105,21 @@
          */
         setValue: function(value)
         {
-            var defValue = {from: new Date, to: new Date};
+            var defaultValue = {
+                from: new Date, 
+                to: new Date
+            };
+            
             if (!Ext.isObject(value))
             {
-                value = defValue;
+                value = this.defaultValue;
             }
             
-            value = Ext.apply(defValue, value);
-            Ext.copyTo(this.value, this.storedValue);
-
+            value = Ext.apply(defaultValue, value);
+            value.from = this.convertToDate(value.from);
+            value.to = this.convertToDate(value.to);
+            this.lastValue = value;
+            
             return this.callParent([value]);
         },
         
@@ -113,6 +133,45 @@
             var strTo = Ext.Date.format(value.to, this.format);
             
             return strFrom + ' - ' + strTo;
+        },
+        
+        /**
+         * Conversion from text to object
+         * 
+         * @param {String}
+         * @return {Object}
+         */
+        rawToValue: function(value)
+        {
+            return this.dateRangeToObject(value);
+        },
+        
+        /**
+         * Check if dates are equal
+         * 
+         * @return {Boolean}
+         */
+        isEqualRangeDate: function(newVal, oldVal)
+        {
+            return Ext.JSON.encode(newVal) == Ext.JSON.encode(oldVal);
+        },
+        
+        /**
+         * Check if value changed
+         * 
+         * @param {Boolean} force optional to force event
+         */
+        checkChange: function(force) {
+            if (!this.suspendCheckChange) {
+                var me = this,
+                    newVal = me.getValue(),
+                    oldVal = me.lastValue;
+                if ((!me.isEqualRangeDate(newVal, oldVal) || force) && !me.isDestroyed) {
+                    me.lastValue = newVal;
+                    me.fireEvent('change', me, newVal, oldVal);
+                    me.onChange(newVal, oldVal);
+                }
+            }
         },
         
         /**
@@ -133,6 +192,7 @@
                 layout: 'auto',
                 items: [
                     {
+                        itemId: 'boilerplates-combobox',
                         xtype: 'combobox',
                         margin: '10 0 0 10',
                         store: Ext.create('Ext.data.Store', {
@@ -145,20 +205,22 @@
                         displayField: 'value'
                     },
                     {
+                        xtype: 'panel',
                         layout: 'hbox',
+                        itemId: 'pickers-panel',
                         border: 0,
                         defaults: {margin: 5},
                         items: [
                             Ext.create('Ext.picker.Date', {
+                                itemId: 'picker-from',
                                 format: this.format,
-                                minDate: this.from,
                                 handler: function(picker, date) {
                                     _this.onDateSelect('from', date);
                                 }
                             }),
                             Ext.create('Ext.picker.Date', {
+                                itemId: 'picker-to',
                                 format: this.format,
-                                minDate: this.to,
                                 handler: function(picker, date) {
                                     _this.onDateSelect('to', date)
                                 }
@@ -174,15 +236,67 @@
         },
         
         /**
+         * Apply date values to pickers
          * 
+         * @param {Object} value {from:Date, to:Date}
+         */
+        applyToPicker: function(value)
+        {
+            if (this.picker)
+            {
+                this.picker.down('#picker-from').setValue(value.from);
+                this.picker.down('#picker-to').setValue(value.to);
+            }
+        },
+        
+        /**
+         * Event: react on expanding picker
+         */
+        onExpand: function()
+        {
+            this.applyToPicker(this.value);
+        },
+        
+        /**
+         * Apply new date
+         * 
+         * @param {String} type
+         * @param {Date} date
          */
         onDateSelect: function(type, date)
         {
-            this.storedValue[type] = date;
-            this.setValue(this.storedValue);
+            this.value[type] = date;
+            this.setValue(this.value);
+            this.checkChange(true);
+        },
+        
+        /**
+         * Validator for raw date range
+         * 
+         * @return {Boolean}
+         */
+        isRawDateRangeValid: function(value)
+        {
+            value = this.dateRangeToObject(value);
+            
+            return (value.from && value.to);
+        },
+        
+        /**
+         * Validate raw value
+         * 
+         * @return {Boolean}/{String}
+         */
+        validator: function(value)
+        {
+            if (!this.isRawDateRangeValid(value))
+            {
+                return "Daty są w nieprawidłowym formacie!";
+            }
+            
+            return true;
         }
         
     });
     
-
 })();
