@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js"><span id='Hatimeria-core-field-DateRangeField'>/**
+</span> * Date Range Field
+ * 
+ * @class Hatimeria.core.field.DateRangeField
+ * @extends Ext.form.field.Basic
+ */
+(function() {
+    
+    Ext.define('Hatimeria.core.field.DateRangeField', {
+        extend: 'Ext.form.field.Picker',
+        
+<span id='Hatimeria-core-field-DateRangeField-cfg-value'>        /**
+</span>         * @cfg {Object} value
+         */
+        value: {
+            from: new Date,
+            to: new Date
+        },
+        
+<span id='Hatimeria-core-field-DateRangeField-cfg-returnFormat'>        /**
+</span>         * Type of data which will be returned (&quot;object&quot;/&quot;string&quot;/&quot;d/m/Y&quot;)
+         *
+         * @cfg {String} returnFormat
+         */
+        returnFormat: 'string',
+        
+<span id='Hatimeria-core-field-DateRangeField-cfg-width'>        /**
+</span>         * Default width
+         * 
+         * @cfg {Number} width
+         */
+        width: 170,
+        
+<span id='Hatimeria-core-field-DateRangeField-cfg-format'>        /**
+</span>         * @cfg {String} format corresponding to Ext.util.Format.date()
+         */
+        format: 'd/m/Y',
+        
+<span id='Hatimeria-core-field-DateRangeField-property-rangeBoilerplates'>        /**
+</span>         * @private
+         * @property {Array}
+         */
+        rangeBoilerplates: [
+            {key: 'yesterday', value: 'Wczoraj'},
+            {key: 'week',      value: 'Ostatni tydzień'},
+            {key: 'prevweek',  value: 'Przedostatni tydzień'},
+            {key: 'month',     value: 'Ostatni miesiąc'},
+            {key: 'prevmonth', value: 'Przedostatni miesiąc'},
+            {key: 'year',      value: 'Z ostatniego roku'}
+        ],
+        
+        pickerAlign: 'bl',
+        
+<span id='Hatimeria-core-field-DateRangeField-property-matchFieldWidth'>        /**
+</span>         * @private
+         */
+        matchFieldWidth: false,
+        
+<span id='Hatimeria-core-field-DateRangeField-property-triggerCls'>        /**
+</span>         * @private
+         * @property
+         */
+        triggerCls : Ext.baseCSSPrefix + 'form-date-trigger',
+        
+<span id='Hatimeria-core-field-DateRangeField-method-dateRangeToObject'>        /**
+</span>         * Converts string to value Object
+         * 
+         * @param {String} value
+         * @private
+         */
+        dateRangeToObject: function(value)
+        {
+            var dates = value.split(/\s+\-\s+/);
+            var date = {
+                from: this.convertToDate(dates[0]),
+                to: this.convertToDate(dates[1])
+            }
+            
+            return date;
+        },
+        
+<span id='Hatimeria-core-field-DateRangeField-method-convertToDate'>        /**
+</span>         * String to object {Date}
+         * 
+         * @param {String}
+         * @return {Date}
+         */
+        convertToDate: function(value)
+        {
+            if (typeof value == 'object')
+            {
+                if (value instanceof Date)
+                {
+                    return value;
+                }
+                else
+                {
+                    throw new Error('Object must be instance of Date');
+                }
+            }
+            else
+            {
+                return Ext.Date.parse(value, this.format);
+            }
+        },
+        
+<span id='Hatimeria-core-field-DateRangeField-method-setValue'>        /**
+</span>         * Guess!
+         * 
+         * @param {Object}
+         */
+        setValue: function(value)
+        {
+            var bp = this.createBoilerplates();
+            
+            if (typeof value == 'string' &amp;&amp; typeof bp[value] == 'object') 
+            {
+                value = bp[value];
+            }
+            else
+            {
+                var defaultValue = {
+                    from: new Date, 
+                    to: new Date
+                };
+
+                if (!Ext.isObject(value))
+                {
+                    value = this.defaultValue;
+                }
+
+                value = Ext.apply(defaultValue, value);
+                value.from = this.convertToDate(value.from);
+                value.to = this.convertToDate(value.to);
+            }
+            
+            this.lastValue = value;
+            
+            return this.callParent([value]);
+        },
+        
+<span id='Hatimeria-core-field-DateRangeField-method-valueToRaw'>        /**
+</span>         * @param {String} value Must be {from: {Date}, to: {Date}}
+         * @return {String}
+         */
+        valueToRaw: function(value)
+        {
+            var strFrom = Ext.Date.format(value.from, this.format);
+            var strTo = Ext.Date.format(value.to, this.format);
+            
+            return strFrom + ' - ' + strTo;
+        },
+        
+<span id='Hatimeria-core-field-DateRangeField-method-rawToValue'>        /**
+</span>         * Conversion from text to object
+         * 
+         * @param {String}
+         * @return {Object}
+         */
+        rawToValue: function(value)
+        {
+            return this.dateRangeToObject(value);
+        },
+        
+<span id='Hatimeria-core-field-DateRangeField-method-isEqualRangeDate'>        /**
+</span>         * Check if dates are equal
+         * 
+         * @return {Boolean}
+         */
+        isEqualRangeDate: function(newVal, oldVal)
+        {
+            return Ext.JSON.encode(newVal) == Ext.JSON.encode(oldVal);
+        },
+        
+<span id='Hatimeria-core-field-DateRangeField-method-checkChange'>        /**
+</span>         * Check if value changed
+         * 
+         * @param {Boolean} force optional to force event
+         */
+        checkChange: function(force)
+        {
+            if (!this.suspendCheckChange)
+            {
+                var me = this,
+                    newVal = me.getValue(),
+                    oldVal = me.lastValue;
+                    
+                if (!this.isDateRangeValid(newVal))
+                {
+                    me.onChange(newVal, oldVal);
+                    return false;
+                }
+                    
+                if ((!me.isEqualRangeDate(newVal, oldVal) || force) &amp;&amp; !me.isDestroyed)
+                {
+                    me.lastValue = newVal;
+                    var newValFormatted = me.getUnifiedReturnValue(newVal);
+                    var oldValFormatted = me.getUnifiedReturnValue(oldVal);
+                    me.fireEvent('change', me, newValFormatted, oldValFormatted);
+                    me.onChange(newVal, oldVal);
+                }
+            }
+        },
+        
+<span id='Hatimeria-core-field-DateRangeField-method-createPicker'>        /**
+</span>         * Creates instance of picker
+         */
+        createPicker: function()
+        {
+            var _this = this;
+            var picker = Ext.create('Ext.container.Container', {
+                floating: true,
+                border: 0,
+                width: 405,
+                height: 260,
+                hidden: true,
+                padding: 5,
+                ownerCt: this.ownerCt,
+                layout: 'auto',
+                items: [
+                    {
+                        xtype: 'combobox',
+                        cls: 'ranges-combo',
+                        itemId: 'boilerplates-combobox',
+                        margin: '10 0 0 10',
+                        store: Ext.create('Ext.data.Store', {
+                            fields: ['key', 'value'],
+                            data: this.rangeBoilerplates
+                        }),
+                        listConfig: {
+                            cls: 'ranges-combo-boundlist'
+                        },
+                        editable: false,
+                        fieldLabel: 'Wybierz przedział',
+                        valueField: 'key',
+                        displayField: 'value',
+                        listeners: {
+                            change: function(combo, value) {
+                                _this.onBoilerplateSelect(combo, value);
+                            }
+                        }
+                    },
+                    {
+                        xtype: 'panel',
+                        layout: 'hbox',
+                        itemId: 'pickers-panel',
+                        border: 0,
+                        defaults: {margin: 5},
+                        items: [
+                            Ext.create('Ext.picker.Date', {
+                                itemId: 'picker-from',
+                                format: this.format,
+                                handler: function(picker, date) {
+                                    _this.onDateSelect('from', date);
+                                }
+                            }),
+                            Ext.create('Ext.picker.Date', {
+                                itemId: 'picker-to',
+                                format: this.format,
+                                handler: function(picker, date) {
+                                    _this.onDateSelect('to', date)
+                                }
+                            })
+                        ]
+                    }
+                ]
+            });
+
+            this.picker = picker;
+            
+            return this.picker;
+        },
+        
+<span id='Hatimeria-core-field-DateRangeField-method-applyToPicker'>        /**
+</span>         * Apply date values to pickers
+         * 
+         * @param {Object} value {from:Date, to:Date}
+         */
+        applyToPicker: function(value)
+        {
+            if (this.picker)
+            {
+                this.picker.down('#picker-from').setValue(value.from);
+                this.picker.down('#picker-to').setValue(value.to);
+            }
+        },
+        
+<span id='Hatimeria-core-field-DateRangeField-method-collapseIf'>        /**
+</span>         * Walkround collapsing main picker
+         */
+        collapseIf: function(event, target)
+        {
+            if (!Ext.get(target).up('.ranges-combo-boundlist'))
+            {
+                this.callParent(arguments);
+            }
+        },
+        
+<span id='Hatimeria-core-field-DateRangeField-method-onExpand'>        /**
+</span>         * Event: react on expanding picker
+         */
+        onExpand: function()
+        {
+            this.applyToPicker(this.value);
+        },
+        
+<span id='Hatimeria-core-field-DateRangeField-method-onDateSelect'>        /**
+</span>         * Apply new date
+         * 
+         * @param {String} type
+         * @param {Date} date
+         */
+        onDateSelect: function(type, date)
+        {
+            this.value[type] = date;
+            this.setValue(this.value);
+            this.checkChange(true);
+        },
+        
+<span id='Hatimeria-core-field-DateRangeField-method-isRawDateRangeValid'>        /**
+</span>         * Validator for raw date range
+         * 
+         * @return {Boolean}
+         */
+        isRawDateRangeValid: function(value)
+        {
+            value = this.dateRangeToObject(value);
+            
+            return (value.from &amp;&amp; value.to);
+        },
+        
+<span id='Hatimeria-core-field-DateRangeField-method-isDateRangeValid'>        /**
+</span>         * Check if date range object is valid
+         * 
+         * @param {Object} value
+         * @return {Boolean}
+         */
+        isDateRangeValid: function(value)
+        {
+            return value.from &amp;&amp; value.to &amp;&amp; typeof value.from.getDate == 'function' &amp;&amp; typeof value.to.getDate == 'function' ;
+        },
+        
+<span id='Hatimeria-core-field-DateRangeField-method-validator'>        /**
+</span>         * Validate raw value
+         * 
+         * @return {Boolean}/{String}
+         */
+        validator: function(value)
+        {
+            if (!this.isRawDateRangeValid(value))
+            {
+                return &quot;Daty są w nieprawidłowym formacie!&quot;;
+            }
+            
+            return true;
+        },
+        
+<span id='Hatimeria-core-field-DateRangeField-method-getUnifiedReturnValue'>        /**
+</span>         * Convert declared output format
+         * 
+         * @param {Object} value Must be {from:Date, to:Date}
+         * @return {Object}
+         */
+        getUnifiedReturnValue: function(value)
+        {
+            if (this.returnFormat == 'object')
+            {
+                return value;
+            }
+            
+            var format = (this.returnFormat == 'string') ? this.format : this.returnFormat;
+            
+            return {
+                from: Ext.Date.format(value.from, format),
+                  to: Ext.Date.format(value.to, format)
+            };
+        },
+        
+<span id='Hatimeria-core-field-DateRangeField-method-getSubmitValue'>        /**
+</span>         * Submit output
+         * 
+         * @return {Object}
+         */
+        getSubmitValue: function()
+        {
+            return this.getUnifiedReturnValue(this.value);
+        },
+        
+<span id='Hatimeria-core-field-DateRangeField-method-createBoilerplates'>        /**
+</span>         * Ready to use date ranges
+         * 
+         * @retutn {Object}
+         */
+        createBoilerplates: function()
+        {
+            if (this.boilerplates)
+            {
+                return this.boilerplates;
+            }
+            
+            var now = new Date();
+            
+            var dayBack = new Date();
+            dayBack.setDate(dayBack.getDate()-1);
+            
+            var weekBack = new Date();
+            weekBack.setDate(weekBack.getDate()-7);
+            
+            var twoweekBack = new Date();
+            twoweekBack.setDate(twoweekBack.getDate()-14);
+            
+            var monthBack = new Date();
+            monthBack.setMonth(monthBack.getMonth()-1);
+            
+            var twomonthBack = new Date();
+            twomonthBack.setMonth(twomonthBack.getMonth()-2);
+            
+            var yearBack = new Date();
+            yearBack.setFullYear(yearBack.getFullYear()-1);
+            
+            this.boilerplates = {
+                yesterday: {to: now, from: dayBack},
+                week:      {to: now, from: weekBack},
+                prevweek:  {to: weekBack, from: twoweekBack},
+                month:     {to: now, from: monthBack},
+                prevmonth: {to: monthBack, from: twomonthBack},
+                year:      {to: now, from: yearBack}
+            }
+            
+            return this.boilerplates;
+        },
+        
+<span id='Hatimeria-core-field-DateRangeField-method-onBoilerplateSelect'>        /**
+</span>         * Event: Selected boilerplate
+         * 
+         * @param Ext.form.field.ComboBox combo
+         * @param {String} name
+         */
+        onBoilerplateSelect: function(combo, name)
+        {
+            var bp = this.createBoilerplates();
+            this.value = bp[name];
+            this.setValue(this.value);
+            this.collapse();
+        }
+    });
+    
+})();
+</pre>
+</body>
+</html>

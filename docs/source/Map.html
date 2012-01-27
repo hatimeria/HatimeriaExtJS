@@ -29,6 +29,8 @@
  *                  'Kraków, ul. Portowa 3'
  *              ]
  *          });
+ *          
+ *          &lt;div id=&quot;maps-container&quot; style=&quot;width:500px; height:500px;&quot;&gt;&lt;/div&gt;
  *      
  * @class Hatimeria.google.Map
  */
@@ -44,7 +46,15 @@ Ext.define(&quot;Hatimeria.google.Map&quot;, {
      * 
      * @cfg {Array} addresses
      */    
-    addresses: null,
+    addresses: [],
+    
+<span id='Hatimeria-google-Map-cfg-coordinates'>    /**
+</span>     * Coordinates [[latitude, longitude]]
+     *
+     * @cfg {Array} coordinates
+     */
+    coordinates: [],
+    
 <span id='Hatimeria-google-Map-cfg-renderTo'>    /**
 </span>     * Dom element id in which map will be placed
      * 
@@ -69,6 +79,14 @@ Ext.define(&quot;Hatimeria.google.Map&quot;, {
      * @cfg {Number} zoom
      */
     zoom: 9,
+    
+<span id='Hatimeria-google-Map-cfg-mapType'>    /**
+</span>     * Map Type
+     * 
+     * @cfg {String} mapType [ TERRAIN / HYBRID / ROADMAP ]
+     */
+    mapType: 'TERRAIN',
+    
 <span id='Hatimeria-google-Map-cfg-center'>    /**
 </span>     * Center address
      * 
@@ -97,8 +115,14 @@ Ext.define(&quot;Hatimeria.google.Map&quot;, {
     {
         var me = this;
         me.createMap();
+        var i = 0;
         Ext.each(me.getAddresses(), function(address, index) {
             me.getLocalization(address, Ext.bind(me.addMarker, me, [index], true));
+            i++;
+        });
+        Ext.each(me.coordinates, function(coordinate, index) {
+            var localization = new google.maps.LatLng(coordinate[0], coordinate[1]);
+            me.addMarker(localization, index)
         });
         
         this.centerMap();
@@ -181,7 +205,7 @@ Ext.define(&quot;Hatimeria.google.Map&quot;, {
     createMap: function() {
         var myOptions = {
             zoom: this.zoom,
-            mapTypeId: google.maps.MapTypeId.TERRAIN
+            mapTypeId: google.maps.MapTypeId[this.mapType]
         };
         
         this.map = new google.maps.Map(this.getContainer(), myOptions);
@@ -202,6 +226,8 @@ Ext.define(&quot;Hatimeria.google.Map&quot;, {
             } else {
                 if(failure) {
                     failure();
+                } else {
+                    console.debug('Google map: '+ address + ' not found, with status ' + status);
                 }
             }
         });
@@ -223,9 +249,15 @@ Ext.define(&quot;Hatimeria.google.Map&quot;, {
             address = this.getAddresses()[0];
         }
         
-        var localization = this.getLocalization(address, function(localization) {
-            me.map.setCenter(localization);
-        });
+        if(!address &amp;&amp; this.coordinates.length != 0) {
+            var coordinate = this.coordinates[0];
+            me.map.setCenter(new google.maps.LatLng(coordinate[0], coordinate[1]));
+        } else {
+            this.getLocalization(address, function(localization) {
+                me.map.setCenter(localization);
+            });
+        }
+        
     }
 })</pre>
 </body>

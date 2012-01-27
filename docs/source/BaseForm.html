@@ -51,6 +51,13 @@ Ext.define(&quot;Hatimeria.core.form.BaseForm&quot;, {
      */
     submitConfig: null,
     
+<span id='Hatimeria-core-form-BaseForm-cfg-waitMessage'>    /**
+</span>     * Message on wait mask, defaults to translated form.wait
+     *
+     * @cfg {String} waitMessage
+     */
+    waitMessage: null,
+    
 <span id='Hatimeria-core-form-BaseForm-property-Ext.button.Button'>    /**
 </span>     * Submit button
      * 
@@ -79,7 +86,7 @@ Ext.define(&quot;Hatimeria.core.form.BaseForm&quot;, {
     {
         var config = cfg || {};
         
-        if (typeof this.submitConfig == 'object')
+        if (this.submitConfig != null)
         {
             if(typeof this.submitConfig.submit == 'function') {
                 Ext.merge(config, {api: {
@@ -101,14 +108,13 @@ Ext.define(&quot;Hatimeria.core.form.BaseForm&quot;, {
             msgTarget: 'under'
         });
         
-        if (typeof cfg == 'object' &amp;&amp; typeof cfg.submitConfig == 'object' &amp;&amp; typeof cfg.submitConfig.submit == 'function')
-        {
-            Ext.merge(config, {api: {
-                submit: cfg.submitConfig.submit
-            }});
-        }
+        this.addEvents(
         
-        this.addEvents('recordsaved');
+<span id='Hatimeria-core-form-BaseForm-event-recordsaved'>            /**
+</span>             * @event recordsaved
+             */
+            'recordsaved'
+        );
         
         this.callParent([config]);
     },
@@ -198,7 +204,7 @@ Ext.define(&quot;Hatimeria.core.form.BaseForm&quot;, {
         
         if (Ext.isObject(el))
         {
-            this.mask = new Ext.LoadMask(el, {msg: 'Czekaj...'});
+            this.mask = new Ext.LoadMask(el, {msg: this.waitMessage || this.translate('wait')});
             this.mask.show();
         }        
     },

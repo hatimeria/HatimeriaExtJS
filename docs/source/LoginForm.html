@@ -27,9 +27,28 @@
         extend: &quot;Hatimeria.core.form.BaseForm&quot;,
         transNS: &quot;form.login&quot;,
         transDomain: 'HatimeriaExtJSBundle',
-        // name of route for redirect after succesfull login
+        
+<span id='Hatimeria-core-form-LoginForm-cfg-afterLogin'>        /**
+</span>         * name of route for redirect after succesfull login
+         *
+         * @cfg {String} afterLogin
+         */
         afterLogin: 'hatimeria_admin',
-
+        
+<span id='Hatimeria-core-form-LoginForm-cfg-logoUri'>        /**
+</span>         * Absolute path to logo
+         *
+         * @cfg {String} logoUri 
+         */
+        logoUri: &quot;/bundles/hatimeriaadmin/images/hatimeria_v_220.png&quot;,
+        
+<span id='Hatimeria-core-form-LoginForm-cfg-footer'>        /**
+</span>         * Text which appears under form (like copyrights)
+         *
+         * @cfg {String} footer 
+         */
+        footer: '&lt;img src=&quot;/bundles/hatimeriaadmin/images/hatimeria.ico&quot;/&gt;&lt;p&gt;Powered by Hatimeria&lt;/p&gt; &lt;a href=&quot;http://www.hatimeria.pl&quot;&gt;www.hatimeria.pl&lt;/a&gt;',
+        
 <span id='Hatimeria-core-form-LoginForm-method-constructor'>        /**
 </span>         * Constructor
          * 
@@ -40,13 +59,7 @@
         {
             var config = cfg || {};
             config.url = Routing.generate('fos_user_security_check');
-            
-            if (config.logoUri) {
-               this.logoUri = config.logoUri;
-            } else {
-               this.logoUri = &quot;/bundles/hatimeriaadmin/images/hatimeria_v_220.png&quot;
-            }
-
+            config.waitMessage = this.__('wait');
             this.callParent([config]);
         },
 
@@ -143,7 +156,7 @@
                 height: 27,
                 id: 'hatimeria-powered-by',
                 style: {margin: '10px 125px'},
-                html: '&lt;img src=&quot;/bundles/hatimeriaadmin/images/hatimeria.ico&quot;/&gt;&lt;p&gt;Powered by Hatimeria&lt;/p&gt; &lt;a href=&quot;http://www.hatimeria.pl&quot;&gt;www.hatimeria.pl&lt;/a&gt;'
+                html: this.footer
             });
             
             return fields;

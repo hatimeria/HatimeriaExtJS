@@ -30,50 +30,59 @@
         },
         transDomain: 'HatimeriaExtJSBundle',
         
-        config: {
-            
-<span id='Hatimeria-core-form-ImageForm-css_var-int'>            /**
-</span>             * Image width
-             * 
-             * @var int
-             */
-            imgWidth: 100,
-            
-<span id='Hatimeria-core-form-ImageForm-css_var-100'>            /**
-</span>             * Image height
-             * 
-             * @var 100
-             */
-            imgHeight: 100,
-            
-<span id='Hatimeria-core-form-ImageForm-css_var-string'>            /**
-</span>             * Variable name
-             * 
-             * @var string
-             */
-            imgName: 'image',
-            
-<span id='Hatimeria-core-form-ImageForm-css_var-defaultImage'>            /**
-</span>             * Default image
-             * 
-             * @var {}
-             */
-            defaultImage: '',
-            
-<span id='Hatimeria-core-form-ImageForm-property-api'>            /**
-</span>             * Api for request procedures
-             * { submit: function() {}, remove: function() {} }
-             */
-            api: {},
-            
-<span id='Hatimeria-core-form-ImageForm-css_var-params'>            /**
-</span>             * Addition params from outside
-             * 
-             * @var {}
-             */
-            params: {}
-        },
+<span id='Hatimeria-core-form-ImageForm-cfg-imgWidth'>        /**
+</span>         * Image width
+         * 
+         * @cfg {Number} imgWidth
+         */
+        imgWidth: 100,
+
+<span id='Hatimeria-core-form-ImageForm-cfg-imgHeight'>        /**
+</span>         * Image height
+         * 
+         * @cfg {Number} imgHeight
+         */
+        imgHeight: 100,
+
+<span id='Hatimeria-core-form-ImageForm-cfg-imgName'>        /**
+</span>         * Json submit property name
+         * 
+         * @cfg {String} imgName
+         */
+        imgName: 'image',
         
+<span id='Hatimeria-core-form-ImageForm-cfg-name'>        /**
+</span>         * POST submit property name
+         * 
+         * @cfg {String} name
+         */
+        name: 'photo',
+
+<span id='Hatimeria-core-form-ImageForm-cfg-defaultImage'>        /**
+</span>         * Default image
+         * 
+         * @cfg {String} defaultImage
+         */
+        defaultImage: '',
+
+<span id='Hatimeria-core-form-ImageForm-cfg-api'>        /**
+</span>         * Api for request procedures
+         * @cfg {Object} api
+         *     @example
+         *     api: {
+         *       submit: function() {}, 
+         *       remove: function() {}
+         *     }
+         */
+        api: {},
+
+<span id='Hatimeria-core-form-ImageForm-cfg-params'>        /**
+</span>         * Addition params from outside
+         * 
+         * @cfg {Object} params
+         */
+        params: {},
+            
 <span id='Hatimeria-core-form-ImageForm-method-constructor'>        /**
 </span>         * Constructor
          * 
@@ -97,16 +106,16 @@
             
             // Image
             var img = Ext.create('Ext.Img', {
-                id: 'image-form-img',
-                width: this.getImgWidth(),
-                height: this.getImgHeight()
+                itemId: 'image-form-img',
+                width: this.imgWidth,
+                height: this.imgHeight
             });
             
             // Upload button
             var uploadBtn = Ext.create('Ext.form.field.File', {
-                id: 'image-form-upload',
+                itemId: 'image-form-upload',
                 allowBlank: true,
-                name: this.getImgName(),
+                name: this.name,
                 msgTarget: 'none',
                 fieldLabel: false,
                 buttonText: this.__(&quot;form.image.browse&quot;),
@@ -132,28 +141,28 @@
             });
             
             var config = {
-                id: 'image-form',
+                itemId: 'image-form',
                 layout: 'border',
                 border: false,
-                height: this.getImgHeight() + 5,
+                height: this.imgHeight + 5,
                 items: [
                     {
-                        id: 'image-form-imgcontainer',
+                        itemId: 'image-form-imgcontainer',
                         xtype: 'panel',
                         region: 'west',
-                        width: this.getImgWidth() + 5,
-                        height: this.getImgHeight() + 5,
+                        width: this.imgWidth + 5,
+                        height: this.imgHeight + 5,
                         items: [ img ]
                     },
                     {
-                        id: 'image-form-form',
+                        xtype: 'form',
+                        itemId: 'image-form-form',
                         region: 'center',
                         padding: '0 0 0 10',
                         border: false,
-                        xtype: 'form',
                         method: 'POST',
                         api: {
-                            submit: this.getApi().submit
+                            submit: this.api.submit
                         },
                         fileUpload: true,
                         layout: 'auto',
@@ -162,8 +171,13 @@
                             deleteBtn,
                             {
                                 xtype: 'hiddenfield',
-                                id: 'current-image-path',
-                                name: this.getImgName()
+                                itemId: 'current-image-path',
+                                name: this.imgName,
+                                listeners: {
+                                    change: function(field, value) {
+                                        _this.setSrc(value);
+                                    }
+                                }
                             }
                         ]
                     }
@@ -205,7 +219,17 @@
                 .getComponent('image-form-form')
                 .getComponent('current-image-path')
                 .setValue(path);
-                
+            
+            this.setSrc(path);
+        },
+        
+<span id='Hatimeria-core-form-ImageForm-method-setSrc'>        /**
+</span>         * Sets path to img
+         * 
+         * @param {String} path
+         */
+        setSrc: function(path)
+        {
             this
                 .getComponent('image-form-imgcontainer')
                 .getComponent('image-form-img')
@@ -235,7 +259,7 @@
             var _this = this;
             this.fireEvent('beforeload', this);
             this.getComponent('image-form-form').submit({
-                params: this.getParams(),
+                params: this.params,
                 success: function(form, response) {
                     _this.setCurrent(response.result.record);
                     _this.fireEvent('imageloaded', response.result);
@@ -249,17 +273,17 @@
         removeImage: function()
         {
             var _this = this;
-            if (typeof this.getApi().remove == 'function')
+            if (typeof this.api.remove == 'function')
             {
-                this.getApi().remove({}, function(form, response) {
+                this.api.remove({}, function(form, response) {
                     _this.fireEvent('imageremove', response);
-                    _this.setCurrent(_this.getDefaultImage());
+                    _this.setCurrent(_this.defaultImage);
                 });
             }
             else
             {
                 _this.fireEvent('imageremove');
-                _this.setCurrent(_this.getDefaultImage());
+                _this.setCurrent(_this.defaultImage);
             }
         },
         
@@ -271,7 +295,7 @@
         getSubmitData: function()
         {
             var data = {};
-            data[this.getImgName()] = this.getCurrent();
+            data[this.imgName] = this.getCurrent();
             
             return data;
         }

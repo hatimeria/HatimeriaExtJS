@@ -95,7 +95,13 @@
                 proxy.directFn = this.directFn;
             
                 if(!proxy.directFn) {
-                    var actions = Ext.ClassManager.get(config.model).prototype.actionsConfiguration;
+                    var model = Ext.ClassManager.get(config.model);
+                    
+                    if(!model) {
+                        console.error(&quot;Invalid model class &quot; + config.model);
+                    }
+                    
+                    var actions = model.prototype.actionsConfiguration;
 
                     proxy.directFn = actions[this.directSuffix];
                 }
@@ -164,6 +170,21 @@
             }
 
             Ext.apply(this.proxy.extraParams, data);
+        },
+        
+<span id='Hatimeria-core-store-BaseStore-method-mergeExtraParams'>        /**
+</span>         * Applying extraparams passed during creating store
+         * 
+         * @param {Object} data
+         */
+        mergeExtraParams: function(data)
+        {
+            if (typeof this.proxy.extraParams != 'object')
+            {
+                this.proxy.extraParams = {};
+            }
+
+            Ext.merge(this.proxy.extraParams, data);
         },
         
 <span id='Hatimeria-core-store-BaseStore-method-setExtraParams'>        /**
