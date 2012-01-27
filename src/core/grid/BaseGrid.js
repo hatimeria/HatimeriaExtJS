@@ -296,6 +296,10 @@ Ext.define('Foo.Bar', {
                     listeners: {
                         afterrender: function() {
                             var form = this.getForm();
+                            // @todo apply before store is loaded
+                            store.mergeExtraParams(form.getValues());
+                            store.load();
+                            
                             form.getFields().each(function(field) {
                                 field.on('change', function() {
                                     store.mergeExtraParams(form.getValues());
