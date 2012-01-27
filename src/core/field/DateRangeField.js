@@ -41,11 +41,12 @@
          * @property {Array}
          */
         rangeBoilerplates: [
-            {key: 'today',   value: 'Dzisiejsze'},
-            {key: 'week',    value: 'Z ostatniego tygodnia'},
-            {key: 'twoweek', value: 'Z ostatnich dwóch tygodni'},
-            {key: 'month',   value: 'Z ostatniego miesiąca'},
-            {key: 'year',    value: 'Z ostatniego roku'}
+            {key: 'yesterday', value: 'Wczoraj'},
+            {key: 'week',      value: 'Ostatni tydzień'},
+            {key: 'prevweek',  value: 'Przedostatni tydzień'},
+            {key: 'month',     value: 'Ostatni miesiąc'},
+            {key: 'prevmonth', value: 'Przedostatni miesiąc'},
+            {key: 'year',      value: 'Z ostatniego roku'}
         ],
         
         pickerAlign: 'bl',
@@ -54,14 +55,6 @@
          * @private
          */
         matchFieldWidth: false,
-        
-        constructor: function(cfg)
-        {
-            var config = {
-            };
-            Ext.apply(config, cfg || {});
-            this.callParent([config]);
-        },
         
         /**
          * Converts string to value Object
@@ -207,21 +200,29 @@
                 hidden: true,
                 padding: 5,
                 ownerCt: this.ownerCt,
-                pickerField: this,
                 layout: 'auto',
                 items: [
                     {
-                        itemId: 'boilerplates-combobox',
                         xtype: 'combobox',
+                        cls: 'ranges-combo',
+                        itemId: 'boilerplates-combobox',
                         margin: '10 0 0 10',
                         store: Ext.create('Ext.data.Store', {
                             fields: ['key', 'value'],
                             data: this.rangeBoilerplates
                         }),
+                        listConfig: {
+                            cls: 'ranges-combo-boundlist'
+                        },
                         editable: false,
                         fieldLabel: 'Wybierz przedział',
                         valueField: 'key',
-                        displayField: 'value'
+                        displayField: 'value',
+                        listeners: {
+                            change: function(combo, value) {
+                                _this.onBoilerplateSelect(combo, value);
+                            }
+                        }
                     },
                     {
                         xtype: 'panel',
@@ -248,7 +249,7 @@
                     }
                 ]
             });
-            
+
             this.picker = picker;
             
             return this.picker;
@@ -265,6 +266,17 @@
             {
                 this.picker.down('#picker-from').setValue(value.from);
                 this.picker.down('#picker-to').setValue(value.to);
+            }
+        },
+        
+        /**
+         * Walkround collapsing main picker
+         */
+        collapseIf: function(event, target)
+        {
+            if (!Ext.get(target).up('.ranges-combo-boundlist'))
+            {
+                this.callParent(arguments);
             }
         },
         
@@ -356,8 +368,65 @@
         getSubmitValue: function()
         {
             return this.getUnifiedReturnValue(this.value);
-        }
+        },
         
+        /**
+         * Ready to use date ranges
+         * 
+         * @retutn {Object}
+         */
+        createBoilerplates: function()
+        {
+            if (this.boilerplates)
+            {
+                return this.boilerplates;
+            }
+            
+            var now = new Date();
+            
+            var dayBack = new Date();
+            dayBack.setDate(dayBack.getDate()-1);
+            
+            var weekBack = new Date();
+            weekBack.setDate(weekBack.getDate()-7);
+            
+            var twoweekBack = new Date();
+            twoweekBack.setDate(twoweekBack.getDate()-14);
+            
+            var monthBack = new Date();
+            monthBack.setMonth(monthBack.getMonth()-1);
+            
+            var twomonthBack = new Date();
+            twomonthBack.setMonth(twomonthBack.getMonth()-2);
+            
+            var yearBack = new Date();
+            yearBack.setFullYear(yearBack.getFullYear()-1);
+            
+            this.boilerplates = {
+                yesterday: {to: now, from: dayBack},
+                week:      {to: now, from: weekBack},
+                prevweek:  {to: weekBack, from: twoweekBack},
+                month:     {to: now, from: monthBack},
+                prevmonth: {to: monthBack, from: twomonthBack},
+                year:      {to: now, from: yearBack}
+            }
+            
+            return this.boilerplates;
+        },
+        
+        /**
+         * Event: Selected boilerplate
+         * 
+         * @param Ext.form.field.ComboBox combo
+         * @param {String} name
+         */
+        onBoilerplateSelect: function(combo, name)
+        {
+            var bp = this.createBoilerplates();
+            this.value = bp[name];
+            this.setValue(this.value);
+            this.collapse();
+        }
     });
     
 })();
