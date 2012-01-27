@@ -8,6 +8,9 @@
     
     Ext.define('Hatimeria.core.field.DateRangeField', {
         extend: 'Ext.form.field.Picker',
+        requires: [
+          "Ext.Date"
+        ],
         
         /**
          * @cfg {Object} value
@@ -34,7 +37,7 @@
         /**
          * @cfg {String} format corresponding to Ext.util.Format.date()
          */
-        format: 'd/m/Y',
+        format: 'Y-m-d',
         
         /**
          * @private
@@ -44,9 +47,9 @@
             {key: 'yesterday', value: 'Wczoraj'},
             {key: 'week',      value: 'Ostatni tydzień'},
             {key: 'prevweek',  value: 'Przedostatni tydzień'},
-            {key: 'month',     value: 'Ostatni miesiąc'},
-            {key: 'prevmonth', value: 'Przedostatni miesiąc'},
-            {key: 'year',      value: 'Z ostatniego roku'}
+            {key: 'month',     value: 'Ten miesiąc'},
+            {key: 'prevmonth', value: 'Poprzedni miesiąc'},
+            {key: 'year',      value: 'Ten rok'}
         ],
         
         pickerAlign: 'bl',
@@ -409,21 +412,22 @@
             var twoweekBack = new Date();
             twoweekBack.setDate(twoweekBack.getDate()-14);
             
-            var monthBack = new Date();
-            monthBack.setMonth(monthBack.getMonth()-1);
-            
-            var twomonthBack = new Date();
-            twomonthBack.setMonth(twomonthBack.getMonth()-2);
+            var prevMonth = new Date();
+            prevMonth.setMonth(now.getMonth() - 1);
             
             var yearBack = new Date();
-            yearBack.setFullYear(yearBack.getFullYear()-1);
+            yearBack.setDate(1);
+            yearBack.setMonth(0);
             
             this.boilerplates = {
                 yesterday: {to: now, from: dayBack},
                 week:      {to: now, from: weekBack},
                 prevweek:  {to: weekBack, from: twoweekBack},
-                month:     {to: now, from: monthBack},
-                prevmonth: {to: monthBack, from: twomonthBack},
+                month:     {to: now, from: Ext.Date.getFirstDateOfMonth(now)},
+                prevmonth: {
+                    to: Ext.Date.getFirstDateOfMonth(prevMonth), 
+                    from: Ext.Date.getLastDateOfMonth(prevMonth)
+                },
                 year:      {to: now, from: yearBack}
             }
             
