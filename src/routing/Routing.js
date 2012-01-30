@@ -100,7 +100,8 @@ var Routing = Routing || {};
     function buildParams( prefix, obj, traditional, add) {
         if ( Ext.isArray(obj) ) {
             // Serialize array item.
-            Ext.each(obj, function( i, v ) {
+            Ext.each(obj, function( v, i ) {
+                console.log(arguments);
                 if ( traditional || rbracket.test( prefix ) ) {
                     // Treat each array item as a scalar.
                     add( prefix, v );
