@@ -383,7 +383,6 @@ Ext.define('Foo.Bar', {
                 items.push({
                     xtype: 'toolbar',
                     dock: 'top',
-                    padding: 0,
                     items: [{
                         xtype: 'button',
                         iconCls: 'icon-add',
