@@ -208,7 +208,7 @@ Ext.define('Foo.Bar', {
             
             return column;
         },
-
+        
         /**
          * Get summary configuration
          *
@@ -230,11 +230,16 @@ Ext.define('Foo.Bar', {
                     tpl: config.label + ': <b>{value}</b>'
                 }
                 
-                store.on('load', function() {
+                var sumField = function() {
                     grid.down('#' + id).update({
                         value: Ext.util.Format.number(store.sum(config.value), '0.00')
                     })
-                })
+                }
+                
+                store.on('load', sumField);
+                store.on('datachanged', sumField);
+                store.on('update', sumField);
+                
                 
                 items[index] = item;
             });
@@ -280,11 +285,9 @@ Ext.define('Foo.Bar', {
                 cls: 'grid-docked-toolbar',
                 items: {
                     layout: {
-                        type: 'hbox',
-                        align: 'stretch'
+                        type: 'hbox'
                     },
                     defaults: {
-                        height: 50,
                         style: 'margin-left: 15px; padding-top: 10px'
                     },
                     height: 50,
@@ -377,32 +380,49 @@ Ext.define('Foo.Bar', {
                 items.push(this.getSummary());
             }
             
-            // With add-button ?
-            if (Ext.Array.contains(this.dockedElements, 'add'))
+            var buttons = this.getTopButtons();
+            
+            // With buttons toolbar ?
+            if (buttons.length)
             {
                 items.push({
                     xtype: 'toolbar',
                     dock: 'top',
                     padding: 0,
-                    items: [{
-                        xtype: 'button',
-                        iconCls: 'icon-add',
-                        cls: 'ux-icon-add-btn',
-                        text: this.translate('actions.add'),
-                        scope: this,
-                        handler: function() {
-                            var window = Ext.create(this.getWindowEditClass());
-                            window.show();
-                            if (this.recordClass)
-                            {
-                                window.populate(Ext.create(this.getRecordClass()))
-                            }
-                        }
-                    }]
+                    items: buttons
                 });
             }
             
             return items;
+        },
+        
+        /**
+         * Top toolbar buttons
+         *
+         * @private
+         */
+        getTopButtons: function()
+        {
+            if(!Ext.Array.contains(this.dockedElements, 'add')) {
+                return [];
+            }
+            
+            return [
+                {
+                    xtype: 'button',
+                    iconCls: 'icon-add',
+                    cls: 'ux-icon-add-btn',
+                    text: this.translate('actions.add'),
+                    scope: this,
+                    handler: function() {
+                        var window = Ext.create(this.getWindowEditClass());
+                        window.show();
+                        if (this.recordClass)
+                        {
+                            window.populate(Ext.create(this.getRecordClass()))
+                        }
+                    }
+                }];          
         },
         
         /**
