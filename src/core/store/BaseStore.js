@@ -88,7 +88,6 @@
                     proxy.api = Ext.clone(model.prototype.actionsConfiguration);
                     proxy.api.read = proxy.api.list;
                     delete proxy.api.list;
-                    console.log(proxy.api);
                 }
             }
             
