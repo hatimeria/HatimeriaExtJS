@@ -284,9 +284,7 @@ Ext.define('Foo.Bar', {
                 padding: 0,
                 cls: 'grid-docked-toolbar',
                 items: {
-                    layout: {
-                        type: 'hbox'
-                    },
+                    layout: 'hbox',
                     defaults: {
                         style: 'margin-left: 15px; padding-top: 10px'
                     },
@@ -387,6 +385,7 @@ Ext.define('Foo.Bar', {
             {
                 items.push({
                     xtype: 'toolbar',
+                    cls: 'grid-docked-top-buttons',
                     dock: 'top',
                     padding: 0,
                     items: buttons
