@@ -218,6 +218,7 @@
                 height: 260,
                 hidden: true,
                 padding: 5,
+                style: {'background-color':'#fff'},
                 ownerCt: this.ownerCt,
                 layout: 'auto',
                 items: [
