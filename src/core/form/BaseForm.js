@@ -30,7 +30,6 @@ Ext.define("Hatimeria.core.form.BaseForm", {
     
     /**
      * @cfg {Object} submitConfig
-     *
      */
     submitConfig: null,
     
@@ -71,7 +70,7 @@ Ext.define("Hatimeria.core.form.BaseForm", {
         
         if (this.submitConfig != null)
         {
-            if(typeof this.submitConfig.submit == 'function') {
+            if (typeof this.submitConfig.submit == 'function') {
                 Ext.merge(config, {api: {
                     submit: this.submitConfig.submit
                 }});
@@ -213,7 +212,7 @@ Ext.define("Hatimeria.core.form.BaseForm", {
     {
         var form = this.getForm();
         
-        return form.getRecord() && !Ext.isEmpty(form.getRecord().proxy.api)
+        return form.getRecord() && !Ext.isEmpty(form.getRecord().proxy.api) ;
     },
     
     /**
@@ -225,8 +224,7 @@ Ext.define("Hatimeria.core.form.BaseForm", {
         var _this = this;
         var record = form.getRecord();
         Ext.apply(record.data, form.getValues());
-        record.save(
-        {
+        record.save({
             success: function(rec, result, success) {
                 _this.onAnyAction();
                 _this.fireEvent('recordsaved');
