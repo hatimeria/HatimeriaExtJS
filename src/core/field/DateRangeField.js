@@ -116,6 +116,8 @@
         {
             var bp = this.createBoilerplates();
             
+            this.lastValue = this.getValue();
+            
             if (typeof value == 'string' && typeof bp[value] == 'object') 
             {
                 value = bp[value];
@@ -136,8 +138,6 @@
                 value.from = this.convertToDate(value.from);
                 value.to = this.convertToDate(value.to);
             }
-            
-            this.lastValue = value;
             
             return this.callParent([value]);
         },
@@ -193,7 +193,7 @@
                     me.onChange(newVal, oldVal);
                     return false;
                 }
-                    
+                
                 if ((!me.isEqualRangeDate(newVal, oldVal) || force) && !me.isDestroyed)
                 {
                     me.lastValue = newVal;
@@ -426,8 +426,8 @@
                 prevweek:  {to: weekBack, from: twoweekBack},
                 month:     {to: now, from: Ext.Date.getFirstDateOfMonth(now)},
                 prevmonth: {
-                    to: Ext.Date.getFirstDateOfMonth(prevMonth), 
-                    from: Ext.Date.getLastDateOfMonth(prevMonth)
+                    from: Ext.Date.getFirstDateOfMonth(prevMonth), 
+                    to: Ext.Date.getLastDateOfMonth(prevMonth)
                 },
                 year:      {to: now, from: yearBack}
             }

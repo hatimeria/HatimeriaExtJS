@@ -114,3 +114,16 @@ Ext.require('Ext.form.action.DirectLoad', function() {
             }
         });  
 });
+
+Ext.require("Ext.Element", function() {
+    Ext.Element.prototype.showChildrenWithBorders = function() {
+        Ext.each(this.query('*'), function(e) {
+            var el = new Ext.Element(e);
+            var border = el.getBorderWidth('l');
+            if(border > 0) {
+                console.log(el.id, border);
+                console.log(e);
+            }
+        });
+    };
+}) 

@@ -84,9 +84,10 @@
                         console.error("Invalid model class " + config.model);
                     }
                     
-                    var actions = model.prototype.actionsConfiguration;
-
-                    proxy.directFn = actions[this.directSuffix];
+                    delete proxy.directFn;
+                    proxy.api = Ext.clone(model.prototype.actionsConfiguration);
+                    proxy.api.read = proxy.api.list;
+                    delete proxy.api.list;
                 }
             }
             
@@ -168,6 +169,14 @@
             }
 
             Ext.merge(this.proxy.extraParams, data);
+        },
+        
+        /**
+         * Proxy extra params
+         */
+        getExtraParams: function()
+        {
+            return this.proxy.extraParams;
         },
         
         /**
