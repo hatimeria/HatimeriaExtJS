@@ -162,6 +162,10 @@ Ext.define('Foo.Bar', {
                 this.translateInterface();
             }
             
+            if (Ext.isEmpty(this.columns)) {
+                console.error('No columns specified for grid ' + this.$className);
+            }
+            
             // Action column with row-operations:
             var actions = this.getRowActions();
             if (!Ext.isEmpty(actions) && this.actionColumn)
