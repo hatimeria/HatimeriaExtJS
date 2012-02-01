@@ -65,12 +65,11 @@
             }
             else
             {
-                if(typeof msg == 'object') {
-                    this.globalMsg.push(text.join(', '));
-                } else {
-                    this.globalMsg.push(text);
+                if(typeof text == 'object') {
+                    text = text.join(', ');
                 }
                 
+                this.globalMsg.push(text);
             }
         }
 
