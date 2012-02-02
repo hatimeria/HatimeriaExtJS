@@ -165,6 +165,12 @@ Ext.define('Foo.Bar', {
             return this.statics().prototype.__(key, placeholders);
         },
         
+        constructor: function(cfg)
+        {
+            this.applyExternal(cfg);
+            this.callParent([cfg]);
+        },
+        
         /**
          * Initializes component
          */
