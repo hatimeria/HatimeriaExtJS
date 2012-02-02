@@ -9,7 +9,6 @@
     Ext.define("Hatimeria.core.response.FormHandler", {
         extend: 'Hatimeria.core.response.BaseHandler',
         config: {
-            
             /**
              * Success callback
              * @cfg {Function} success

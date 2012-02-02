@@ -68,9 +68,17 @@ Ext.define("Hatimeria.core.form.BaseForm", {
     {
         var config = cfg || {};
         
+        Ext.apply(this.submitConfig, config.submitConfig || {});
+        
         if (this.submitConfig != null)
         {
-            if (typeof this.submitConfig.submit == 'function') {
+            var submit = this.submitConfig.submit;
+            if (typeof submit == 'function') {
+                if(submit.directCfg.method.formHandler != true) {
+                    console.error(submit.directCfg.action + '.' + 
+                        submit.directCfg.method.name + " doesn't have @form annotation");
+                }
+                
                 Ext.merge(config, {api: {
                     submit: this.submitConfig.submit
                 }});
