@@ -37,7 +37,7 @@ Ext.define('Foo.Bar', {
          *   - clone
          *   - remove
          * 
-         * @cfg {Array/String/{Object} rowActions
+         * @cfg {Array/String/Object} rowActions
          * 
          <pre><code>
                 // Simple array
@@ -200,11 +200,7 @@ Ext.define('Foo.Bar', {
                 itemdblclick: {
                     scope: this, 
                     fn: function(grid, record, el, index, e) {
-                        if (actions['edit'])
-                        {
-                            this.onEditClick(record, index);
-                            e.stopEvent();
-                        }
+                        this.onRowDblClick(record, el, index, e);
                     }
                 }
             });
@@ -383,7 +379,7 @@ Ext.define('Foo.Bar', {
             var cfg = Ext.clone(this.getFormConfig());
             cfg.itemId = 'form-embeded';
             
-            var isNew = record.getId() < 1;
+            var isNew = record.getId();
             var formClass = cfg.formClass;
             var useFormSubmit = cfg.useFormSubmit;
             var useFormLoad = cfg.useFormLoad;
@@ -416,7 +412,7 @@ Ext.define('Foo.Bar', {
                         scope: this,
                         params: {id: record.getId()},
                         success: function(result) {
-                            this.down('#form-embeded').getForm().setValues(result.record);
+                            this.down('#form-embeded').getForm().setValues(result.record.data);
                         }
                     });
                 };
@@ -470,6 +466,24 @@ Ext.define('Foo.Bar', {
         {
             if(e.getTarget().parentNode.className.match(/actions-show-column/)) {
                 this.onContextMenu(grid, record, el, index, e);
+            }
+        },
+        
+        /**
+         * Double click
+         * 
+         * @param {Ext.data.Model} record
+         * @param {Ext.Element} el
+         * @param {Number} index
+         * @param {Ext.Event} e
+         */
+        onRowDblClick: function(record, el, index, e)
+        {
+            var actions = this.getRowActions();
+            if (actions['edit'])
+            {
+                this.onEditClick(record, index);
+                e.stopEvent();
             }
         },
         
