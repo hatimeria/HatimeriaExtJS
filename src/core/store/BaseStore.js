@@ -86,7 +86,7 @@
                     
                     delete proxy.directFn;
                     proxy.api = Ext.clone(model.prototype.actionsConfiguration);
-                    proxy.api.read = proxy.api.list;
+                    proxy.api.read = proxy.api[this.directSuffix];
                     delete proxy.api.list;
                 }
             }
