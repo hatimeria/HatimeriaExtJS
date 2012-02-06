@@ -24,6 +24,7 @@ Ext.define("Hatimeria.core.form.BaseForm", {
         'Hatimeria.core.response.FormHandler'
     ],
     mixins: {
+        configurable: 'Hatimeria.core.mixins.ConfigurableExternal',
         translationable: 'Hatimeria.core.mixins.Translationable'
     },
     transNS: 'form',
@@ -67,6 +68,8 @@ Ext.define("Hatimeria.core.form.BaseForm", {
     constructor: function(cfg)
     {
         var config = cfg || {};
+        
+        this.applyExternals(cfg);
         
         Ext.apply(this.submitConfig, config.submitConfig || {});
         
@@ -287,5 +290,26 @@ Ext.define("Hatimeria.core.form.BaseForm", {
         {
             this.mask.hide();
         }
-    }
+    },
+    
+    /**
+     * Merges external config
+     * 
+     * @param {} config
+     * @return {}
+     */
+    applyExternals: function(cfg)
+    {
+        var config = this.getConnectedConfig();
+
+        if (config && config.items)
+        {
+            for (var i in config.items)
+            {
+                cfg.items.push(config.items[i]);
+            }
+        }
+
+        return cfg;
+    }    
 });
