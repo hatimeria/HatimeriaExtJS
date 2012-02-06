@@ -30,7 +30,7 @@
          *
          * @cfg {String} footer 
          */
-        footer: '<img src="/bundles/hatimeriaadmin/images/hatimeria.ico"/><p>Powered by Hatimeria</p> <a href="http://www.hatimeria.pl">www.hatimeria.pl</a>',
+        footer: null,
         
         /**
          * Constructor
@@ -40,6 +40,10 @@
          */
         constructor: function(cfg)
         {
+            if(!this.footer) {
+                this.footer = this.__('copyright');
+            }
+            
             var config = cfg || {};
             config.url = Routing.generate('fos_user_security_check');
             config.waitMessage = this.__('wait');
@@ -135,10 +139,10 @@
             
             fields.push({
                 border: 0,
-                width: 270,
+                width: 350,
                 height: 27,
                 id: 'hatimeria-powered-by',
-                style: {margin: '10px 125px'},
+                style: {margin: '20px 65px'},
                 html: this.footer
             });
             

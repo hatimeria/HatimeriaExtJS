@@ -326,10 +326,22 @@ Ext.define('Foo.Bar', {
                             store.load();
                             
                             form.getFields().each(function(field) {
-                                field.on('change', function() {
-                                    store.mergeExtraParams(form.getValues());
-                                    store.load();
-                                });
+                                
+                                var applyFilters = function() {
+                                    if(this.validate()) {
+                                        store.mergeExtraParams(form.getValues());
+                                        store.load();
+                                    }
+                                }
+                                
+                                if(field.forceSelection) {
+                                    field.on('select', applyFilters);
+                                    field.on('reset', applyFilters);
+                                } else {
+                                    field.on('change', applyFilters);
+                                }
+                                
+                                
                             })
                         }
                     }
