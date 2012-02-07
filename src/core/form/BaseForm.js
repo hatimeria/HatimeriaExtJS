@@ -238,7 +238,7 @@ Ext.define("Hatimeria.core.form.BaseForm", {
         record.save({
             success: function(rec, result, success) {
                 _this.onAnyAction();
-                _this.fireEvent('recordsaved');
+                _this.fireEvent('recordsaved', record, result);
                 _this.getSubmitHandler().success(_this, result.records[0].data);
             },
             failure: function(rec, result, success) {
