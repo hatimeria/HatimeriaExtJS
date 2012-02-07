@@ -330,21 +330,19 @@ Ext.define('Foo.Bar', {
                             form.getFields().each(function(field) {
                                 
                                 var applyFilters = function() {
-                                    if(this.validate()) {
+                                    if (this.validate()) {
                                         store.mergeExtraParams(form.getValues());
                                         store.load();
                                     }
-                                }
+                                };
                                 
-                                if(field.forceSelection) {
+                                if (field.forceSelection) {
                                     field.on('select', applyFilters);
                                     field.on('reset', applyFilters);
                                 } else {
                                     field.on('change', applyFilters);
                                 }
-                                
-                                
-                            })
+                            });
                         }
                     }
                 }

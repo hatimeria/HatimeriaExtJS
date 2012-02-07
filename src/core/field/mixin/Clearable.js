@@ -22,7 +22,8 @@
          * 
          * @private
          */
-        onTrigger2Click: function() {
+        onTrigger2Click: function()
+        {
             var val = this.getValue();
             this.reset();
             this.blur();
