@@ -547,7 +547,7 @@ Ext.define('Foo.Bar', {
                     xtype: 'toolbar',
                     cls: 'grid-docked-top-buttons',
                     dock: 'top',
-                    padding: 0,
+                    padding: 2,
                     items: buttons
                 });
             }
@@ -708,6 +708,7 @@ Ext.define('Foo.Bar', {
                     items.push({
                         text: typeof label == 'function' ? label(record) : label,
                         cls: 'ux-' + name,
+                        iconCls: 'ux-icon-' + name,
                         scope: scope,
                         handler: function() {
                             scope['on' + Ext.String.capitalize(name) + 'Click'](record, index);

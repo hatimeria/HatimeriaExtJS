@@ -140,14 +140,15 @@ Ext.define("Hatimeria.core.form.BaseForm", {
     mountSubmit: function()
     {
         var config = this.submitConfig;
-        
         // Add button only if submitConfig.text defined:
         if (typeof config.text != 'undefined')
         {
+            var cls = this.submitConfig.iconCls || 'ux-button' ;
             var submitButton = {
                 text: config.text,
                 scope: this,
-                cls: this.submitConfig.iconCls || 'ux-button',
+                iconCls: this.submitConfig.iconCls ? cls + '-submit-icon' : false,
+                cls: cls,
                 handler: function(button) {
                     this.submitForm();
                 }
