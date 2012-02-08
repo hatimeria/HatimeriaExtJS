@@ -90,6 +90,16 @@ Ext.define("Hatimeria.google.Map", {
         
         return this
     },
+    
+    /**
+     * Google map object
+     *
+     * @return {Object} map
+     */
+    getMap: function()
+    {
+        return this.map;
+    },
        
     /**
      * Renders map
@@ -121,7 +131,7 @@ Ext.define("Hatimeria.google.Map", {
     {
         var marker = new google.maps.Marker({
                     map: this.map,
-                    title: '',
+                    title: 'Test',
                     position: localization
         });
         
@@ -210,7 +220,7 @@ Ext.define("Hatimeria.google.Map", {
                 if(failure) {
                     failure();
                 } else {
-                    console.debug('Google map: '+ address + ' not found, with status ' + status);
+                    console.error('Google map: '+ address + ' not found, with status ' + status);
                 }
             }
         });
@@ -236,6 +246,10 @@ Ext.define("Hatimeria.google.Map", {
             var coordinate = this.coordinates[0];
             me.map.setCenter(new google.maps.LatLng(coordinate[0], coordinate[1]));
         } else {
+            if(!address) {
+                console.error("No address for centering the map, leaving");
+                return;
+            }
             this.getLocalization(address, function(localization) {
                 me.map.setCenter(localization);
             });
