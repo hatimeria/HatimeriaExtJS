@@ -52,8 +52,6 @@
             {key: 'year',      value: 'Ten rok'}
         ],
         
-        pickerAlign: 'bl',
-        
         /**
          * @private
          */
