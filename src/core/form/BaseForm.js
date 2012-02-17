@@ -5,6 +5,7 @@
  *     Ext.define("Foo.bar.Form", {
  *         submitConfig: {
  *          text: 'Save button text', // default: translated
+ *          button: true, // include button? Default: true
  *          submit: DirectFN, // default: run record.save 
  *          iconCls: 'button-icon-class',
  *          success: function() {
@@ -33,6 +34,15 @@ Ext.define("Hatimeria.core.form.BaseForm", {
      * @cfg {Object} submitConfig
      */
     submitConfig: null,
+    
+    /**
+     * Defaults of submitConfig
+     * @private {Object}
+     */
+    defaultSubmitConfig: {
+        button: true,
+        text: null
+    },
     
     /**
      * Message on wait mask, defaults to translated form.wait
@@ -71,25 +81,25 @@ Ext.define("Hatimeria.core.form.BaseForm", {
         
         this.applyExternals(cfg);
         
+        var defs = Ext.clone(this.defaultSubmitConfig);
+        this.submitConfig = this.submitConfig ? Ext.apply(defs, this.submitConfig) : defs;
         Ext.apply(this.submitConfig, config.submitConfig || {});
         
-        if (this.submitConfig != null)
+        if (typeof this.submitConfig.submit == 'function')
         {
             var submit = this.submitConfig.submit;
-            if (typeof submit == 'function') {
-                if(submit.directCfg.method.formHandler != true) {
-                    console.error(submit.directCfg.action + '.' + 
-                        submit.directCfg.method.name + " doesn't have @form annotation");
-                }
-                
-                Ext.merge(config, {api: {
-                    submit: this.submitConfig.submit
-                }});
+            if(submit.directCfg.method.formHandler != true) {
+                console.error(submit.directCfg.action + '.' + 
+                    submit.directCfg.method.name + " doesn't have @form annotation");
             }
-            
-            if(!this.submitConfig.text) {
-                this.submitConfig.text = this.translate('save');
-            }
+
+            Ext.merge(config, {api: {
+                submit: this.submitConfig.submit
+            }});
+        }
+        
+        if (this.submitConfig.text === null) {
+            this.submitConfig.text = this.translate('save');
         }
         
         config.defaults = config.defaults || {};
@@ -140,8 +150,8 @@ Ext.define("Hatimeria.core.form.BaseForm", {
     mountSubmit: function()
     {
         var config = this.submitConfig;
-        // Add button only if submitConfig.text defined:
-        if (typeof config.text != 'undefined')
+        
+        if (config.button)
         {
             var cls = this.submitConfig.iconCls || 'ux-button' ;
             var submitButton = {
