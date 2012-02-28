@@ -109,7 +109,10 @@ Ext.define("Hatimeria.core.form.BaseForm", {
         var defs = Ext.clone(this.defaultSubmitConfig);
         this.submitConfig = this.submitConfig ? Ext.apply(defs, this.submitConfig) : defs;
         Ext.apply(this.submitConfig, config.submitConfig || {});
-        
+
+        //@FIXME fix applying to config ( parent rewrites this.submitConfig )
+        config.submitConfig = this.submitConfig;
+
         if (typeof this.submitConfig.submit == 'function')
         {
             var submit = this.submitConfig.submit;
@@ -126,7 +129,7 @@ Ext.define("Hatimeria.core.form.BaseForm", {
         if (this.submitConfig.text === null) {
             this.submitConfig.text = this.translate('save');
         }
-        
+
         config.defaults = config.defaults || {};
         
         Ext.apply(config.defaults, {
@@ -175,7 +178,7 @@ Ext.define("Hatimeria.core.form.BaseForm", {
     mountSubmit: function()
     {
         var config = this.submitConfig;
-        
+
         if (config.button)
         {
             // Base button configuration:
