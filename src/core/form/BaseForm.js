@@ -4,13 +4,20 @@
  *     <pre><code>
  *     Ext.define("Foo.bar.Form", {
  *         submitConfig: {
- *          text: 'Save button text', // default: translated
- *          button: true, // include button? Default: true
- *          submit: DirectFN, // default: run record.save 
- *          iconCls: 'button-icon-class',
- *          success: function() {
- *             // After success backend operation
- *          }
+ *           text: 'Save button text', // default: translated
+ *           button: true, // include button? Default: true
+ *           submit: DirectFN, // default: run record.save 
+ *           iconCls: 'button-icon-class',   // DEPRECATED!
+ *           icon: 'button-icon',            // DEPRECATED!
+ *           success: function() {
+ *              // After success backend operation
+ *           }
+ *         },
+ *         
+ *         // optional:
+ *         buttonConfig: {
+ *           // all features of Ext.button.Button component
+ *         }
  *     });
  *     </code></pre>
  * 
@@ -37,11 +44,29 @@ Ext.define("Hatimeria.core.form.BaseForm", {
     
     /**
      * Defaults of submitConfig
-     * @private {Object}
+     * @property {Object} defaultSubmitConfig
+     * @private 
      */
     defaultSubmitConfig: {
         button: true,
         text: null
+    },
+    
+    /**
+     * Button config
+     * All features of {Ext.button.Button} component.
+     * @cfg {Object} buttonConfig
+     */
+    buttonConfig:  {},
+    
+    /**
+     * Default button config
+     * @property {Object} defaultButtonConfig
+     * @private
+     */
+    defaultButtonConfig: {
+        cls: 'ux-button',
+        text: 'Zapisz'
     },
     
     /**
@@ -153,23 +178,26 @@ Ext.define("Hatimeria.core.form.BaseForm", {
         
         if (config.button)
         {
-            var cls = this.submitConfig.iconCls || 'ux-button' ;
-            var submitButton = {
-                text: config.text,
+            // Base button configuration:
+            var defaultButtonCfg = Ext.apply(this.defaultButtonConfig, this.buttonConfig || {});
+            var buttonConfig = Ext.apply(defaultButtonCfg, {
                 scope: this,
-                iconCls: this.submitConfig.iconCls ? cls + '-submit-icon' : false,
-                cls: cls,
                 handler: function(button) {
                     this.submitForm();
                 }
-            };
+            });
+            
+            // backward compatibility:
+            if (this.submitConfig) {
+                Ext.copyTo(buttonConfig, this.submitConfig, ['text', 'iconCls', 'icon']);
+            }
 
             if (!this.buttons)
             {
                 this.buttons = [];
             }
 
-            this.buttons.push(submitButton);
+            this.buttons.push(buttonConfig);
         }
     },
     
