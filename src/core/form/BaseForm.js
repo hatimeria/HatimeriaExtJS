@@ -48,8 +48,7 @@ Ext.define("Hatimeria.core.form.BaseForm", {
      * @private 
      */
     defaultSubmitConfig: {
-        button: true,
-        text: null
+        button: true
     },
     
     /**
@@ -66,7 +65,7 @@ Ext.define("Hatimeria.core.form.BaseForm", {
      */
     defaultButtonConfig: {
         cls: 'ux-button',
-        text: 'Zapisz'
+        text: null
     },
     
     /**
@@ -92,38 +91,6 @@ Ext.define("Hatimeria.core.form.BaseForm", {
     translate: function(key, placeholders)
     {
         return this.statics().prototype.__(key, placeholders);
-    },
-    
-    /**
-     * Resolves final config of property
-     * 
-     * @param {Object} config
-     * @param {String} varname
-     * @return {Object}
-     */
-    finalConfig: function(config, varname)
-    {
-        // first copy defaults:
-        var 
-            defs = Ext.clone(this['default' + Ext.String.capitalize(varname)]),
-            baseConfig
-        
-        if (this[varname]) {
-            // if config in class is overwriten, we need create baseConfig from defaults merged with property from class
-            baseConfig = Ext.apply(defs, this[varname]);
-        }
-        else {
-            // otherwise we create baseConfig from default config
-            baseConfig = defs;
-        }
-        
-        // then baseConfig is merged with injected config
-        baseConfig = Ext.apply(baseConfig, config[varname] || {});
-        
-        // we save resolved config to right property (then it will be written to "this")
-        config[varname] = baseConfig;
-        
-        return config;
     },
     
     /**
@@ -154,10 +121,10 @@ Ext.define("Hatimeria.core.form.BaseForm", {
             }});
         }
         
-        if (config.submitConfig.text === null) {
-            config.submitConfig.text = this.translate('save');
+        if (config.buttonConfig.text === null) {
+            config.buttonConfig.text = this.translate('save');
         }
-
+        
         config.defaults = config.defaults || {};
         
         Ext.apply(config.defaults, {
@@ -199,6 +166,38 @@ Ext.define("Hatimeria.core.form.BaseForm", {
     },
     
     /**
+     * Resolves final config of property
+     * 
+     * @param {Object} config
+     * @param {String} varname
+     * @return {Object}
+     */
+    finalConfig: function(config, varname)
+    {
+        // first copy defaults:
+        var 
+            defs = Ext.clone(this['default' + Ext.String.capitalize(varname)]),
+            baseConfig
+        
+        if (this[varname]) {
+            // if config in class is overwriten, we need create baseConfig from defaults merged with property from class
+            baseConfig = Ext.apply(defs, this[varname]);
+        }
+        else {
+            // otherwise we create baseConfig from default config
+            baseConfig = defs;
+        }
+        
+        // then baseConfig is merged with injected config
+        baseConfig = Ext.apply(baseConfig, config[varname] || {});
+        
+        // we save resolved config to right property (then it will be written to "this")
+        config[varname] = baseConfig;
+        
+        return config;
+    },
+    
+    /**
      * Mount submit features
      * 
      * @private
@@ -209,23 +208,23 @@ Ext.define("Hatimeria.core.form.BaseForm", {
 
         if (config.button)
         {
+            // backward compatibility:
+            Ext.copyTo(this.buttonConfig, this.submitConfig, ['iconCls', 'icon', 'text']);
+
             // Base button configuration:
-            var buttonConfig = Ext.apply(this.buttonConfig, {
+            Ext.apply(this.buttonConfig, {
                 scope: this,
                 handler: function(button) {
                     this.submitForm();
                 }
             });
-            
-            // backward compatibility:
-            Ext.copyTo(buttonConfig, this.submitConfig, ['iconCls', 'icon']);
 
             if (!this.buttons)
             {
                 this.buttons = [];
             }
 
-            this.buttons.push(buttonConfig);
+            this.buttons.push(this.buttonConfig);
         }
     },
     

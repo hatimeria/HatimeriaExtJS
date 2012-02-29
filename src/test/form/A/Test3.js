@@ -18,6 +18,7 @@
         
         buttonConfig: {
             padding: 5,
+            iconCls: 'x-tbar-loading',
             text: 'Lepszy button A'
         },
         
