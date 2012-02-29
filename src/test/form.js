@@ -4,12 +4,16 @@
 Ext.require('Hatimeria.core.form.BaseForm');
 Ext.require('Hatimeria.test.form.A.Test1');
 Ext.require('Hatimeria.test.form.A.Test2');
+Ext.require('Hatimeria.test.form.A.Test3');
 Ext.require('Hatimeria.test.form.B.Test1');
 Ext.require('Hatimeria.test.form.B.Test2');
+Ext.require('Hatimeria.test.form.B.Test3');
 Ext.require('Hatimeria.test.form.C.Test1');
 Ext.require('Hatimeria.test.form.C.Test2');
+Ext.require('Hatimeria.test.form.C.Test3');
 Ext.require('Hatimeria.test.form.D.Test1');
 Ext.require('Hatimeria.test.form.D.Test2');
+Ext.require('Hatimeria.test.form.D.Test3');
 
 Ext.onReady(function() {
     
@@ -38,25 +42,27 @@ Ext.onReady(function() {
            {
                columnWidth: 0.25,
                items: [
-                   Ext.apply({html: 'submitConfig jako składnik klasy'}, label),
+                   Ext.apply({html: '[A] submitConfig jako składnik klasy'}, label),
                    
                    Ext.create('Hatimeria.test.form.A.Test1'),
                    Ext.create('Hatimeria.test.form.A.Test2'),
+                   Ext.create('Hatimeria.test.form.A.Test3')
                ]
            },
            {
                columnWidth: 0.25,
                items: [
-                   Ext.apply({html: 'submitConfig w konstruktorze'}, label),
+                   Ext.apply({html: '[B] submitConfig w konstruktorze'}, label),
                    
                    Ext.create('Hatimeria.test.form.B.Test1'),
-                   Ext.create('Hatimeria.test.form.B.Test2')
+                   Ext.create('Hatimeria.test.form.B.Test2'),
+                   Ext.create('Hatimeria.test.form.B.Test3')
                ]
            },
            {
                columnWidth: 0.25,
                items: [
-                   Ext.apply({html: 'submitConfit w konfiguracji'}, label),
+                   Ext.apply({html: '[C] submitConfit w konfiguracji'}, label),
                    
                    Ext.create('Hatimeria.test.form.C.Test1', {
                         submitConfig: {
@@ -69,12 +75,19 @@ Ext.onReady(function() {
                    }),
                    Ext.create('Hatimeria.test.form.C.Test2', {
                         submitConfig: {
-                            text: 'Zapisz C',
-                            button: false,
+                            button: false
+                        }
+                   }),
+                   Ext.create('Hatimeria.test.form.C.Test3', {
+                        submitConfig: {
                             submit: Actions.HatimeriaExtJS_Javascript.receiveTestData,
                             success: function() {
                                 Ext.Msg.alert('Ok', 'Wykonano zapytanie testu C');
                             }
+                        },
+                        buttonConfig: {
+                            padding: 5,
+                            text: 'Lepszy button C'
                         }
                    })
                ]
@@ -82,7 +95,7 @@ Ext.onReady(function() {
            {
                columnWidth: 0.25,
                items: [
-                   Ext.apply({html: 'submitConfig w konfiguracji + jako składnik klasy'}, label),
+                   Ext.apply({html: '[D] submitConfig w konfiguracji + jako składnik klasy'}, label),
                    
                    Ext.create('Hatimeria.test.form.D.Test1', {
                         submitConfig: {
@@ -95,12 +108,19 @@ Ext.onReady(function() {
                    }),
                    Ext.create('Hatimeria.test.form.D.Test2', {
                         submitConfig: {
-                            text: 'Zapisz D',
-                            button: false,
+                            button: false
+                        }
+                   }),
+                   Ext.create('Hatimeria.test.form.D.Test3', {
+                        submitConfig: {
                             submit: Actions.HatimeriaExtJS_Javascript.receiveTestData,
                             success: function() {
                                 Ext.Msg.alert('Ok', 'Wykonano zapytanie testu D');
                             }
+                        },
+                        buttonConfig: {
+                            padding: 5,
+                            text: 'Lepszy button D'
                         }
                    })
                ]

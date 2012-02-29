@@ -57,7 +57,7 @@ Ext.define("Hatimeria.core.form.BaseForm", {
      * All features of {Ext.button.Button} component.
      * @cfg {Object} buttonConfig
      */
-    buttonConfig:  {},
+    buttonConfig:  null,
     
     /**
      * Default button config
@@ -218,9 +218,7 @@ Ext.define("Hatimeria.core.form.BaseForm", {
             });
             
             // backward compatibility:
-            if (this.submitConfig) {
-                Ext.copyTo(buttonConfig, this.submitConfig, ['text', 'iconCls', 'icon']);
-            }
+            Ext.copyTo(buttonConfig, this.submitConfig, ['iconCls', 'icon']);
 
             if (!this.buttons)
             {
@@ -242,7 +240,7 @@ Ext.define("Hatimeria.core.form.BaseForm", {
         {
             return;
         }
-        var el = this.up('window') || this.up('container') || this;
+        var el = this.getMaskedObject() || this.up('window') || this.up('container') || this;
 
         if (this.isFormProxyEnabled())
         {
@@ -380,5 +378,15 @@ Ext.define("Hatimeria.core.form.BaseForm", {
         }
 
         return cfg;
-    }    
+    },
+    
+    /**
+     * Return object that will be masked on any actions
+     * 
+     * @return {Ext.container.Container}
+     */
+    getMaskedObject: function()
+    {
+        return false;
+    }
 });

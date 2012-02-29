@@ -33,6 +33,7 @@
             Ext.apply(config, cfg || {});
             this.callParent([config]);
         }
+        
     });
 
 })();

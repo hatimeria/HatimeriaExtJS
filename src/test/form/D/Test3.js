@@ -6,21 +6,25 @@
  */
 (function() {
     
-    Ext.define('Hatimeria.test.form.D.Test1', {
+    Ext.define('Hatimeria.test.form.D.Test3', {
         extend: 'Hatimeria.core.form.BaseForm',
         
         submitConfig: {
-            text: 'Zapisz D',
             submit: Actions.HatimeriaExtJS_Javascript.receiveTestData,
             success: function() {
-                Ext.Msg.alert('ERROR', 'ERROR: Nieprawidłowy rezultat zapytania');
+                Ext.Msg.alert('ERROR', 'ERROR: Błędnie wykonano zapytanie D');
             }
+        },
+        
+        buttonConfig: {
+            padding: 5,
+            text: 'ZŁY button D'
         },
         
         constructor: function(cfg)
         {
             var config = {
-                title: 'Przycisk domyślnie widoczny',
+                title: 'Ostylowany przycisk',
                 frame: true,
                 items: [
                    {xtype: 'textfield', name: 'firstname', fieldLabel: 'Imię'},

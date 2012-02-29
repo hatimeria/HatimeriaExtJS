@@ -13,7 +13,7 @@
             text: 'Zapisz D',
             submit: Actions.HatimeriaExtJS_Javascript.receiveTestData,
             success: function() {
-                Ext.Msg.alert('Ok', 'BŁĄD: Nieprawidłowy rezultat zapytania');
+                Ext.Msg.alert('ERROR', 'ERROR: Nieprawidłowy rezultat zapytania');
             }
         },
         

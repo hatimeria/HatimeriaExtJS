@@ -14,12 +14,7 @@
             var config = {
                 title: 'Przycisk ukryty',
                 submitConfig: {
-                    text: 'Zapisz B',
-                    button: false,
-                    submit: Actions.HatimeriaExtJS_Javascript.receiveTestData,
-                    success: function() {
-                        Ext.Msg.alert('Ok', 'Wykonano zapytanie testu B');
-                    }
+                    button: false
                 },
                 frame: true,
                 items: [

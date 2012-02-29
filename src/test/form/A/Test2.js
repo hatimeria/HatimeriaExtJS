@@ -10,12 +10,7 @@
         extend: 'Hatimeria.core.form.BaseForm',
         
         submitConfig: {
-            text: 'Zapisz A',
-            button: false,
-            submit: Actions.HatimeriaExtJS_Javascript.receiveTestData,
-            success: function() {
-                Ext.Msg.alert('Ok', 'Wykonano zapytanie testu A');
-            }
+            button: false
         },
         
         constructor: function(cfg)

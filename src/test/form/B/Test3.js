@@ -1,26 +1,28 @@
 /**
  * Form
  * 
- * @class Hatimeria.test.form.TestD
+ * @class Hatimeria.test.form.TestB
  * @extends Hatimeria.core.form.BaseForm
  */
 (function() {
     
-    Ext.define('Hatimeria.test.form.D.Test1', {
+    Ext.define('Hatimeria.test.form.B.Test3', {
         extend: 'Hatimeria.core.form.BaseForm',
-        
-        submitConfig: {
-            text: 'Zapisz D',
-            submit: Actions.HatimeriaExtJS_Javascript.receiveTestData,
-            success: function() {
-                Ext.Msg.alert('ERROR', 'ERROR: Nieprawidłowy rezultat zapytania');
-            }
-        },
         
         constructor: function(cfg)
         {
             var config = {
-                title: 'Przycisk domyślnie widoczny',
+                title: 'Ostylowany przycisk',
+                submitConfig: {
+                    submit: Actions.HatimeriaExtJS_Javascript.receiveTestData,
+                    success: function() {
+                        Ext.Msg.alert('Ok', 'Wykonano zapytanie testu B');
+                    }
+                },
+                buttonConfig: {
+                    padding: 5,
+                    text: 'Lepszy button B'
+                },
                 frame: true,
                 items: [
                    {xtype: 'textfield', name: 'firstname', fieldLabel: 'Imię'},
