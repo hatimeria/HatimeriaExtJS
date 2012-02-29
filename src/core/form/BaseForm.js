@@ -92,7 +92,38 @@ Ext.define("Hatimeria.core.form.BaseForm", {
     translate: function(key, placeholders)
     {
         return this.statics().prototype.__(key, placeholders);
-    },    
+    },
+    
+    /**
+     * Resolves defaults config
+     * 
+     * @param {Object} config
+     * @return {Object}
+     */
+    resolveConfig: function(config, varname)
+    {
+        // first copy defaults:
+        var 
+            defs = Ext.clone(this['default' + Ext.String.capitalize(varname)]),
+            baseConfig
+        
+        if (this[varname]) {
+            // if config in class is overwriten, we need create baseConfig from defaults merged with property from class
+            baseConfig = Ext.apply(defs, this[varname]);
+        }
+        else {
+            // otherwise we create baseConfig from default config
+            baseConfig = defs;
+        }
+        
+        // then baseConfig is merged with injected config
+        baseConfig = Ext.apply(baseConfig, config[varname] || {});
+        
+        // we save resolved config to right property (then it will be written to "this")
+        config[varname] = baseConfig;
+        
+        return config;
+    },
     
     /**
      * Constructor
@@ -106,28 +137,24 @@ Ext.define("Hatimeria.core.form.BaseForm", {
         
         this.applyExternals(cfg);
         
-        var defs = Ext.clone(this.defaultSubmitConfig);
-        this.submitConfig = this.submitConfig ? Ext.apply(defs, this.submitConfig) : defs;
-        Ext.apply(this.submitConfig, config.submitConfig || {});
+        config = this.resolveConfig(config, 'submitConfig');
+        config = this.resolveConfig(config, 'buttonConfig');
 
-        //@FIXME fix applying to config ( parent rewrites this.submitConfig )
-        config.submitConfig = this.submitConfig;
-
-        if (typeof this.submitConfig.submit == 'function')
+        if (config.submit == 'function')
         {
-            var submit = this.submitConfig.submit;
-            if(submit.directCfg.method.formHandler != true) {
+            var submit = config.submit;
+            if (submit.directCfg.method.formHandler != true) {
                 console.error(submit.directCfg.action + '.' + 
                     submit.directCfg.method.name + " doesn't have @form annotation");
             }
 
             Ext.merge(config, {api: {
-                submit: this.submitConfig.submit
+                submit: config.submitConfig.submit
             }});
         }
         
-        if (this.submitConfig.text === null) {
-            this.submitConfig.text = this.translate('save');
+        if (config.submitConfig.text === null) {
+            config.submitConfig.text = this.translate('save');
         }
 
         config.defaults = config.defaults || {};
@@ -182,8 +209,7 @@ Ext.define("Hatimeria.core.form.BaseForm", {
         if (config.button)
         {
             // Base button configuration:
-            var defaultButtonCfg = Ext.apply(this.defaultButtonConfig, this.buttonConfig || {});
-            var buttonConfig = Ext.apply(defaultButtonCfg, {
+            var buttonConfig = Ext.apply(this.buttonConfig, {
                 scope: this,
                 handler: function(button) {
                     this.submitForm();
