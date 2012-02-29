@@ -95,12 +95,13 @@ Ext.define("Hatimeria.core.form.BaseForm", {
     },
     
     /**
-     * Resolves defaults config
+     * Resolves final config of property
      * 
      * @param {Object} config
+     * @param {String} varname
      * @return {Object}
      */
-    resolveConfig: function(config, varname)
+    finalConfig: function(config, varname)
     {
         // first copy defaults:
         var 
@@ -137,12 +138,12 @@ Ext.define("Hatimeria.core.form.BaseForm", {
         
         this.applyExternals(cfg);
         
-        config = this.resolveConfig(config, 'submitConfig');
-        config = this.resolveConfig(config, 'buttonConfig');
+        config = this.finalConfig(config, 'submitConfig');
+        config = this.finalConfig(config, 'buttonConfig');
 
-        if (config.submit == 'function')
+        if (typeof config.submitConfig.submit == 'function')
         {
-            var submit = config.submit;
+            var submit = config.submitConfig.submit;
             if (submit.directCfg.method.formHandler != true) {
                 console.error(submit.directCfg.action + '.' + 
                     submit.directCfg.method.name + " doesn't have @form annotation");
