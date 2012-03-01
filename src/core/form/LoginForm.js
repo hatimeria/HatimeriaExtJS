@@ -10,11 +10,7 @@
         extend: "Hatimeria.core.form.BaseForm",
         transNS: "form.login",
         transDomain: 'HatimeriaExtJSBundle',
-        
-        buttonConfig: {
-            text: 'Zaloguj'
-        },
-        
+
         /**
          * name of route for redirect after succesfull login
          *
@@ -39,21 +35,30 @@
         /**
          * Constructor
          * 
-         * @private
          * @param {Object} cfg
          */
         constructor: function(cfg)
         {
-            if(!this.footer) {
-                this.footer = this.__('copyright');
-            }
+            var me = this;
+            var config = {
+                submitConfig: {
+                    text: this.__('submit'),
+                    failureWindowTitle: this.__("failureTitle"),
+                    success: function() { 
+                        window.location = Routing.generate(cfg.afterLogin || me.afterLogin); 
+                    }
+                },
+                buttonConfig: {
+                    text: 'Zaloguj'
+                },
+                waitMessage: this.__('wait'),
+                url: Routing.generate('fos_user_security_check')
+            };
             
-            var config = cfg || {};
-            config.url = Routing.generate('fos_user_security_check');
-            config.waitMessage = this.__('wait');
+            Ext.apply(config, cfg || {});
             this.callParent([config]);
         },
-
+        
         /**
          * Initialize component
          * 
@@ -61,15 +66,6 @@
          */
         initComponent: function()
         {
-            var form = this;
-            this.submitConfig = {
-                text: this.__('submit'),
-                failureWindowTitle: this.__("failureTitle"),
-                success: function() { 
-                    window.location = Routing.generate(form.afterLogin); 
-                }
-            };
-
             var config = {
                 layout: 'auto',
                 bodyPadding: 10,
@@ -102,7 +98,12 @@
                     }
                 ])
             };
+            
             Ext.apply(this, Ext.apply(config, this.initialConfig));
+            
+            if (!this.footer) {
+                this.footer = this.__('copyright');
+            }
 
             this.callParent();
         },
