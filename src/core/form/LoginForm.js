@@ -11,6 +11,10 @@
         transNS: "form.login",
         transDomain: 'HatimeriaExtJSBundle',
         
+        buttonConfig: {
+            text: 'Zaloguj'
+        },
+        
         /**
          * name of route for redirect after succesfull login
          *
