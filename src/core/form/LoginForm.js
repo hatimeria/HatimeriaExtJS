@@ -66,6 +66,10 @@
          */
         initComponent: function()
         {
+            if (!this.footer) {
+                this.footer = this.__('copyright');
+            }
+            
             var config = {
                 layout: 'auto',
                 bodyPadding: 10,
@@ -100,10 +104,6 @@
             };
             
             Ext.apply(this, Ext.apply(config, this.initialConfig));
-            
-            if (!this.footer) {
-                this.footer = this.__('copyright');
-            }
 
             this.callParent();
         },
