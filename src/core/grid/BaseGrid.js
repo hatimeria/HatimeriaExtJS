@@ -398,7 +398,8 @@ Ext.define('Foo.Bar', {
             var cfg = Ext.clone(this.getFormConfig());
             cfg.itemId = 'form-embeded';
             
-            var isNew = record.getId();
+            var id = record.getId();
+            var isNew = id == 0 || id == null;
             var formClass = cfg.formClass;
             var useFormSubmit = cfg.useFormSubmit;
             var useFormLoad = cfg.useFormLoad;
