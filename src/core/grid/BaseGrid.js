@@ -100,6 +100,13 @@ Ext.define('Foo.Bar', {
         actionColumn: true,
         
         /**
+         * Show remove confirmation window
+         *
+         * @cfg {Boolean} showRemoveConfirmation
+         */
+        showRemoveConfirmation: true,        
+        
+        /**
          * Class name of edit window
          * Important: this property can be replaced by formConfig (window class will not be required)
          * 
@@ -783,16 +790,27 @@ Ext.define('Foo.Bar', {
         onRemoveClick: function(record)
         {
             var store = this.store;
-            Ext.Msg.confirm(this.translate('remove.confirm.title'), this.translate('remove.confirm.text'), function(response) {
-                if (response == 'yes')
-                {
-                    record.destroy({
-                        success: function() {
-                            store.load();
-                        }
-                    });
-                }
-            });
+            
+            var destroy = function() {
+                record.destroy({
+                    success: function() {
+                        store.load();
+                    }
+                });                
+            }
+            
+            if(this.showRemoveConfirmation) {
+                Ext.Msg.confirm(this.translate('remove.confirm.title'), this.translate('remove.confirm.text'), function(response) {
+                    if (response == 'yes')
+                    {
+                        destroy();
+                    }
+                });
+            } else {
+                destroy();
+            }
+            
+            
         }
     });
     
