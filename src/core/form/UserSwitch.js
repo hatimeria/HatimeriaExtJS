@@ -1,7 +1,7 @@
 (function() {
 
     Ext.define('Hatimeria.core.form.UserSwitch', {
-        extend: 'Ext.form.ComboBox',
+        extend: 'Hatimeria.core.field.ComboBox',
         mixins: {
             translationable: 'Hatimeria.core.mixins.Translationable'
         },
