@@ -7,7 +7,7 @@
 (function() {
     
     Ext.define('Hatimeria.edit.window.EditWindow', {
-        extend: 'Ext.window.Window',
+        extend: 'Hatimeria.core.window.BaseWindow',
         config: {
             
             /**

@@ -49,7 +49,8 @@
             {key: 'prevweek',  value: 'Przedostatni tydzień'},
             {key: 'month',     value: 'Ten miesiąc'},
             {key: 'prevmonth', value: 'Poprzedni miesiąc'},
-            {key: 'year',      value: 'Ten rok'}
+            {key: 'year',      value: 'Ten rok'},
+            {key: 'lastyear',      value: 'Poprzedni rok'}
         ],
         
         /**
@@ -414,9 +415,23 @@
             var prevMonth = new Date();
             prevMonth.setMonth(now.getMonth() - 1);
             
-            var yearBack = new Date();
-            yearBack.setDate(1);
-            yearBack.setMonth(0);
+            var thisYearStart = new Date();
+            thisYearStart.setDate(1);
+            thisYearStart.setMonth(0);
+            
+            var thisYearEnd = new Date();
+            thisYearEnd.setDate(30);
+            thisYearEnd.setMonth(11);
+            
+            var lastYearStart = new Date();
+            lastYearStart.setFullYear(lastYearStart.getFullYear()-1);
+            lastYearStart.setDate(1);
+            lastYearStart.setMonth(0);
+            
+            var lastYearEnd = new Date();
+            lastYearEnd.setFullYear(lastYearEnd.getFullYear()-1);
+            lastYearEnd.setDate(30);
+            lastYearEnd.setMonth(11);
             
             this.boilerplates = {
                 yesterday: {to: now, from: dayBack},
@@ -427,7 +442,8 @@
                     from: Ext.Date.getFirstDateOfMonth(prevMonth), 
                     to: Ext.Date.getLastDateOfMonth(prevMonth)
                 },
-                year:      {to: now, from: yearBack}
+                year:      {to: thisYearEnd, from: thisYearStart},
+                lastyear:  {to: lastYearEnd, from: lastYearStart}
             }
             
             return this.boilerplates;

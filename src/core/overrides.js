@@ -44,50 +44,6 @@ Ext.require('Ext.data.reader.Json', function() {
             };
         };
     }());
-
-    /**
-     * Add groups from store allGroups property, fixes applying new group to record after grid is rendered
-     */
-    Ext.require('Ext.data.Store', function() {
-        Ext.data.Store.override('getGroups', function(requestGroupString) {
-            var records = this.data.items,
-                length = records.length,
-                groups = [],
-                pointers = {},
-                record,
-                groupStr,
-                group,
-                i;
-                
-                if(this.allGroups) {
-                    Ext.each(this.allGroups, function(name) {
-                        var group = {name: name, children: []};
-                        groups.push(group);
-                        pointers[name] = group;
-                    });
-                }
-                
-            for (i = 0; i < length; i++) {
-                record = records[i];
-                groupStr = this.getGroupString(record);
-                group = pointers[groupStr];
-
-                if (group === undefined) {
-                    group = {
-                        name: groupStr,
-                        children: []
-                    };
-
-                    groups.push(group);
-                    pointers[groupStr] = group;
-                }
-
-                group.children.push(record);
-            }
-
-            return requestGroupString ? pointers[requestGroupString] : groups;
-        });
-    });
 });
 
 Ext.require('Ext.form.action.DirectLoad', function() {
