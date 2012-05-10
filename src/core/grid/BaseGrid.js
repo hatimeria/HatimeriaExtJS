@@ -330,19 +330,25 @@ Ext.define('Foo.Bar', {
                     listeners: {
                         afterrender: function() {
                             var form = this.getForm();
-                            // @todo apply before store is loaded
+
+                            var o = {};
+                            form.getFields().each(function(field) {
+                                o[field.name] = undefined;
+                            });
+
                             store.mergeExtraParams(form.getValues());
                             store.load();
-                            
+
                             form.getFields().each(function(field) {
-                                
+
                                 var applyFilters = function() {
+                                    var tmp = Ext.clone(o);
                                     if (this.validate()) {
-                                        store.mergeExtraParams(form.getValues());
+                                        store.mergeExtraParams(Ext.apply(tmp, form.getValues()));
                                         store.load();
                                     }
                                 };
-                                
+
                                 if (field.forceSelection) {
                                     field.on('select', applyFilters);
                                     field.on('reset', applyFilters);
