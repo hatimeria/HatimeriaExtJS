@@ -101,7 +101,6 @@ var Routing = Routing || {};
         if ( Ext.isArray(obj) ) {
             // Serialize array item.
             Ext.each(obj, function( v, i ) {
-                console.log(arguments);
                 if ( traditional || rbracket.test( prefix ) ) {
                     // Treat each array item as a scalar.
                     add( prefix, v );

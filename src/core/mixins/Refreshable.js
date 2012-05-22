@@ -10,7 +10,6 @@
     
     Ext.define('Hatimeria.core.mixins.Refreshable', {
         extend: 'Ext.Base',
-        
         refresherId: null,
         refreshInterval: null,
         refreshMinutesInterval: 1,
