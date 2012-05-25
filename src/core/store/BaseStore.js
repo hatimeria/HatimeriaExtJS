@@ -35,6 +35,13 @@
          * @cfg {String}
          */        
         directSuffix: 'list',
+        
+        /**
+         * Extra params for direct call
+         * 
+         * @cfg {Object}
+         */        
+        extraProxyParams: {},
 
         /**
          * Constructor
@@ -60,6 +67,7 @@
                     root: 'records',
                     type: 'json'
                 },
+                extraParams: cfg.extraProxyParams || {},
                 writer: {
                     type: 'json',
                     allowSingle: false
