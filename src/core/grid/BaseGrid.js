@@ -713,7 +713,7 @@ Ext.define('Foo.Bar', {
         {
             var items = [];
             var actions = Ext.clone(this.getRowActions(record));
-            this.addConditionalRecordActions(actions, record);
+            this.addConditionalRecordActions(actions, this.getSelection());
             
             for (var name in actions)
             {
@@ -735,6 +735,23 @@ Ext.define('Foo.Bar', {
         },
         
         /**
+         * Selected records, single if mode is single
+         * 
+         * @return {Array|Object}
+         */        
+        getSelection: function() {
+            var sm = this.getSelectionModel();
+            var mode = sm.getSelectionMode();
+            var records = sm.getSelection();
+            
+            if( mode == 'MULTI' || mode == 'SIMPLE') {
+                return records;
+            } else {
+                return records.length == 1 ? records[0] : null;
+            }
+        },
+        
+        /**
          * Event: right click on row
          * @private
          * 
@@ -749,7 +766,7 @@ Ext.define('Foo.Bar', {
             if (!Ext.isEmpty(this.getRowActions()))
             {
                 Ext.create('Ext.menu.Menu', {
-                    items: this.getContextMenuItems(record, index)
+                    items: this.getContextMenuItems(this.getSelection(), index)
                 }).showAt(event.getXY());
 
                 event.stopEvent();
