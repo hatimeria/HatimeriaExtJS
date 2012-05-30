@@ -82,6 +82,7 @@ Ext.define('Foo.Bar', {
          * @cfg {Array} filters
          */
         summary: {
+            dock: 'top',
             items: []
         },
         
@@ -283,7 +284,7 @@ Ext.define('Foo.Bar', {
             });
             
             var summary = {
-                dock: 'top',
+                dock: this.summary.dock,
                 xtype: 'toolbar',
                 cls: 'grid-docked-toolbar',
                 padding: 0,
