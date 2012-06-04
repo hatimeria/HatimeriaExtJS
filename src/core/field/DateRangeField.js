@@ -437,7 +437,7 @@
                 yesterday: {to: now, from: dayBack},
                 week:      {to: now, from: weekBack},
                 prevweek:  {to: weekBack, from: twoweekBack},
-                month:     {to: now, from: Ext.Date.getFirstDateOfMonth(now)},
+                month:     {to: Ext.Date.getLastDateOfMonth(now), from: Ext.Date.getFirstDateOfMonth(now)},
                 prevmonth: {
                     from: Ext.Date.getFirstDateOfMonth(prevMonth), 
                     to: Ext.Date.getLastDateOfMonth(prevMonth)

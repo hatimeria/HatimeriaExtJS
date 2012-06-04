@@ -257,17 +257,21 @@ Ext.define('Foo.Bar', {
             Ext.Array.each(items, function(config, index) {
                 var id = 'grid-summary-' + config.value;
                 var item = {
-                    xtype: 'container',
+                    xtype: config.xtype || 'container',
                     data: {value: 0},
+                    label: config.label,
                     itemId: id,
-                    style: 'margin-left: 15px',
-                    tpl: config.label + ': <b>{value}</b>'
+                    style: 'margin-left: 15px'
+                }
+                
+                if(!config.xtype) {
+                    item.tpl = config.label + ': <b>{value}</b>';
                 }
                 
                 var sumField = function() {
-                    grid.down('#' + id).update({
-                        value: Ext.util.Format.number(store.sum(config.value), '0.00')
-                    })
+                    var value = store.sum(config.value)
+                    value = config.xtype ? value : Ext.util.Format.number(value, '0.00');
+                    grid.down('#' + id).update(value);
                 }
                 
                 store.on('load', sumField);

@@ -15,7 +15,9 @@
 Ext.define('Hatimeria.core.text.Price', {
     extend: 'Ext.container.Container',
     alias: 'widget.price',
-    data: {price: 0},
+    data: {
+        price: 0
+    },
     style: 'text-align:right',
     
     /**
@@ -23,7 +25,7 @@ Ext.define('Hatimeria.core.text.Price', {
      */
     constructor: function(config)
     {
-        config.tpl = config.text + ' <b>{price}</b>';
+        config.tpl = config.label + ': <b>{price}</b>';
         this.callParent([config]);
     },
     
@@ -32,8 +34,8 @@ Ext.define('Hatimeria.core.text.Price', {
      *
      * @param {Float} value
      */
-    setPrice: function(value)
+    update: function(value)
     {
-        this.update({price: Ext.util.Format.currency(value)});
+        this.callParent([{price: Ext.util.Format.currency(value.value || value)}]);
     }
 });
