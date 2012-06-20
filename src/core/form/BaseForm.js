@@ -110,12 +110,6 @@ Ext.define("Hatimeria.core.form.BaseForm", {
 
         if (typeof config.submitConfig.submit == 'function')
         {
-            var submit = config.submitConfig.submit;
-            if (submit.directCfg.method.formHandler != true) {
-                console.error(submit.directCfg.action + '.' + 
-                    submit.directCfg.method.name + " doesn't have @form annotation");
-            }
-
             Ext.merge(config, {api: {
                 submit: config.submitConfig.submit
             }});
@@ -329,6 +323,11 @@ Ext.define("Hatimeria.core.form.BaseForm", {
                 success: config.success || function() {},
                 formPanel: this
             });
+            
+            // this must be called directly before submit
+            if(Ext.isFunction(this.getDirectSubmitData)) {
+                this.submitHandler.params = this.getDirectSubmitData();
+            }
         }
         
         return this.submitHandler;

@@ -46,6 +46,27 @@ Ext.require('Ext.data.reader.Json', function() {
     }());
 });
 
+Ext.require("Ext.form.action.DirectSubmit", function() {
+    
+    Ext.form.action.DirectSubmit.override({
+        doSubmit: function() {
+            var me = this,
+                callback = Ext.Function.bind(me.onSuccess, me),
+                formEl = me.buildForm(),
+                isFormHandler = Actions.Seo4Extranet_Website.update.prototype.constructor.directCfg.method.formHandler;
+
+                if(isFormHandler) {
+                    me.form.api.submit(formEl, callback, me);
+                } else {
+                    var values = me.form.getValues();
+                    me.form.api.submit(values, callback);
+                }
+            Ext.removeNode(formEl);
+        }
+    });
+});
+
+
 Ext.require('Ext.form.action.DirectLoad', function() {
         // Data may be also returned in 'record':
         Ext.form.action.DirectLoad.override({
