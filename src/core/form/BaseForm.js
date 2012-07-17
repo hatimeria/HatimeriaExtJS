@@ -68,6 +68,13 @@ Ext.define("Hatimeria.core.form.BaseForm", {
         text: null
     },
     
+    defaults: {
+            labelAlign: 'right',
+            labelSeparator: '',
+            labelStyle: 'color: #666',
+            msgTarget: 'under'
+    },
+    
     /**
      * Message on wait mask, defaults to translated form.wait
      *
@@ -118,15 +125,6 @@ Ext.define("Hatimeria.core.form.BaseForm", {
         if (config.buttonConfig.text === null) {
             config.buttonConfig.text = this.translate('save');
         }
-        
-        config.defaults = config.defaults || {};
-        
-        Ext.apply(config.defaults, {
-            labelAlign: 'right',
-            labelSeparator: '',
-            labelStyle: 'color: #666',
-            msgTarget: 'under'
-        });
         
         this.addEvents(
         
