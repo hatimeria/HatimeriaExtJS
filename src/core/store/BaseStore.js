@@ -175,8 +175,11 @@
             {
                 this.proxy.extraParams = {};
             }
+            
+            var oldObject = Ext.JSON.encode(this.proxy.extraParams);
+            var newObject = Ext.JSON.encode(Ext.merge(this.proxy.extraParams, data));
 
-            Ext.merge(this.proxy.extraParams, data);
+            return newObject != oldObject;
         },
         
         /**
