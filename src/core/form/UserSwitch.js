@@ -17,6 +17,11 @@
                 valueField: 'username',
                 listeners: {
                     scope: this,
+                    focus: function() {
+                        if(this.store.count() == 0) {
+                            this.store.load();
+                        }
+                    },
                     select: function(field, record) {
                         
                         var switchUrl = Routing.generate('homepage') + '?_switch_user=' + record[0].get('username');
