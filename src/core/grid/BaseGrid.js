@@ -268,15 +268,25 @@ Ext.define('Foo.Bar', {
                     item.tpl = config.label + ': <b>{value}</b>';
                 }
                 
-                var sumField = function() {
-                    var value = store.sum(config.value)
-                    value = config.xtype ? value : Ext.util.Format.number(value, '0.00');
-                    grid.down('#' + id).update(value);
+                if (!config.agregate) {
+                    config.agregate = 'sum';
                 }
-                
-                store.on('load', sumField);
-                store.on('datachanged', sumField);
-                store.on('update', sumField);
+                var agregateFunction;
+                if (config.agregate == 'sum') {
+                    agregateFunction = function() {
+                        var value = store.sum(config.value)
+                        value = config.xtype ? value : Ext.util.Format.number(value, '0.00');
+                        grid.down('#' + id).update(value);
+                    }
+                } else if (config.agregate == 'average') {
+                    agregateFunction = function() {
+                        var value = store.average(config.value)
+                        grid.down('#' + id).update(value);
+                    }
+                }
+                store.on('load', agregateFunction);
+                store.on('datachanged', agregateFunction);
+                store.on('update', agregateFunction);
                 
                 items[index] = item;
             });
