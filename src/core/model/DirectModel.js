@@ -63,6 +63,31 @@ Ext.define("Hatimeria.core.model.DirectModel", {
             data.idProperty = typeof data.fields[0] == 'string' ? data.fields[0] : data.fields[0].name;
         }
         
+        var modelMappingSafe = function(mapping) {
+            return function(value, record) {
+                var path = mapping.split(".");
+                var entity = record.get(path.unshift());
+                var converted = entity;
+
+                if(entity) {
+                    while(path.length) {
+                        converted = converted[path.unshift()];
+                    }
+                }
+
+                return converted;
+            }
+        }        
+        
+        Ext.each(data.fields, function(field) {
+            if(field.mapping) {
+                var mapping = field.mapping;
+                delete field.mapping;
+                
+                field.convert = modelMappingSafe(mapping);
+            }
+        });
+        
         if (typeof data.api == 'string') {
             var controller = data.api;
             var actions = Actions[controller];

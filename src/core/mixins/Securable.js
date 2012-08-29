@@ -16,15 +16,30 @@
          * @param role Role name
          */
         secure: function(role) {
-            if(User.signedIn) {
-                if(!User.hasRole(role)) {
-                    window.location = Routing.generate('hatimeria_error_403');
-                }
-                
+            
+            var roles = [];
+            
+            if(Ext.isArray(role)) {
+                roles = role;
             } else {
+                roles = [role];
+            }
+            
+            if(!User.signedIn) {
                 window.location = App.Direct.signinUrl;
             }
             
+            var granted = false;
+            
+            Ext.each(roles, function(role) {
+                if(User.hasRole(role)) {
+                    granted = true;
+                } 
+            })
+            
+            if(!granted) {
+                window.location = Routing.generate('hatimeria_error_403');
+            }
         }
     });
 })();
