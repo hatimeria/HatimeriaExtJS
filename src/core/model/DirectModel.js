@@ -66,12 +66,18 @@ Ext.define("Hatimeria.core.model.DirectModel", {
         var modelMappingSafe = function(mapping) {
             return function(value, record) {
                 var path = mapping.split(".");
-                var entity = record.get(path.unshift());
+                var first = path.shift();
+                var entity = record.get(first);
                 var converted = entity;
-
+                
                 if(entity) {
                     while(path.length) {
-                        converted = converted[path.unshift()];
+                        if(converted) {
+                            converted = converted[path.shift()];
+                        } else {
+                            break;
+                        }
+                        
                     }
                 }
 
