@@ -27,6 +27,7 @@
             
             if(!User.signedIn) {
                 window.location = App.Direct.signinUrl;
+                return;
             }
             
             var granted = false;
