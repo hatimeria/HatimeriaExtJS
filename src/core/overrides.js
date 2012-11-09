@@ -53,7 +53,7 @@ Ext.require("Ext.form.action.DirectSubmit", function() {
             var me = this,
                 callback = Ext.Function.bind(me.onSuccess, me),
                 formEl = me.buildForm(),
-                isFormHandler = Actions.Seo4Extranet_Website.update.prototype.constructor.directCfg.method.formHandler;
+                isFormHandler = me.form.api.submit.prototype.constructor.directCfg.method.formHandler;
 
                 if(isFormHandler) {
                     me.form.api.submit(formEl, callback, me);
