@@ -85,7 +85,8 @@ Ext.require('Ext.direct.Manager', function() {
                 createWindow('prod').show();
                 break;
             case 403:
-                if (App.Direct.signinUrl) {
+                var isSignedIn = typeof User != "undefined" && User.signedIn;
+                if (App.Direct.signinUrl && !isSignedIn) {
                     window.location = App.Direct.signinUrl;
                 } else {
                     createWindow('prod', __('HatimeriaExtJSBundle:direct.forbidden')).show();
