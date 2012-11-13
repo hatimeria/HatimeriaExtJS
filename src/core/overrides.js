@@ -59,6 +59,7 @@ Ext.require("Ext.form.action.DirectSubmit", function() {
                     me.form.api.submit(formEl, callback, me);
                 } else {
                     var values = me.form.getValues();
+                    values = Ext.apply(values, me.params);
                     me.form.api.submit(values, callback);
                 }
             Ext.removeNode(formEl);
