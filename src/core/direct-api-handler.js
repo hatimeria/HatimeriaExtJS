@@ -86,7 +86,8 @@ Ext.require('Ext.direct.Manager', function() {
                 break;
             case 403:
                 var isSignedIn = typeof User != "undefined" && User.signedIn;
-                if (App.Direct.signinUrl && !isSignedIn) {
+				// if sign in url is specified and user is not signed in or is anonymous redirect to login page
+                if (App.Direct.signinUrl && (!isSignedIn || result.anonymous === true)) {
                     window.location = App.Direct.signinUrl;
                 } else {
                     createWindow('prod', __('HatimeriaExtJSBundle:direct.forbidden')).show();
